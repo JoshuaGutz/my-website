@@ -5,7 +5,6 @@
   <title>Hello Cutie</title>
 </head>
 <body>
-  <h1>Hello Cutie</h1>
 <h1 style="font-size: 200px;color: #fdc331;
 text-shadow: #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
              #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
@@ -48,13 +47,16 @@ text-shadow: #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
                         setTimeout(function () {
                             cooldown_wait();
                         }, 1000);
+                    } else if (next_spawn === 60) {
+                        setTimeout(function () {
+                            mainloop();
+                        }, 2000);
                     } else {
                         setTimeout(function () {
                             mainloop();
                         }, 2000);
                     }
                 }
-
                 cooldown_wait();
             }
         )
