@@ -71,6 +71,23 @@
 </style>
 
 
+<button onclick="copyText(this)">!pokecheck</button>
+<button onclick="copyText(this)">!pokecatch Ultra Ball</button>
+<button onclick="copyText(this)">!pokecatch Great Ball</button>
+<button onclick="copyText(this)">!pokecatch Poke Ball</button>
+
+<script>
+function copyText(button) {
+  const text = button.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    console.log(`Copied: ${text}`);
+  }).catch(err => {
+    console.error("Copy failed:", err);
+  });
+}
+</script>
+
+
 
 
     <script src="allpages.js"></script>
