@@ -43,14 +43,14 @@ text-shadow: #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
 
                     document.getElementById('countdown').innerHTML = str_pad_left(minutes, '0', 2) + ":" + str_pad_left(seconds, '0', 2)
                     console.log(next_spawn)
-                    if (next_spawn > 0) {
-                        setTimeout(function () {
-                            cooldown_wait();
-                        }, 1000);
-                    } else if (next_spawn === 60) {
+                    if (next_spawn === 60) {
                         setTimeout(function () {
                             mainloop();
                         }, 2000);
+                    } else if (next_spawn > 0) {
+                        setTimeout(function () {
+                            cooldown_wait();
+                        }, 1000);
                     } else {
                         setTimeout(function () {
                             mainloop();
