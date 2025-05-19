@@ -5,55 +5,21 @@
     <title>Hello PCG Community!</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="modal.css">
+<!--
+ -->
     <script src="timer.js"></script>
 </head>
 <!--
  -->
 <body>
     <p id="page_name" style="font-size: 12px;"></p>
-    <h1>Current Pokémon Spawn</h1>
-    <!-- Return Button -->
-    <button id="return-btn">Return to Main</button>
-    <button id="openExtensionBtn">Open PCG Extension</button>
-    <script src="modals.js"></script>
     <br>
-
-    <!-- Button for Last A Spawns -->
-    <button onclick="window.open('https://twitch.center/customapi/quote/list?token=f712463c', '_blank')">
-        List of Last A Spawns
-    </button>
-
-    <!-- JSON Data -->
-    <a href="https://poketwitch.bframework.de/info/events/last_spawn/" target="_blank">Spawn JSON</a>
-
-    <h1>Timer drifts due to your device</h1>
-    <h1>Timer resyncs at 20 and 0</h1>
-
-
-<!--
-    <h1 style="font-size: 200px;color: #fdc331;
-    text-shadow: #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px;"
-        id="countdown">
-        13:37
-    </h1>
- -->
-
-
 
     <!-- Timer -->
     <h1 id="countdown">hh:mm</h1>
 
+    <br>
+    <br>
 
 <!--
 <iframe
@@ -74,6 +40,8 @@
 
 
 
+    <br>
+    <br>
 
 
 
@@ -86,24 +54,51 @@
     margin: 0 auto;
   }
 
+  .chat-iframe {
+    width: 100%;
+    height: 70vh;
+    border: none;
+    transform-origin: top left;
+  }
+
   iframe {
     width: 100%;
     height: 100%;
     border: none;
   }
+
+  /* Scale up the chat only on screens smaller than 768px */
+  @media (max-width: 768px) {
+    .chat-iframe {
+      transform: scale(1.3);
+      height: calc(70vh / 1.3); /* Adjust height so it fits after scaling */
+    }
+  }
 </style>
 
 <div class="chat-container">
   <iframe
-    src="https://www.twitch.tv/embed/deemonrider/chat?parent=joshuagutz.com&darkpopout">
+    src="https://www.twitch.tv/embed/deemonrider/chat?parent=joshuagutz.com&parent=localhost&darkpopout">
   </iframe>
 </div>
 
 
+    <br>
+    <br>
+
+<!--
+    <iframe
+      class="chat-iframe"
+      src="https://www.twitch.tv/embed/deemonrider/chat?parent=joshuagutz.com&parent=localhost&darkpopout"
+      scrolling="no"
+    ></iframe>
+ -->
 
 
 
 
+    <br>
+    <br>
 
 
 
@@ -120,7 +115,7 @@
     max-width: 400px;
     margin: 12px auto;
     padding: 16px;
-    font-size: 18px;
+    font-size: 32px;
     background: linear-gradient(90deg, #ffbd2a, #ffca35);
     border: none;
     border-radius: 12px;
@@ -156,8 +151,24 @@ function copyText(button) {
 
 
 
+    <h1>Current Pokémon Spawn</h1>
+    <!-- Return Button -->
+    <button id="return-btn">Return to Main</button>
+    <button id="openExtensionBtn">Open PCG Extension</button>
+    <script src="modals.js"></script>
 
-    <p style="font-size: 12px;">Version 2025-05-18 1050pm</p>
+    <!-- Button for Last A Spawns -->
+    <button onclick="window.open('https://twitch.center/customapi/quote/list?token=f712463c', '_blank')">
+        List of Last A Spawns
+    </button>
+
+    <!-- JSON Data -->
+    <a href="https://poketwitch.bframework.de/info/events/last_spawn/" target="_blank">Spawn JSON</a>
+
+    <h1>Timer drifts due to your device</h1>
+    <h1>Timer resyncs at 20 and 0</h1>
+
+    <p style="font-size: 12px;">Version 2025-05-18 1116pm</p>
 
     <script src="allpages.js"></script>
 
