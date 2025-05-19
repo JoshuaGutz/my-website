@@ -1,0 +1,183 @@
+/*
+*/
+/* General styling for the page */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    color: #4CAF50;
+    margin-top: 20px;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* List for displaying Pokémon information */
+#results-list {
+    padding: 0;
+    margin-top: 20px;
+}
+
+/* List items with Pokémon details */
+#results-list li {
+    margin: 10px 0;
+    padding: 10px;
+    list-style-type: none;
+    border-radius: 5px;
+    color: white;  /* Ensure default text is visible */
+    font-weight: bold;
+}
+
+/* Flash effect when Pokémon is already listed */
+.flash {
+    background-color: yellow !important;
+    transition: background-color 0.5s ease;
+}
+
+/* Text inside list items (preformatted) */
+#results-list li pre {
+    white-space: pre-wrap; /* Wrap long lines of text */
+    word-wrap: break-word;
+}
+
+/* Buttons */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Clear and Return buttons */
+.clear-btn, .return-btn {
+    background-color: #f44336;
+    margin-top: 20px;
+}
+
+.clear-btn:hover, .return-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* Background color for list items based on Pokémon types */
+.flash {
+    background-color: yellow !important;
+    transition: background-color 0.5s ease;
+}
+
+/* Type-based backgrounds */
+#results-list li.pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Scroll container for results if needed */
+#results-list {
+    /* max-height: 500px; */
+    overflow-y: auto;
+}
+
+/* General page styling (index, battle assistant) */
+body {
+    background-color: rgb(54, 54, 54);
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, p {
+    color: white;
+}
+
+/* Buttons styling */
+button {
+    background-color: #333; /* Dark button background */
+    color: white; /* White button text */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: #666; /* Slightly lighter when hovered */
+}
+
+/* Buttons styling */
+button {
+    background: linear-gradient(90deg, #ffbd2a, #ffca35);
+    color: black; /* White button text */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 10px;
+    font-weight: bold;
+}
+
+button:hover {
+    background: linear-gradient(90deg, #333, #666); /* Slightly reverse gradient when hovered */
+}
+
+
+/* Links styling */
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Other page elements */
+input[type="text"] {
+    background-color: #222;
+    color: white;
+    border: 1px solid #777;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+
+.results-list-item {
+    border: 3px solid black;
+}
+
+#countdown {
+    font-size: 100px;
+    color: #fdc331;
+    text-shadow: 
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px,
+        #000 0 0 5px, #000 0 0 5px, #000 0 0 5px;
+}
