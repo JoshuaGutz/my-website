@@ -71,10 +71,40 @@
 </style>
 
 
-<button onclick="copyText(this)">!pokecheck</button>
-<button onclick="copyText(this)">!pokecatch Ultra Ball</button>
-<button onclick="copyText(this)">!pokecatch Great Ball</button>
-<button onclick="copyText(this)">!pokecatch Poke Ball</button>
+
+
+
+
+
+
+
+<style>
+  .copy-button {
+    display: block;
+    width: 90%;
+    max-width: 400px;
+    margin: 12px auto;
+    padding: 16px;
+    font-size: 18px;
+    background: linear-gradient(90deg, #ffbd2a, #ffca35);
+    border: none;
+    border-radius: 12px;
+    color: #333;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease;
+  }
+  .copy-button:active {
+    transform: scale(0.98);
+  }
+</style>
+
+
+<button class="copy-button" onclick="copyText(this)">!pokecheck</button>
+<button class="copy-button" onclick="copyText(this)">!pokecatch Ultra Ball</button>
+<button class="copy-button" onclick="copyText(this)">!pokecatch Great Ball</button>
+<button class="copy-button" onclick="copyText(this)">!pokecatch Poke Ball</button>
 
 <script>
 function copyText(button) {
@@ -86,6 +116,8 @@ function copyText(button) {
   });
 }
 </script>
+
+
 
 
 
