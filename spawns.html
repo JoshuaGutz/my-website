@@ -110,6 +110,7 @@
 function copyText(button) {
   const text = button.innerText;
   navigator.clipboard.writeText(text).then(() => {
+    alert('Copied: ' + text);
     console.log(`Copied: ${text}`);
   }).catch(err => {
     console.error("Copy failed:", err);
