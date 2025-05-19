@@ -2,46 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hello PCG Community!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Tool</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="modal.css">
-    <script src="timer.js"></script>
 </head>
 <!--
  -->
 <body>
     <p id="page_name" style="font-size: 12px;"></p>
-    <h1>Current Pokémon Spawn</h1>
-    <!-- Return Button -->
-    <button id="return-btn">Return to Main</button>
-    <button id="openExtensionBtn">Open PCG Extension</button>
+    <h1>PCG Tool</h1>
+    <div class="buttons">
+        <button id="openExtensionBtn">Open PCG Extension</button><br>
+        <button onclick="location.href='spawns.html'">spawns.html</button><br>
+        <button onclick="location.href='test.html'">TEST</button><br>
+        <button onclick="location.href='test2.html'">TEST2</button><br>
+        <button onclick="location.href='test3.html'">TEST3</button><br>
+        <button onclick="location.href='battle-assistant.html'">Battle Assistant</button><br>
+        <button onclick="location.href='spawns.html'">Current Pokémon Spawn</button><br>
+        <button onclick="openInNewTab('https://docs.google.com/spreadsheets/d/1fEdavSJKA5CcqwdMNK7USbmgbezqJcHyml7xubKXu0c/edit?gid=740206826#gid=740206826');">
+        Open MY MOVE TIER SHEET (New Tab)</button><br>
+        <button onclick="openInNewTab('https://docs.google.com/spreadsheets/d/1GrU5J7KHIh1dF-tpjqOAdO6W-KNys0Ka6FtVxM-O8Hs/edit?gid=517315912#gid=517315912');">
+        Open MY SPREADSHEET (New Tab)</button><br>
+<!--
+        <button onclick="openInSameWindow();">Open PCG Extension (Same Window) (alt+left arrow to come "Back")</button><br>
+        <button onclick="openInNewTab();">Open PCG Extension (New Tab)</button><br>
+        <button onclick="openExtensionWindow();">Open PCG Extension (Pop-up App Mode)</button><br>
+        <button onclick="openNewExtensionWindow();">Open PCG Extension (NewPop-up App Mode)</button><br>
+ -->
+    </div>
+    <script src="allpages.js"></script>
+    <script src="index.js"></script>
     <script src="modals.js"></script>
-    <br>
-
-    <h1>Timer drifts due to your device</h1>
-    <h1>Timer resyncs at 20 and 0</h1>
-    <h1 style="font-size: 200px;color: #fdc331;
-    text-shadow: #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
-                 #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px;"
-        id="countdown">
-        13:37
-    </h1>
-
-    <!-- Button for Last A Spawns -->
-    <button onclick="window.open('https://twitch.center/customapi/quote/list?token=f712463c', '_blank')">
-        List of Last A Spawns
-    </button>
-
-
 </body>
 </html>
+
+
+
+
+
+
