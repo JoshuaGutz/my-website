@@ -18,8 +18,19 @@
     <script src="modals.js"></script>
     <br>
 
+    <!-- Button for Last A Spawns -->
+    <button onclick="window.open('https://twitch.center/customapi/quote/list?token=f712463c', '_blank')">
+        List of Last A Spawns
+    </button>
+
+    <!-- JSON Data -->
+    <a href="https://poketwitch.bframework.de/info/events/last_spawn/" target="_blank">Spawn JSON</a>
+
     <h1>Timer drifts due to your device</h1>
     <h1>Timer resyncs at 20 and 0</h1>
+
+
+<!--
     <h1 style="font-size: 200px;color: #fdc331;
     text-shadow: #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
                  #000 0 0 5px,   #000 0 0 5px,   #000 0 0 5px,
@@ -36,14 +47,23 @@
         id="countdown">
         13:37
     </h1>
+ -->
 
-    <!-- Button for Last A Spawns -->
-    <button onclick="window.open('https://twitch.center/customapi/quote/list?token=f712463c', '_blank')">
-        List of Last A Spawns
-    </button>
 
-    <!-- JSON Data -->
-    <a href="https://poketwitch.bframework.de/info/events/last_spawn/" target="_blank">Spawn JSON</a>
+
+    <!-- Timer -->
+    <h1 id="countdown">hh:mm</h1>
+
+
+
+<iframe
+  src="https://www.twitch.tv/embed/deemonrider/chat?parent=joshuagutz.com"
+  height="500"
+  width="350">
+</iframe>
+
+
+
 
     <script src="allpages.js"></script>
 
