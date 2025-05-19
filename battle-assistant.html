@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="modal.css">
+</head>
+<!-- 
+-->
+<body>
+    <p id="page_name" style="font-size: 12px;"></p>
+    <div onclick="focusTextBox('pokemon-name')">
+    <h1>Battle Assistant</h1>
+    <button id="return-btn">Return to Main</button>
+    <button id="openExtensionBtn">Open PCG Extension</button>
+    <br>
+
+    <!-- File input for loading the PCGmons.txt -->
+    <input type="file" id="file-input" accept=".txt" />
+    <br>
+    
+    <!-- Search form -->
+    <input type="text" id="pokemon-name" placeholder="Enter Pokémon name" />
+    <button id="search-btn" disabled>Search</button>
+    <button id="clear-btn">Clear List</button>
+    </div>
+
+    <!-- Result list -->
+    <ul id="results-list"></ul>
+
+    <!-- Hidden text input for entering data manually if Pokémon is not found -->
+    <div id="data-entry" style="display:none;">
+        <input type="text" id="result-data" placeholder="Enter Pokémon data" />
+    </div>
+
+    <script src="allpages.js"></script>
+    <script src="script.js"></script>
+    <script src="modals.js"></script>
+</body>
+</html>
