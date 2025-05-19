@@ -27,7 +27,7 @@ function mainloop() {
                 } else if (next_spawn > 0) {
                     setTimeout(function () {
                         cooldown_wait();
-                    }, 1000);
+                    }, 999); /* reduced 1000ms to 999ms to account for drift*/
                 } else {
                     setTimeout(function () {
                         mainloop();
