@@ -19,6 +19,112 @@
 
     <br>
 
+
+<!--
+    <button id="openExtensionBtn">Open PCG Extension</button>
+    <script src="modals.js"></script>
+    <br>
+ -->
+    <!-- Search form -->
+<!--
+    <input type="text" id="pokemon-name" placeholder="Enter Pokémon name" />
+    <button id="search-btn" disabled>Search</button>
+    <button id="clear-btn">Clear List</button>
+ -->
+
+    <br>
+
+
+<!--
+ -->
+
+
+<!--
+      display: none;
+ -->
+
+  <style>
+    #chatFrame {
+      position: relative;
+      z-index: 9999;
+      width: 90vw;
+      height: 50vh;
+      border: none;
+      margin: 20px auto;
+      display: block;
+      .other-elements {
+      z-index: 0;
+      }
+    }
+    .channel-button {
+      padding: 1em;
+      margin: 0.5em;
+      font-size: 1.2em;
+    }
+  </style>
+
+
+<!--
+  <h2>Select a Twitch Channel to Load Chat:</h2>
+ -->
+
+
+
+<div id="buttonContainer">
+  <button class="channel-button" onclick="loadChat('DeemonRider')">DeemonRider</button>
+  <button class="channel-button" onclick="loadChat('Jonaswagern')">Jonaswagern</button>
+  <button class="channel-button" onclick="loadChat('malice_dumpling')">malice_dumpling</button>
+</div>
+
+
+<div id="chatContainer" style="margin-top: 1em;">
+</div>
+
+<!--
+  <iframe id="chatFrame" ></iframe>
+
+  <script>
+    function loadChat(channelName) {
+      const iframe = document.getElementById("chatFrame");
+      const parentDomain = location.hostname;
+      iframe.src = `https://www.twitch.tv/embed/${channelName}/chat?parent=${parentDomain}&darkpopout`;
+      iframe.style.display = "block";
+    }
+  </script>
+ -->
+
+
+<script>
+  function loadChat(channelName) {
+    const chatContainer = document.getElementById('chatContainer');
+    const parentDomain = location.hostname;
+
+    // Remove previous iframe if it exists
+    chatContainer.innerHTML = '';
+
+    // Create new iframe
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.twitch.tv/embed/${channelName}/chat?parent=${parentDomain}&darkpopout`;
+    iframe.width = "100%";
+    iframe.height = "500"; // adjust as needed
+    iframe.frameBorder = "0";
+    iframe.scrolling = "no";
+    iframe.id = "chatFrame";
+    iframe.style.border = "none";
+
+    // Append iframe to container
+    chatContainer.appendChild(iframe);
+  }
+</script>
+
+
+
+
+
+
+
+    <br>
+
 <!--
 <iframe
   src="https://www.twitch.tv/embed/deemonrider/chat?parent=ggutzyy.com"
@@ -69,12 +175,15 @@
   }
 </style>
 
+
+
+<!--
 <div class="chat-container">
   <iframe
     src="https://www.twitch.tv/embed/deemonrider/chat?parent=ggutzyy.com&parent=localhost&darkpopout">
   </iframe>
 </div>
-
+ -->
 
 <!--
     <iframe
