@@ -30,9 +30,9 @@
     <input type="text" id="pokemon-name" placeholder="Enter Pokémon name" />
     <button id="search-btn" disabled>Search</button>
     <button id="clear-btn">Clear List</button>
+    <br>
  -->
 
-    <br>
 
 
 <!--
@@ -50,7 +50,7 @@
       width: 90vw;
       height: 50vh;
       border: none;
-      margin: 20px auto;
+      margin: 2px auto;
       display: block;
       .other-elements {
       z-index: 0;
@@ -61,6 +61,9 @@
       margin: 0.5em;
       font-size: 1.2em;
     }
+    #chatContainer {
+      padding: 1rem;
+    }
   </style>
 
 
@@ -69,15 +72,15 @@
  -->
 
 
+<div id="chatContainer" style="margin-top: 1em;">
+</div>
+
+
 
 <div id="buttonContainer">
   <button class="channel-button" onclick="loadChat('DeemonRider')">DeemonRider</button>
   <button class="channel-button" onclick="loadChat('Jonaswagern')">Jonaswagern</button>
   <button class="channel-button" onclick="loadChat('malice_dumpling')">malice_dumpling</button>
-</div>
-
-
-<div id="chatContainer" style="margin-top: 1em;">
 </div>
 
 <!--
@@ -119,11 +122,6 @@
 
 
 
-
-
-
-
-    <br>
 
 <!--
 <iframe
