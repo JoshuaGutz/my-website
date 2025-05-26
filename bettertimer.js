@@ -40,7 +40,7 @@ function updateCountdownDisplay(remainingSeconds) {
 async function startCountdownLoop() {
   let remainingTime = getRemainingTime();
   updateCountdownDisplay(remainingTime);
-  while (remainingTime > 0) {
+  while (remainingTime > 0 && remainingTime != 15) {
     await delay(1000);
     remainingTime = getRemainingTime();
     updateCountdownDisplay(remainingTime);
