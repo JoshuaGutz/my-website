@@ -48,8 +48,8 @@ async function startCountdownLoop() {
   if (remainingTime == 0) {
     // Check for Vibration API support
     if ('vibrate' in navigator) {
-      // Vibrate the phone for 1 second
-      navigator.vibrate(1000);
+      // Vibrate the phone for 10 seconds
+      navigator.vibrate(10000);
     } else {
       // Vibration not supported
       console.log("Vibration not supported in this browser.");
