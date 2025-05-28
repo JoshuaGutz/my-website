@@ -29,6 +29,14 @@ function mainloop() {
                         cooldown_wait();
                     }, 999); /* reduced 1000ms to 999ms to account for drift*/
                 } else {
+                    // Check for Vibration API support
+                    if ('vibrate' in navigator) {
+                      // Vibrate the phone for 6 seconds
+                      navigator.vibrate(6000);
+                    } else {
+                      // Vibration not supported
+                      console.log("Vibration not supported in this browser.");
+                    }
                     setTimeout(function () {
                         mainloop();
                     }, 2000);
