@@ -45,11 +45,11 @@ async function startCountdownLoop() {
     remainingTime = getRemainingTime();
     updateCountdownDisplay(remainingTime);
   }
-  if (remainingTime == 0) {
+  if (remainingTime == 5) {
     // Check for Vibration API support
     if ('vibrate' in navigator) {
-      // Vibrate the phone for 10 seconds
-      navigator.vibrate(10000);
+      // Vibrate the phone for 5 seconds
+      navigator.vibrate(5000);
     } else {
       // Vibration not supported
       console.log("Vibration not supported in this browser.");
