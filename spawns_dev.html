@@ -34,7 +34,7 @@
   <style>
     #chatFrame {
       position: relative;
-      z-index: 999;
+      z-index: 9999;
       width: 90vw;
       height: 60vh;
       border: none;
@@ -66,9 +66,9 @@
 
 
 <div id="buttonContainer">
-  <button class="channel-button" onclick="loadChat('DeemonRider')">DeemonRider</button>
-  <button class="channel-button" onclick="loadChat('Jonaswagern')">Jonaswagern</button>
-  <button class="channel-button" onclick="loadChat('malice_dumpling')">malice_dumpling</button>
+  <button class="channel-button" onclick="loadChat('DeemonRider')">Deemon</button>
+  <!-- <button class="channel-button" onclick="loadChat('Jonaswagern')">Jonas</button> -->
+  <button class="channel-button" onclick="loadChat('malice_dumpling')">malice</button>
 </div>
 
 <!--
@@ -213,6 +213,7 @@
 </style>
 
 
+<!-- 
 <button class="copy-button" onclick="copyText(this)">!pokecheck</button>
 <button class="copy-button" onclick="copyText(this)">!pokecatch Ultra Ball</button>
 <button class="copy-button" onclick="copyText(this)">!pokecatch Great Ball</button>
@@ -221,6 +222,9 @@
 <button class="copy-button" onclick="copyText(this)">!pokeshop Ultra Ball 10</button>
 <button class="copy-button" onclick="copyText(this)">!pokeshop Great Ball 10</button>
 <button class="copy-button" onclick="copyText(this)">!pokeshop Poke Ball 10</button>
+ -->
+
+
 
 <script>
 function copyText(button) {
@@ -243,19 +247,23 @@ function copyText(button) {
     <!-- <h1>Current Pokémon Spawn</h1> -->
     <!-- Return Button -->
     <button id="return-btn">Return to Main</button>
-    <button id="openExtensionBtn">Open PCG Extension</button>
-    <script src="modals.js"></script>
+    <!-- <button id="openExtensionBtn">Open PCG Extension</button> -->
+    <!-- <script src="modals.js"></script> -->
 
     <!-- Button for Last A Spawns -->
+<!-- 
     <button onclick="window.open('https://twitch.center/customapi/quote/list?token=f712463c', '_blank')">
         List of Last A Spawns
     </button>
-
+ -->
 
     <!-- Button for JSON Data -->
+<!-- 
     <button onclick="window.open('https://poketwitch.bframework.de/info/events/last_spawn/', '_blank')">
         Spawn JSON
     </button>
+ -->
+
 
     <!-- <h1>Timer drifts due to your device</h1> -->
     <!-- <h1>Timer resyncs at 20 and 0</h1> -->
