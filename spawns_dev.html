@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCG Spawn Watch DEV</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="modal.css">
+    <link rel="stylesheet" href="spawns_dev.css">
+<!--
+ -->
+    <!-- <script src="timer.js"></script> -->
+    <script src="bettertimer.js"></script>
+</head>
+<!--
+ -->
+<body>
+
+
+
+  <div class="top-section">
+    <div id="countdown">00:00</div>
+    <img id="sprite-image" src="" alt="Sprite" />
+  </div>
+  <script src="sprite.js"></script>
+
+  <div class="content">
+<!--     <p>Scroll down to test sticky behavior.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+    <p style="height: 20px;"></p>
+ -->
+
+
+  <style>
+    #chatFrame {
+      position: relative;
+      z-index: 999;
+      width: 90vw;
+      height: 60vh;
+      border: none;
+      margin: 1px auto;
+      display: block;
+      .other-elements {
+      z-index: 0;
+      }
+    }
+    .channel-button {
+      padding: 1em;
+      margin: 0.5em;
+      font-size: 1.2em;
+    }
+    #chatContainer {
+      padding: 0rem;
+    }
+  </style>
+
+
+<!--
+  <h2>Select a Twitch Channel to Load Chat:</h2>
+ -->
+
+
+<div id="chatContainer" style="margin-top: 0;">
+</div>
+
+
+
+<div id="buttonContainer">
+  <button class="channel-button" onclick="loadChat('DeemonRider')">DeemonRider</button>
+  <button class="channel-button" onclick="loadChat('Jonaswagern')">Jonaswagern</button>
+  <button class="channel-button" onclick="loadChat('malice_dumpling')">malice_dumpling</button>
+</div>
+
+<!--
+  <iframe id="chatFrame" ></iframe>
+
+  <script>
+    function loadChat(channelName) {
+      const iframe = document.getElementById("chatFrame");
+      const parentDomain = location.hostname;
+      iframe.src = `https://www.twitch.tv/embed/${channelName}/chat?parent=${parentDomain}&darkpopout`;
+      iframe.style.display = "block";
+    }
+  </script>
+ -->
+
+
+<script>
+  function loadChat(channelName) {
+    const chatContainer = document.getElementById('chatContainer');
+    const parentDomain = location.hostname;
+
+    // Remove previous iframe if it exists
+    chatContainer.innerHTML = '';
+
+    // Create new iframe
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.twitch.tv/embed/${channelName}/chat?parent=${parentDomain}&darkpopout`;
+    iframe.width = "100%";
+    iframe.height = "500"; // adjust as needed
+    iframe.frameBorder = "0";
+    iframe.scrolling = "no";
+    iframe.id = "chatFrame";
+    iframe.style.border = "none";
+
+    // Append iframe to container
+    chatContainer.appendChild(iframe);
+  }
+</script>
+
+
+
+
+<!--
+<iframe
+  src="https://www.twitch.tv/embed/deemonrider/chat?parent=ggutzyy.com"
+  class="chat-frame">
+</iframe>
+<style>
+.chat-frame {
+  width: 90vw;                /* 90% of viewport width */
+  height: 50vh;               /* 50% of viewport height */
+  display: block;
+  margin: 0 auto;             /* center horizontally */
+  /*border: none;               /* optional: removes iframe border */
+}
+</style>
+ -->
+
+
+
+
+
+
+<style>
+  .chat-container {
+    width: 90vw;
+    height: 50vh;
+    margin: 0 auto;
+  }
+
+  .chat-iframe {
+    width: 100%;
+    height: 70vh;
+    border: none;
+    transform-origin: top left;
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  /* Scale up the chat only on screens smaller than 768px */
+  @media (max-width: 768px) {
+    .chat-iframe {
+      transform: scale(1.3);
+      height: calc(70vh / 1.3); /* Adjust height so it fits after scaling */
+    }
+  }
+</style>
+
+
+
+<!--
+<div class="chat-container">
+  <iframe
+    src="https://www.twitch.tv/embed/deemonrider/chat?parent=ggutzyy.com&parent=localhost&darkpopout">
+  </iframe>
+</div>
+ -->
+
+<!--
+    <iframe
+      class="chat-iframe"
+      src="https://www.twitch.tv/embed/deemonrider/chat?parent=ggutzyy.com&parent=localhost&darkpopout"
+      scrolling="no"
+    ></iframe>
+ -->
+
+
+    <br>
+
+
+
+
+
+
+
+
+
+<style>
+  .copy-button {
+    display: block;
+    width: 90%;
+    max-width: 400px;
+    margin: 12px auto;
+    padding: 16px;
+    font-size: 26px;
+    background: linear-gradient(90deg, #ffbd2a, #ffca35);
+    border: none;
+    border-radius: 12px;
+    color: #333;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease;
+  }
+  .copy-button:active {
+    transform: scale(0.98);
+  }
+</style>
+
+
+<button class="copy-button" onclick="copyText(this)">!pokecheck</button>
+<button class="copy-button" onclick="copyText(this)">!pokecatch Ultra Ball</button>
+<button class="copy-button" onclick="copyText(this)">!pokecatch Great Ball</button>
+<button class="copy-button" onclick="copyText(this)">!pokecatch Poke Ball</button>
+
+<button class="copy-button" onclick="copyText(this)">!pokeshop Ultra Ball 10</button>
+<button class="copy-button" onclick="copyText(this)">!pokeshop Great Ball 10</button>
+<button class="copy-button" onclick="copyText(this)">!pokeshop Poke Ball 10</button>
+
+<script>
+function copyText(button) {
+  const text = button.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Copied: ' + text);
+    console.log(`Copied: ${text}`);
+  }).catch(err => {
+    console.error("Copy failed:", err);
+  });
+}
+</script>
+
+
+
+  </div>
+
+
+
+    <!-- <h1>Current Pokémon Spawn</h1> -->
+    <!-- Return Button -->
+    <button id="return-btn">Return to Main</button>
+    <button id="openExtensionBtn">Open PCG Extension</button>
+    <script src="modals.js"></script>
+
+    <!-- Button for Last A Spawns -->
+    <button onclick="window.open('https://twitch.center/customapi/quote/list?token=f712463c', '_blank')">
+        List of Last A Spawns
+    </button>
+
+
+    <!-- Button for JSON Data -->
+    <button onclick="window.open('https://poketwitch.bframework.de/info/events/last_spawn/', '_blank')">
+        Spawn JSON
+    </button>
+
+    <!-- <h1>Timer drifts due to your device</h1> -->
+    <!-- <h1>Timer resyncs at 20 and 0</h1> -->
+
+    <p style="font-size: 12px;">Version 2025-06-01 502 pm</p>
+
+    <p id="page_name" style="font-size: 12px;"></p>
+    <br>
+
+    <script src="allpages.js"></script>
+
+</body>
+</html>
