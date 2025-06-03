@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compact Mobile Site</title>
+    <link rel="stylesheet" href="gemini-style.css">
+</head>
+<body>
+    <div class="page-container">
+        <header class="top-section">
+            <div id="countdown" class="countdown-text">mm:ss</div>
+            <div class="sprite-container">
+                <img id="sprite-image" src="https://dev.bframework.de/static/pokedex/sprites/question.png" alt="Sprite">
+            </div>
+        </header>
+
+        <main class="middle-section">
+            <div id="chat-embed-area" class="chat-embed-area">
+                <!-- <p class="no-chat-selected">Select a channel to view chat.</p> -->
+            </div>
+            <div id="tabs-container" class="tabs-container">
+            </div>
+        </main>
+
+        <footer class="bottom-section">
+            <nav class="main-nav">
+                <!-- <a href="#home">Home</a> -->
+                <!-- <a href="#page1">Page 1</a> -->
+                <!-- <a href="#page2">Page 2</a> -->
+                <a href="index.html">Home</a>
+                <a href="spawns.html">Spawns</button><br>
+                <a href="spawns_dev.html">Spawns DEV</button><br>
+                <a href="bettertimer.html">Better Timer</button><br>
+                <!-- <a href="gemini-index.html">Gemini</button><br> -->
+            </nav>
+        </footer>
+    </div>
+
+    <div id="new-channel-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3>Add New Twitch Channel</h3>
+            <input type="text" id="new-channel-name" placeholder="Enter channel name">
+            <div class="popup-buttons">
+                <button id="add-channel-btn">Add Channel</button>
+                <button id="cancel-add-channel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="gemini-script.js"></script>
+    <script src="bettertimer.js"></script>
+    <script src="sprite.js"></script>
+</body>
+</html>
