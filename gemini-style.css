@@ -168,7 +168,7 @@ body, html {
 }
 
 .main-nav a {
-    padding: 8px 5px; /* Compact padding */
+    padding: 98px 5px; /* Compact padding */
     text-decoration: none;
     color: #333; /* You can change this */
     font-size: 14px; /* Adjust for mobile */
