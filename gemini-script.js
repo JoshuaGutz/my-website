@@ -1,5 +1,3 @@
-// In script.js
-
 document.addEventListener('DOMContentLoaded', () => {
     const chatEmbedArea = document.getElementById('chat-embed-area');
     const tabsContainer = document.getElementById('tabs-container');
@@ -8,41 +6,74 @@ document.addEventListener('DOMContentLoaded', () => {
     const addChannelBtn = document.getElementById('add-channel-btn');
     const cancelAddChannelBtn = document.getElementById('cancel-add-channel-btn');
 
+    // Initial channels
     let channels = [
-        { name: "deemonrider", id: "deemonrider" }, 
+        { name: "deemonrider", id: "deemonrider" },
         { name: "malice_dumpling", id: "malice_dumpling" }
-        // { name: "asdf", id: "asdf" } 
     ];
 
     let activeChannelId = null;
 
-/*
+    /*
     // --- USER'S JAVASCRIPT FOR COUNTDOWN AND SPRITE ---
-    <script src="../bettertimer.js"></script>
-    <script src="../sprite.js"></script>
-    function updateCountdownDisplay(timeString) {
-        const countdownEl = document.getElementById('countdown');
-        if (countdownEl) {
-            countdownEl.textContent = timeString;
+    // Example:
+    // function updateCountdownDisplay(timeString) {
+    //     const countdownEl = document.getElementById('countdown');
+    //     if (countdownEl) {
+    //         countdownEl.textContent = timeString;
+    //     }
+    // }
+    // function updateSpriteImageSource(imageUrl) {
+    //     const spriteImgEl = document.getElementById('sprite-image');
+    //     if (spriteImgEl) {
+    //         spriteImgEl.src = imageUrl;
+    //     }
+    // }
+    // --- END USER'S JAVASCRIPT ---
+    */
+
+    // Helper function to create and store an iframe for a channel
+    function createAndStoreIframe(channelId) {
+        // Check if iframe already exists to prevent duplicates
+        if (document.getElementById(`iframe-${channelId}`)) {
+            return document.getElementById(`iframe-${channelId}`);
         }
+
+        const iframe = document.createElement('iframe');
+        iframe.id = `iframe-${channelId}`; // Unique ID for each iframe
+        iframe.dataset.channelId = channelId; // Store channelId for reference
+        iframe.style.width = '100%';
+        // iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        iframe.style.display = 'none'; // Initially hidden
+        const twitchParent = window.location.hostname || 'localhost'; // Dynamically get parent domain
+        iframe.src = `https://www.twitch.tv/embed/${channelId}/chat?parent=${twitchParent}&darkpopout`;
+
+        chatEmbedArea.appendChild(iframe);
+        return iframe;
     }
 
-    function updateSpriteImageSource(imageUrl) {
-        const spriteImgEl = document.getElementById('sprite-image');
-        if (spriteImgEl) {
-            spriteImgEl.src = imageUrl;
-            // Optional: if you want to adjust sprite-container height based on actual image
-            // spriteImgEl.onload = () => {
-            //     const spriteContainer = document.querySelector('.sprite-container');
-            //     if (spriteContainer) {
-            //         // This is a bit more complex; for now, fixed height in CSS is simpler
-            //         // spriteContainer.style.height = spriteImgEl.clientHeight + 'px';
-            //     }
-            // }
+    // Helper function to display messages like "No chat selected"
+    function displayNoChatSelectedMessage(messageText) {
+        // Hide all iframes first
+        const allIframes = chatEmbedArea.querySelectorAll('iframe');
+        allIframes.forEach(frame => frame.style.display = 'none');
+
+        let placeholder = chatEmbedArea.querySelector('p.no-chat-selected');
+        if (!placeholder) {
+            placeholder = document.createElement('p');
+            placeholder.classList.add('no-chat-selected');
+            // Style it to be visible (assuming styles are in CSS)
+            // If not, add basic styling here:
+            placeholder.style.color = '#fff'; // Example
+            placeholder.style.textAlign = 'center';
+            placeholder.style.width = '100%';
+            chatEmbedArea.appendChild(placeholder);
         }
+        placeholder.textContent = messageText;
+        placeholder.style.display = 'block'; // Make sure placeholder is visible
     }
-    // --- END USER'S JAVASCRIPT ---
-*/
+
 
     function renderTabs() {
         tabsContainer.innerHTML = ''; // Clear existing tabs
@@ -59,10 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const closeBtn = document.createElement('span');
             closeBtn.classList.add('close-tab-btn');
-            closeBtn.innerHTML = '&times;'; // '×' character
+            closeBtn.innerHTML = '&times;';
             closeBtn.title = `Close ${channel.name} tab`;
             closeBtn.addEventListener('click', (event) => {
-                event.stopPropagation(); // Prevent tab selection when clicking close
+                event.stopPropagation();
                 removeChannel(channel.id);
             });
             tab.appendChild(closeBtn);
@@ -82,49 +113,73 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function selectChannel(channelId) {
-        const selectedChannel = channels.find(ch => ch.id === channelId);
+        // Hide placeholder message if it exists
+        const placeholder = chatEmbedArea.querySelector('p.no-chat-selected');
+        if (placeholder) {
+            placeholder.style.display = 'none';
+        }
 
-        if (selectedChannel) {
-            activeChannelId = selectedChannel.id; // Set activeChannelId only if channel is found
-            const twitchParent = window.location.hostname || 'localhost';
-            chatEmbedArea.innerHTML = `
-                <iframe
-                    src="https://www.twitch.tv/embed/${selectedChannel.id}/chat?parent=${twitchParent}&darkpopout"
-                    >
-                </iframe>`;
-                    // height="100%"
-                    // width="100%"
-        } else {
-            activeChannelId = null; // Explicitly nullify if no valid channel selected/found
-            if (channels.length === 0) {
-                chatEmbedArea.innerHTML = '<p class="no-chat-selected">No channels. Add a new channel to begin.</p>';
+        // Hide all iframes
+        const allIframes = chatEmbedArea.querySelectorAll('iframe');
+        allIframes.forEach(frame => {
+            if (frame.style.display !== 'none') { // Only log if it was visible
+                // console.log(`Hiding iframe: ${frame.id}`);
+            }
+            frame.style.display = 'none';
+        });
+
+        const selectedChannelObject = channels.find(ch => ch.id === channelId);
+
+        if (selectedChannelObject) {
+            activeChannelId = selectedChannelObject.id;
+            let targetIframe = document.getElementById(`iframe-${selectedChannelObject.id}`);
+
+            if (!targetIframe) {
+                // This case should ideally be handled by creating iframes upon channel addition/initialization
+                console.warn(`Iframe for ${selectedChannelObject.id} not found, creating now.`);
+                targetIframe = createAndStoreIframe(selectedChannelObject.id); // Create if missing
+            }
+
+            if (targetIframe) {
+                // console.log(`Showing iframe: ${targetIframe.id}`);
+                targetIframe.style.display = 'block'; // Or 'flex' or 'initial' depending on layout
             } else {
-                chatEmbedArea.innerHTML = '<p class="no-chat-selected">Select a channel to view chat.</p>';
+                // Fallback if iframe creation also failed for some reason
+                displayNoChatSelectedMessage(`Error: Could not load chat for ${selectedChannelObject.name}.`);
+            }
+        } else {
+            activeChannelId = null; // No valid channel selected
+            if (channels.length === 0) {
+                displayNoChatSelectedMessage("No channels. Add a new channel to begin.");
+            } else {
+                displayNoChatSelectedMessage("Select a channel to view chat.");
             }
         }
-        renderTabs(); // Re-render to update active tab style and content
+        renderTabs(); // Re-render tabs to update active state
     }
 
     function removeChannel(channelIdToRemove) {
         const indexToRemove = channels.findIndex(ch => ch.id === channelIdToRemove);
-        if (indexToRemove === -1) return; // Channel not found
+        if (indexToRemove === -1) return;
+
+        // Remove iframe from DOM
+        const iframeToRemove = document.getElementById(`iframe-${channelIdToRemove}`);
+        if (iframeToRemove) {
+            // console.log(`Removing iframe: ${iframeToRemove.id}`);
+            iframeToRemove.remove();
+        }
 
         const wasActive = (activeChannelId === channelIdToRemove);
-        channels.splice(indexToRemove, 1); // Remove the channel from the array
+        channels.splice(indexToRemove, 1);
 
         if (wasActive) {
-            activeChannelId = null; // Clear the active channel ID
+            activeChannelId = null;
             if (channels.length > 0) {
-                // Default to selecting the new first channel if the active one was removed
-                activeChannelId = channels[0].id;
+                activeChannelId = channels[0].id; // Select the first channel if one exists
             }
-        } else if (activeChannelId && !channels.find(ch => ch.id === activeChannelId)) {
-            // This case handles if somehow activeChannelId is stale (should not happen with current logic but good safeguard)
-            activeChannelId = channels.length > 0 ? channels[0].id : null;
         }
-        // If a non-active channel was removed, activeChannelId remains valid and unchanged (unless it became stale above).
-
-        selectChannel(activeChannelId); // selectChannel will handle null activeChannelId and re-render tabs
+        // No need to re-check activeChannelId validity here, selectChannel will handle it.
+        selectChannel(activeChannelId); // This will display the new active iframe or placeholder
     }
 
     function handleAddNewChannel() {
@@ -132,37 +187,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (newName) {
             const newChannelId = newName.toLowerCase().replace(/[^a-z0-9_]/g, '');
             if (!newChannelId) {
-                // Consider using a less obtrusive notification than alert
                 console.warn("Channel name results in an invalid ID (use letters, numbers, underscore).");
-                // You could show a message in the popup itself
                 return;
             }
             if (channels.some(ch => ch.id === newChannelId || ch.name.toLowerCase() === newName.toLowerCase())) {
                 console.warn("Channel name or ID already exists!");
-                // You could show a message in the popup itself
                 return;
             }
             channels.push({ name: newName, id: newChannelId });
+            createAndStoreIframe(newChannelId); // Create the iframe, it will be hidden by default
             hideNewChannelPopup();
-            selectChannel(newChannelId);
-            // Consider saving 'channels' to localStorage here
+            selectChannel(newChannelId); // This will make the new channel active and show its iframe
         } else {
             console.warn("Please enter a channel name.");
-            // You could show a message in the popup itself
         }
     }
 
-    // Event listener for the 'Enter' key in the input field
     newChannelNameInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent default action (like form submission if it were in a form)
+            event.preventDefault();
             handleAddNewChannel();
         }
     });
 
-    // Event listener for the 'Escape' key on the document when popup is open
     function handlePopupEscapeKey(event) {
-        if (event.key === 'Escape') {
+        if (newChannelPopup.style.display === 'flex' && event.key === 'Escape') {
             hideNewChannelPopup();
         }
     }
@@ -171,13 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
         newChannelNameInput.value = '';
         newChannelPopup.style.display = 'flex';
         newChannelNameInput.focus();
-        // Add Escape key listener when popup is shown
         document.addEventListener('keydown', handlePopupEscapeKey);
     }
 
     function hideNewChannelPopup() {
         newChannelPopup.style.display = 'none';
-        // Remove Escape key listener when popup is hidden to prevent interference
         document.removeEventListener('keydown', handlePopupEscapeKey);
     }
 
@@ -190,10 +237,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initial setup
+    // --- Initial Setup ---
+    // Create iframes for all initially defined channels
+    channels.forEach(channel => {
+        createAndStoreIframe(channel.id);
+    });
+
+    // Select the first channel by default if any exist
     if (channels.length > 0) {
         selectChannel(channels[0].id);
     } else {
-        selectChannel(null); // Handles empty initial state
+        selectChannel(null); // This will display the "No channels" message
     }
 });
