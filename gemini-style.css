@@ -30,7 +30,7 @@ body, html {
 }
 
 .countdown-text {
-    font-size: 80px; /* Adjust as needed (75-100px range) */
+    font-size: 50px; /* Adjust as needed (75-100px range) */
     font-weight: bold;
     color: #333; /* You can change this */
     line-height: 1; /* Helps in height consistency */
@@ -44,7 +44,7 @@ body, html {
     justify-content: center;
     /* Let's aim to match the text height. If countdown-text font-size is 80px,
        its height might be around 80-90px. Adjust as needed. */
-    height: 80px; /* Adjust this to match countdown text actual height */
+    height: 50px; /* Adjust this to match countdown text actual height */
     padding: 0px;
 }
 
