@@ -127,26 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
         selectChannel(activeChannelId); // selectChannel will handle null activeChannelId and re-render tabs
     }
 
-    function showNewChannelPopup() {
-        newChannelNameInput.value = '';
-        newChannelPopup.style.display = 'flex';
-        newChannelNameInput.focus();
-    }
-
-    function hideNewChannelPopup() {
-        newChannelPopup.style.display = 'none';
-    }
-
-    addChannelBtn.addEventListener('click', () => {
+    function handleAddNewChannel() {
         const newName = newChannelNameInput.value.trim();
         if (newName) {
-            const newChannelId = newName.toLowerCase().replace(/[^a-z0-9_]/g, ''); // Basic sanitization for ID
+            const newChannelId = newName.toLowerCase().replace(/[^a-z0-9_]/g, '');
             if (!newChannelId) {
-                alert("Channel name results in an invalid ID (use letters, numbers, underscore).");
+                // Consider using a less obtrusive notification than alert
+                console.warn("Channel name results in an invalid ID (use letters, numbers, underscore).");
+                // You could show a message in the popup itself
                 return;
             }
             if (channels.some(ch => ch.id === newChannelId || ch.name.toLowerCase() === newName.toLowerCase())) {
-                alert("Channel name or ID already exists!");
+                console.warn("Channel name or ID already exists!");
+                // You could show a message in the popup itself
                 return;
             }
             channels.push({ name: newName, id: newChannelId });
@@ -154,10 +147,41 @@ document.addEventListener('DOMContentLoaded', () => {
             selectChannel(newChannelId);
             // Consider saving 'channels' to localStorage here
         } else {
-            alert("Please enter a channel name.");
+            console.warn("Please enter a channel name.");
+            // You could show a message in the popup itself
+        }
+    }
+
+    // Event listener for the 'Enter' key in the input field
+    newChannelNameInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent default action (like form submission if it were in a form)
+            handleAddNewChannel();
         }
     });
 
+    // Event listener for the 'Escape' key on the document when popup is open
+    function handlePopupEscapeKey(event) {
+        if (event.key === 'Escape') {
+            hideNewChannelPopup();
+        }
+    }
+
+    function showNewChannelPopup() {
+        newChannelNameInput.value = '';
+        newChannelPopup.style.display = 'flex';
+        newChannelNameInput.focus();
+        // Add Escape key listener when popup is shown
+        document.addEventListener('keydown', handlePopupEscapeKey);
+    }
+
+    function hideNewChannelPopup() {
+        newChannelPopup.style.display = 'none';
+        // Remove Escape key listener when popup is hidden to prevent interference
+        document.removeEventListener('keydown', handlePopupEscapeKey);
+    }
+
+    addChannelBtn.addEventListener('click', handleAddNewChannel);
     cancelAddChannelBtn.addEventListener('click', hideNewChannelPopup);
 
     newChannelPopup.addEventListener('click', (event) => {
