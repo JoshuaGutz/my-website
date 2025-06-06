@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Data Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Use 'dark' or 'light' depending on system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .filter-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .tier-btn {
+            border: 1px solid #e5e7eb; /* gray-200 */
+        }
+        .dark .tier-btn {
+            border: 1px solid #4b5563; /* gray-600 */
+        }
+        .tier-btn.active {
+            transform: scale(1.05);
+            border-color: #4f46e5; /* indigo-600 */
+            background-color: #e0e7ff; /* indigo-100 */
+            color: #3730a3; /* indigo-800 */
+            font-weight: 600;
+        }
+        .dark .tier-btn.active {
+            border-color: #818cf8; /* indigo-400 */
+            background-color: #3730a3; /* indigo-800 */
+            color: #e0e7ff; /* indigo-100 */
+        }
+        
+        .type-btn {
+            transition: all 0.2s ease-in-out;
+            filter: grayscale(1);
+            opacity: 0.6;
+            border: 2px solid transparent;
+        }
+        .type-btn.active {
+            filter: grayscale(0);
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
+        }
+        .dark .type-btn.active {
+             box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px currentColor; /* bg-gray-800 */
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+        
+        .details-arrow { transition: transform 0.3s ease; }
+        details[open] .details-arrow { transform: rotate(90deg); }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+    <div class="container mx-auto p-4 max-w-3xl">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Pokémon Viewer</h1>
+            <p class="text-md text-gray-600 dark:text-gray-400">Mobile experience with dark mode</p>
+        </header>
+
+        <!-- Filter Controls -->
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg mb-6 space-y-4" id="filter-controls">
+            <input type="text" id="nameFilter" placeholder="Search by name..." class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tiers</label>
+                <div id="tierFilter" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <div>
+                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Types</label>
+                 <div class="flex flex-wrap gap-2 mb-3">
+                     <button id="allTypesBtn" class="px-3 py-1 text-xs font-semibold bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 text-white rounded-full">All Types</button>
+                     <button id="monoTypeBtn" class="filter-btn px-3 py-1 text-xs font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full">Mono-type Only</button>
+                 </div>
+                <div id="typeFilter" class="grid grid-cols-3 sm:grid-cols-6 gap-2"></div>
+            </div>
+
+            <details class="group border-t border-gray-200 dark:border-gray-700 pt-4">
+                <summary class="flex justify-between items-center cursor-pointer list-none">
+                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Stat Filters</h3>
+                    <svg class="details-arrow h-5 w-5 text-gray-500 group-hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </summary>
+                <div class="mt-4 stat-grid"></div>
+            </details>
+
+            <button id="resetButton" class="w-full px-4 py-2 mt-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">Reset Filters</button>
+        </div>
+
+        <!-- Results -->
+        <div class="flex justify-between items-baseline mb-2">
+            <p id="resultsCount" class="text-sm text-gray-600 dark:text-gray-400 font-medium"></p>
+            <div class="flex items-center text-sm">
+                <label for="sortSelect" class="mr-2 text-gray-600 dark:text-gray-400">Sort by:</label>
+                <select id="sortSelect" class="text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md focus:ring-indigo-500 focus:border-indigo-500"></select>
+            </div>
+        </div>
+        <div id="pokemonResults" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    </div>
+
+    <!-- Data file inclusion -->
+    <script src="pokemon-data.js"></script>
+    
+    <script>
+        // --- DATA AND CONFIG ---
+        const typeColors = {
+            normal: 'bg-slate-400', fighting: 'bg-red-600', flying: 'bg-indigo-400', poison: 'bg-purple-600', ground: 'bg-amber-500',
+            rock: 'bg-yellow-600', bug: 'bg-lime-500', ghost: 'bg-indigo-700', steel: 'bg-slate-500', fire: 'bg-orange-500',
+            water: 'bg-blue-500', grass: 'bg-green-500', electric: 'bg-yellow-400', psychic: 'bg-pink-500', ice: 'bg-cyan-400',
+            dragon: 'bg-purple-700', dark: 'bg-stone-600', fairy: 'bg-pink-400'
+        };
+        const numericStats = [
+            { key: 'base', label: 'Base' }, { key: 'hp', label: 'HP' }, { key: 'attack', label: 'Atk' },
+            { key: 'defense', label: 'Def' }, { key: 'specialAttack', label: 'Sp. Atk' }, { key: 'specialDefense', label: 'Sp. Def' },
+            { key: 'speed', label: 'Speed' }, { key: 'weight', label: 'Weight' }
+        ];
+
+        let allPokemon = [];
+        let sortState = { key: 'name', direction: 'asc' };
+
+        function parseData() {
+            // Check if rawPokemonData exists from the external file
+            if (typeof rawPokemonData === 'undefined' || !rawPokemonData) {
+                console.error("Pokémon data not found. Make sure 'pokemon-data.js' is loaded correctly.");
+                document.getElementById('pokemonResults').innerHTML = `<p class="text-center col-span-full text-red-500 py-8">Error: Could not load pokemon-data.js</p>`;
+                return;
+            }
+            const lines = rawPokemonData.trim().split('\n');
+            allPokemon = lines.map(line => {
+                const p = {};
+                const dataPairs = line.replace('Pokemon: ', '').split(' - ');
+                p.name = dataPairs[0];
+                dataPairs.slice(1).forEach(part => {
+                    const [key, ...valueParts] = part.split(': ');
+                    const value = valueParts.join(': ');
+                    switch (key.trim()) {
+                        case 'Tier': p.tier = value; break;
+                        case 'Type': p.type = value; break;
+                        case 'Weight': p.weight = parseFloat(value); break;
+                        case 'Base': p.base = parseInt(value, 10); break;
+                        case 'Speed': p.speed = parseInt(value, 10); break;
+                        case 'HP': p.hp = parseInt(value, 10); break;
+                        case 'Attack': p.attack = parseInt(value, 10); break;
+                        case 'Defense': p.defense = parseInt(value, 10); break;
+                        case 'Special-Attack': p.specialAttack = parseInt(value, 10); break;
+                        case 'Special-Defense': p.specialDefense = parseInt(value, 10); break;
+                    }
+                });
+                return p;
+            }).filter(p => p.name);
+        }
+
+        function initializeUI() {
+            const tierContainer = document.getElementById('tierFilter');
+            const tiers = [...new Set(allPokemon.map(p => p.tier))].sort();
+            tierContainer.innerHTML = tiers.map(tier => `<button class="filter-btn tier-btn px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full" data-tier="${tier}">${tier}</button>`).join('');
+
+            const typeContainer = document.getElementById('typeFilter');
+            typeContainer.innerHTML = Object.keys(typeColors).map(type => `<button class="type-btn text-white text-xs font-bold uppercase rounded-md shadow py-2 ${typeColors[type]}" data-type="${type}">${type}</button>`).join('');
+
+            const statContainer = document.querySelector('.stat-grid');
+            statContainer.innerHTML = numericStats.map(stat => `
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-400">${stat.label}</label>
+                    <div class="flex items-center gap-1 mt-1">
+                       <input type="number" id="${stat.key}Min" placeholder="Min" class="w-full text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                       <input type="number" id="${stat.key}Max" placeholder="Max" class="w-full text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                </div>`).join('');
+            
+            const sortSelect = document.getElementById('sortSelect');
+            const sortOptions = [{key: 'name', label: 'Name'}, ...numericStats];
+            sortSelect.innerHTML = sortOptions.map(opt => `<option value="${opt.key}">${opt.label}</option>`).join('');
+        }
+
+        function renderResults(pokemonList) {
+            const resultsContainer = document.getElementById('pokemonResults');
+            const resultsCountEl = document.getElementById('resultsCount');
+            
+            if (!resultsContainer) return;
+            resultsContainer.innerHTML = pokemonList.length === 0 
+                ? `<p class="text-center col-span-full text-gray-500 dark:text-gray-400 py-8">No Pokémon match filters.</p>`
+                : pokemonList.map(p => {
+                    const typesHtml = p.type.split('/').map(t => `<span class="px-2 py-0.5 text-xs font-semibold text-white ${typeColors[t.trim()]} rounded-full">${t.trim()}</span>`).join('');
+                    return `
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-3 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-lg text-gray-900 dark:text-white">${p.name}</h3>
+                            <div class="flex items-center gap-2">
+                                ${typesHtml}
+                                <span class="px-2 py-0.5 text-xs font-bold bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full">Tier ${p.tier}</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-x-2 gap-y-1 text-xs text-center">
+                            ${numericStats.map(stat => `
+                                <div class="bg-gray-100 dark:bg-gray-700/50 rounded p-1">
+                                    <strong class="text-gray-900 dark:text-white">${p[stat.key] !== undefined ? p[stat.key].toFixed(stat.key === 'weight' ? 1 : 0) : 'N/A'}</strong>
+                                    <span class="block text-gray-500 dark:text-gray-400">${stat.label}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`
+                }).join('');
+            resultsCountEl.textContent = `${pokemonList.length} results`;
+        }
+        
+        function applyFiltersAndSort() {
+            let filtered = [...allPokemon];
+
+            const nameFilter = document.getElementById('nameFilter').value.toLowerCase();
+            const monoTypeOnly = document.getElementById('monoTypeBtn').classList.contains('active');
+            const selectedTiers = Array.from(document.querySelectorAll('.tier-btn.active')).map(el => el.dataset.tier);
+            const selectedTypes = Array.from(document.querySelectorAll('.type-btn.active')).map(el => el.dataset.type);
+
+            if (nameFilter) filtered = filtered.filter(p => p.name.toLowerCase().includes(nameFilter));
+            if (monoTypeOnly) filtered = filtered.filter(p => !p.type.includes('/'));
+            if (selectedTiers.length > 0) filtered = filtered.filter(p => selectedTiers.includes(p.tier));
+            if (selectedTypes.length > 0) {
+                 filtered = filtered.filter(p => p.type.split('/').map(t => t.trim()).some(pt => selectedTypes.includes(pt)));
+            }
+            
+            numericStats.forEach(stat => {
+                const minVal = parseFloat(document.getElementById(`${stat.key}Min`).value);
+                const maxVal = parseFloat(document.getElementById(`${stat.key}Max`).value);
+                if (!isNaN(minVal)) filtered = filtered.filter(p => p[stat.key] >= minVal);
+                if (!isNaN(maxVal)) filtered = filtered.filter(p => p[stat.key] <= maxVal);
+            });
+
+            filtered.sort((a, b) => {
+                const valA = a[sortState.key];
+                const valB = b[sortState.key];
+                let comparison = (typeof valA === 'string') ? valA.localeCompare(valB) : (valA || 0) - (valB || 0);
+                return sortState.direction === 'asc' ? comparison : -comparison;
+            });
+
+            renderResults(filtered);
+        }
+        
+        function handleFilterClick(event) {
+            const target = event.target.closest('.filter-btn, .type-btn');
+            if (!target) return;
+            target.classList.toggle('active');
+            // If it's a type button, remove the grayscale filter when active
+            if(target.classList.contains('type-btn')) {
+                 target.style.filter = target.classList.contains('active') ? 'grayscale(0)' : 'grayscale(1)';
+            }
+            applyFiltersAndSort();
+        }
+
+        function setupEventListeners() {
+            document.getElementById('filter-controls').addEventListener('input', applyFiltersAndSort);
+            document.getElementById('filter-controls').addEventListener('click', handleFilterClick);
+            
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                const newKey = e.target.value;
+                if (sortState.key === newKey) {
+                    sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortState.key = newKey;
+                    sortState.direction = 'asc';
+                }
+                 applyFiltersAndSort();
+            });
+
+            document.getElementById('allTypesBtn').addEventListener('click', () => {
+                const allTypeButtons = document.querySelectorAll('.type-btn');
+                const allActive = Array.from(allTypeButtons).every(b => b.classList.contains('active'));
+                allTypeButtons.forEach(b => b.classList.toggle('active', !allActive));
+                applyFiltersAndSort();
+            });
+
+            document.getElementById('resetButton').addEventListener('click', () => {
+                document.getElementById('filter-controls').querySelectorAll('input').forEach(input => input.value = '');
+                document.querySelectorAll('.filter-btn.active, .type-btn.active').forEach(btn => btn.classList.remove('active'));
+                applyFiltersAndSort();
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            parseData();
+            initializeUI();
+            setupEventListeners();
+            applyFiltersAndSort();
+        });
+    </script>
+</body>
+</html>
