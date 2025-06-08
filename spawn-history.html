@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spawn History</title>
+    <link rel="stylesheet" href="gemini-style.css">
+</head>
+<body>
+    <div class="page-container">
+        <header class="top-section">
+        </header>
+
+        <main class="middle-section">
+            <div id="chat-embed-area" class="chat-embed-area">
+                <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQGDH_-fnudK5_paOFc0mvl061ZyxOR2nXZ7GAJ4GGnyV0xVNn46sItanxBSziuQgNAqAwJFKYo9tUJ/pubhtml?widget=true&amp;headers=false"></iframe>
+            </div>
+        </main>
+
+        <footer class="bottom-section">
+            <nav class="main-nav">
+                <!-- <a href="#home">Home</a> -->
+                <!-- <a href="#page1">Page 1</a> -->
+                <!-- <a href="#page2">Page 2</a> -->
+                <a href="index.html">Home</a>
+                <a href="spawns.html">Spawns</a>
+                <a href="spawns_dev.html">Spawns DEV</a>
+                <a href="bettertimer.html">Better Timer</a>
+                <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQGDH_-fnudK5_paOFc0mvl061ZyxOR2nXZ7GAJ4GGnyV0xVNn46sItanxBSziuQgNAqAwJFKYo9tUJ/pubhtml?gid=401644833&single=true">Spawn History External</a>
+                <!-- <a href="gemini-index.html">Gemini</a> -->
+            </nav>
+        </footer>
+    </div>
+
+    <div id="new-channel-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3>Add New Twitch Channel</h3>
+            <input type="text" id="new-channel-name" placeholder="Enter channel name">
+            <div class="popup-buttons">
+                <button type="button" id="add-channel-btn">Add Channel</button>
+                <button type="button" id="cancel-add-channel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
