@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
-        // Use 'dark' or 'light' depending on system preference
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark')
         } else {
@@ -15,60 +14,30 @@
         }
     </script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        .filter-btn {
-            transition: all 0.2s ease-in-out;
-        }
-        .tier-btn {
-            border: 1px solid #e5e7eb; /* gray-200 */
-        }
-        .dark .tier-btn {
-            border: 1px solid #4b5563; /* gray-600 */
-        }
-        .tier-btn.active {
-            transform: scale(1.05);
-            border-color: #4f46e5; /* indigo-600 */
-            background-color: #e0e7ff; /* indigo-100 */
-            color: #3730a3; /* indigo-800 */
-            font-weight: 600;
-        }
-        .dark .tier-btn.active {
-            border-color: #818cf8; /* indigo-400 */
-            background-color: #3730a3; /* indigo-800 */
-            color: #e0e7ff; /* indigo-100 */
-        }
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        .filter-btn { transition: all 0.2s ease-in-out; }
+        .tier-btn { border: 1px solid #e5e7eb; }
+        .dark .tier-btn { border: 1px solid #4b5563; }
+        .tier-btn.active { transform: scale(1.05); border-color: #4f46e5; background-color: #e0e7ff; color: #3730a3; font-weight: 600; }
+        .dark .tier-btn.active { border-color: #818cf8; background-color: #3730a3; color: #e0e7ff; }
         
-        .type-btn {
-            transition: all 0.2s ease-in-out;
-            filter: grayscale(1);
-            opacity: 0.6;
-            border: 2px solid transparent;
-        }
-        .type-btn.active {
-            filter: grayscale(0);
-            opacity: 1;
-            transform: scale(1.05);
-            box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
-        }
-        .dark .type-btn.active {
-             box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px currentColor; /* bg-gray-800 */
-        }
+        .type-btn { transition: all 0.2s ease-in-out; filter: grayscale(1); opacity: 0.6; border: 2px solid transparent; }
+        .type-btn.active { filter: grayscale(0); opacity: 1; transform: scale(1.05); box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor; }
+        .dark .type-btn.active { box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px currentColor; }
 
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 1rem;
-        }
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
         
         .details-arrow { transition: transform 0.3s ease; }
         details[open] > summary .details-arrow { transform: rotate(90deg); }
+
+        /* Toggle Switch Styles */
+        .toggle-bg:after { content: ''; @apply absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 transition-transform shadow-sm; }
+        .dark .toggle-bg:after { @apply bg-gray-400 border-gray-500; }
+        input:checked + .toggle-bg:after { transform: translateX(100%); @apply border-white; }
+        input:checked + .toggle-bg { @apply bg-indigo-600 border-indigo-600; }
+        .summary-badge { @apply ml-2 text-xs font-bold text-indigo-800 bg-indigo-100 dark:bg-indigo-900 dark:text-indigo-200 px-2 py-0.5 rounded-full; }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -76,50 +45,67 @@
     <div class="container mx-auto p-4 max-w-3xl">
         <header class="text-center mb-6">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Pokémon Viewer</h1>
-            <p class="text-md text-gray-600 dark:text-gray-400">Mobile experience with dark mode</p>
+            <p class="text-md text-gray-600 dark:text-gray-400">Advanced mobile experience</p>
         </header>
 
         <!-- Filter Controls -->
         <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg mb-6 space-y-4" id="filter-controls">
-            <!-- Name Search & Reset -->
             <div class="flex items-center gap-2">
                 <input type="text" id="nameFilter" placeholder="Search: absol, aipom..." class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <button id="resetButton" class="flex-shrink-0 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">Reset</button>
             </div>
             
-            <!-- Collapsible Tier Filters -->
             <details class="group border-t border-gray-200 dark:border-gray-700 pt-4" open>
                 <summary class="flex justify-between items-center cursor-pointer list-none">
-                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Tiers</h3>
-                    <svg class="details-arrow h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    <div class="flex items-center">
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Tiers</h3>
+                        <span id="tier-summary-badge" class="summary-badge hidden"></span>
+                    </div>
+                    <svg class="details-arrow h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                 </summary>
                 <div id="tierFilter" class="flex flex-wrap gap-2 mt-4"></div>
             </details>
 
-            <!-- Collapsible Type Filters -->
             <details class="group border-t border-gray-200 dark:border-gray-700 pt-4" open>
                 <summary class="flex justify-between items-center cursor-pointer list-none">
-                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Types</h3>
-                     <svg class="details-arrow h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    <div class="flex items-center">
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Types</h3>
+                        <span id="type-summary-badge" class="summary-badge hidden"></span>
+                    </div>
+                     <svg class="details-arrow h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                 </summary>
-                 <div class="flex flex-wrap gap-2 mt-4 mb-3">
+                 <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-4 mb-3">
                      <button id="allTypesBtn" class="px-3 py-1 text-xs font-semibold bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 text-white rounded-full">All Types</button>
-                     <button id="monoTypeBtn" class="filter-btn px-3 py-1 text-xs font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full">Mono-type Only</button>
+                     <label for="monoTypeToggle" class="flex items-center cursor-pointer">
+                         <span class="mr-2 text-sm text-gray-700 dark:text-gray-300">Mono-type</span>
+                         <div class="relative">
+                            <input type="checkbox" id="monoTypeToggle" class="sr-only">
+                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner toggle-bg"></div>
+                         </div>
+                     </label>
+                     <label for="typeAndToggle" class="flex items-center cursor-pointer">
+                         <span class="mr-2 text-sm text-gray-700 dark:text-gray-300">Match All (AND)</span>
+                         <div class="relative">
+                            <input type="checkbox" id="typeAndToggle" class="sr-only">
+                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner toggle-bg"></div>
+                         </div>
+                     </label>
                  </div>
                 <div id="typeFilter" class="grid grid-cols-3 sm:grid-cols-6 gap-2"></div>
             </details>
 
-            <!-- Collapsible Stat Filters -->
             <details class="group border-t border-gray-200 dark:border-gray-700 pt-4">
                 <summary class="flex justify-between items-center cursor-pointer list-none">
-                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Stat Filters</h3>
-                    <svg class="details-arrow h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    <div class="flex items-center">
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Stat Filters</h3>
+                        <span id="stat-summary-badge" class="summary-badge hidden"></span>
+                    </div>
+                    <svg class="details-arrow h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                 </summary>
                 <div class="mt-4 stat-grid"></div>
             </details>
         </div>
 
-        <!-- Results -->
         <div class="flex justify-between items-baseline mb-2">
             <p id="resultsCount" class="text-sm text-gray-600 dark:text-gray-400 font-medium"></p>
             <div class="flex items-center text-sm">
@@ -130,11 +116,9 @@
         <div id="pokemonResults" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
     </div>
 
-    <!-- Data file inclusion -->
     <script src="pokemon-data.js"></script>
     
     <script>
-        // --- DATA AND CONFIG ---
         const typeColors = {
             normal: 'bg-slate-400', fighting: 'bg-red-600', flying: 'bg-indigo-400', poison: 'bg-purple-600', ground: 'bg-amber-500',
             rock: 'bg-yellow-600', bug: 'bg-lime-500', ghost: 'bg-indigo-700', steel: 'bg-slate-500', fire: 'bg-orange-500',
@@ -146,14 +130,12 @@
             { key: 'defense', label: 'Def' }, { key: 'specialAttack', label: 'Sp. Atk' }, { key: 'specialDefense', label: 'Sp. Def' },
             { key: 'speed', label: 'Speed' }, { key: 'weight', label: 'Weight' }
         ];
-
         let allPokemon = [];
         let sortState = { key: 'name', direction: 'asc' };
 
         function parseData() {
             if (typeof rawPokemonData === 'undefined' || !rawPokemonData) {
-                console.error("Pokémon data not found. Make sure 'pokemon-data.js' is loaded correctly.");
-                document.getElementById('pokemonResults').innerHTML = `<p class="text-center col-span-full text-red-500 py-8">Error: Could not load pokemon-data.js</p>`;
+                console.error("Data not found.");
                 return;
             }
             const lines = rawPokemonData.trim().split('\n');
@@ -194,21 +176,17 @@
                 <div>
                     <label class="block text-xs font-medium text-gray-600 dark:text-gray-400">${stat.label}</label>
                     <div class="flex items-center gap-1 mt-1">
-                       <input type="number" id="${stat.key}Min" placeholder="Min" class="w-full text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                       <input type="number" id="${stat.key}Max" placeholder="Max" class="w-full text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                       <input type="number" id="${stat.key}Min" placeholder="Min" class="stat-input w-full text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                       <input type="number" id="${stat.key}Max" placeholder="Max" class="stat-input w-full text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500">
                     </div>
                 </div>`).join('');
             
             const sortSelect = document.getElementById('sortSelect');
-            const sortOptions = [{key: 'name', label: 'Name'}, ...numericStats];
-            sortSelect.innerHTML = sortOptions.map(opt => `<option value="${opt.key}">${opt.label}</option>`).join('');
+            sortSelect.innerHTML = [{key: 'name', label: 'Name'}, ...numericStats].map(opt => `<option value="${opt.key}">${opt.label}</option>`).join('');
         }
 
         function renderResults(pokemonList) {
             const resultsContainer = document.getElementById('pokemonResults');
-            const resultsCountEl = document.getElementById('resultsCount');
-            
-            if (!resultsContainer) return;
             resultsContainer.innerHTML = pokemonList.length === 0 
                 ? `<p class="text-center col-span-full text-gray-500 dark:text-gray-400 py-8">No Pokémon match filters.</p>`
                 : pokemonList.map(p => {
@@ -217,7 +195,7 @@
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-3 space-y-2">
                         <div class="flex justify-between items-center">
                             <h3 class="font-bold text-lg text-gray-900 dark:text-white">${p.name}</h3>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 flex-wrap">
                                 ${typesHtml}
                                 <span class="px-2 py-0.5 text-xs font-bold bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full">Tier ${p.tier}</span>
                             </div>
@@ -227,22 +205,55 @@
                                 <div class="bg-gray-100 dark:bg-gray-700/50 rounded p-1">
                                     <strong class="text-gray-900 dark:text-white">${p[stat.key] !== undefined ? p[stat.key].toFixed(stat.key === 'weight' ? 1 : 0) : 'N/A'}</strong>
                                     <span class="block text-gray-500 dark:text-gray-400">${stat.label}</span>
-                                </div>
-                            `).join('')}
+                                </div>`).join('')}
                         </div>
                     </div>`
                 }).join('');
-            resultsCountEl.textContent = `${pokemonList.length} results`;
+            document.getElementById('resultsCount').textContent = `${pokemonList.length} results`;
         }
         
+        function updateSummaryBadges(filters) {
+            const { selectedTiers, selectedTypes, statFiltersCount, monoTypeOnly, typeAndLogic } = filters;
+            
+            const tierBadge = document.getElementById('tier-summary-badge');
+            if (selectedTiers.length > 0) {
+                tierBadge.textContent = `${selectedTiers.length} active`;
+                tierBadge.classList.remove('hidden');
+            } else tierBadge.classList.add('hidden');
+            
+            const typeBadge = document.getElementById('type-summary-badge');
+            let typeFilters = [];
+            if (selectedTypes.length > 0) typeFilters.push(`${selectedTypes.length} types`);
+            if (monoTypeOnly) typeFilters.push('mono');
+            if (typeAndLogic) typeFilters.push('AND');
+            if(typeFilters.length > 0) {
+                typeBadge.textContent = typeFilters.join(', ');
+                typeBadge.classList.remove('hidden');
+            } else typeBadge.classList.add('hidden');
+
+            const statBadge = document.getElementById('stat-summary-badge');
+            if (statFiltersCount > 0) {
+                statBadge.textContent = `${statFiltersCount} active`;
+                statBadge.classList.remove('hidden');
+            } else statBadge.classList.add('hidden');
+        }
+
         function applyFiltersAndSort() {
             let filtered = [...allPokemon];
 
             const nameFilterValue = document.getElementById('nameFilter').value.toLowerCase();
             const namesToFilter = nameFilterValue.split(',').map(n => n.trim()).filter(n => n);
-            const monoTypeOnly = document.getElementById('monoTypeBtn').classList.contains('active');
+            const monoTypeOnly = document.getElementById('monoTypeToggle').checked;
+            const typeAndLogic = document.getElementById('typeAndToggle').checked;
             const selectedTiers = Array.from(document.querySelectorAll('.tier-btn.active')).map(el => el.dataset.tier);
             const selectedTypes = Array.from(document.querySelectorAll('.type-btn.active')).map(el => el.dataset.type);
+            
+            let statFiltersCount = 0;
+            document.querySelectorAll('.stat-input').forEach(input => {
+                if(input.value) statFiltersCount++;
+            });
+
+            updateSummaryBadges({selectedTiers, selectedTypes, statFiltersCount, monoTypeOnly, typeAndLogic});
 
             if (namesToFilter.length > 0) {
                 filtered = filtered.filter(p => namesToFilter.some(searchTerm => p.name.toLowerCase().includes(searchTerm)));
@@ -254,7 +265,10 @@
                 filtered = filtered.filter(p => selectedTiers.includes(p.tier));
             }
             if (selectedTypes.length > 0) {
-                 filtered = filtered.filter(p => p.type.split('/').map(t => t.trim()).some(pt => selectedTypes.includes(pt)));
+                 const logicFn = typeAndLogic 
+                    ? selected => pTypes => selected.every(st => pTypes.includes(st))
+                    : selected => pTypes => selected.some(st => pTypes.includes(st));
+                 filtered = filtered.filter(p => logicFn(selectedTypes)(p.type.split('/').map(t => t.trim())));
             }
             
             numericStats.forEach(stat => {
@@ -275,7 +289,7 @@
         }
         
         function handleFilterClick(event) {
-            const target = event.target.closest('.filter-btn, .type-btn');
+            const target = event.target.closest('.tier-btn, .type-btn');
             if (!target) return;
             target.classList.toggle('active');
             applyFiltersAndSort();
@@ -287,28 +301,21 @@
             
             document.getElementById('sortSelect').addEventListener('change', (e) => {
                 const newKey = e.target.value;
-                if (sortState.key === newKey) {
-                    sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
-                } else {
-                    sortState.key = newKey;
-                    sortState.direction = 'asc';
-                }
-                 applyFiltersAndSort();
+                sortState.key = newKey;
+                applyFiltersAndSort();
             });
 
             document.getElementById('allTypesBtn').addEventListener('click', () => {
                 const allTypeButtons = document.querySelectorAll('.type-btn');
                 const allActive = Array.from(allTypeButtons).every(b => b.classList.contains('active'));
-                allTypeButtons.forEach(b => {
-                    b.classList.toggle('active', !allActive);
-                });
+                allTypeButtons.forEach(b => b.classList.toggle('active', !allActive));
                 applyFiltersAndSort();
             });
 
             document.getElementById('resetButton').addEventListener('click', () => {
-                document.getElementById('filter-controls').querySelector('input[type="text"]').value = '';
-                document.getElementById('filter-controls').querySelectorAll('input[type="number"]').forEach(input => input.value = '');
-                document.querySelectorAll('.filter-btn.active, .type-btn.active').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('filter-controls').querySelectorAll('input[type="text"], input[type="number"]').forEach(input => input.value = '');
+                document.getElementById('filter-controls').querySelectorAll('input[type="checkbox"]').forEach(input => input.checked = false);
+                document.querySelectorAll('.tier-btn.active, .type-btn.active').forEach(btn => btn.classList.remove('active'));
                 applyFiltersAndSort();
             });
         }
