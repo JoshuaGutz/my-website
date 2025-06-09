@@ -37,7 +37,9 @@
         .dark .toggle-bg:after { @apply bg-gray-400 border-gray-500; }
         input:checked + .toggle-bg:after { transform: translateX(100%); @apply border-white; }
         input:checked + .toggle-bg { @apply bg-indigo-600 border-indigo-600; }
-        .summary-badge { @apply ml-2 text-xs font-bold text-indigo-800 bg-indigo-100 dark:bg-indigo-900 dark:text-indigo-200 px-2 py-0.5 rounded-full; }
+        
+        .summary-badge { @apply ml-2 text-xs font-medium text-gray-500 dark:text-gray-400 truncate block; max-width: 150px; }
+        @media (min-width: 640px) { .summary-badge { max-width: 300px; } }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -49,58 +51,65 @@
         </header>
 
         <!-- Filter Controls -->
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg mb-6 space-y-4" id="filter-controls">
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg mb-6 space-y-1" id="filter-controls">
             <div class="flex items-center gap-2">
                 <input type="text" id="nameFilter" placeholder="Search: absol, aipom..." class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <button id="resetButton" class="flex-shrink-0 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">Reset</button>
+                <button id="resetButton" title="Reset All Filters" class="flex-shrink-0 p-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                    </svg>
+                </button>
             </div>
             
-            <details class="group border-t border-gray-200 dark:border-gray-700 pt-4" open>
+            <details id="tier-section" class="group border-t border-gray-200 dark:border-gray-700 pt-4" open>
                 <summary class="flex justify-between items-center cursor-pointer list-none">
-                    <div class="flex items-center">
+                    <div class="flex items-center flex-grow min-w-0">
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Tiers</h3>
-                        <span id="tier-summary-badge" class="summary-badge hidden"></span>
+                        <span id="tier-summary-badge" class="summary-badge"></span>
                     </div>
-                    <svg class="details-arrow h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    <div class="flex items-center flex-shrink-0">
+                         <button class="section-reset-btn hidden p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700" title="Clear tier filters">
+                           <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <svg class="details-arrow h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </div>
                 </summary>
                 <div id="tierFilter" class="flex flex-wrap gap-2 mt-4"></div>
             </details>
 
-            <details class="group border-t border-gray-200 dark:border-gray-700 pt-4" open>
+            <details id="type-section" class="group border-t border-gray-200 dark:border-gray-700 pt-4" open>
                 <summary class="flex justify-between items-center cursor-pointer list-none">
-                    <div class="flex items-center">
+                    <div class="flex items-center flex-grow min-w-0">
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Types</h3>
-                        <span id="type-summary-badge" class="summary-badge hidden"></span>
+                        <span id="type-summary-badge" class="summary-badge"></span>
                     </div>
-                     <svg class="details-arrow h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                     <div class="flex items-center flex-shrink-0">
+                         <button class="section-reset-btn hidden p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700" title="Clear type filters">
+                           <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <svg class="details-arrow h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                     </div>
                 </summary>
                  <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-4 mb-3">
                      <button id="allTypesBtn" class="px-3 py-1 text-xs font-semibold bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 text-white rounded-full">All Types</button>
-                     <label for="monoTypeToggle" class="flex items-center cursor-pointer">
-                         <span class="mr-2 text-sm text-gray-700 dark:text-gray-300">Mono-type</span>
-                         <div class="relative">
-                            <input type="checkbox" id="monoTypeToggle" class="sr-only">
-                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner toggle-bg"></div>
-                         </div>
-                     </label>
-                     <label for="typeAndToggle" class="flex items-center cursor-pointer">
-                         <span class="mr-2 text-sm text-gray-700 dark:text-gray-300">Match All (AND)</span>
-                         <div class="relative">
-                            <input type="checkbox" id="typeAndToggle" class="sr-only">
-                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner toggle-bg"></div>
-                         </div>
-                     </label>
+                     <label for="monoTypeToggle" class="flex items-center cursor-pointer"><span class="mr-2 text-sm text-gray-700 dark:text-gray-300">Mono-type</span><div class="relative"><input type="checkbox" id="monoTypeToggle" class="sr-only"><div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner toggle-bg"></div></div></label>
+                     <label for="typeAndToggle" class="flex items-center cursor-pointer"><span class="mr-2 text-sm text-gray-700 dark:text-gray-300">Match All (AND)</span><div class="relative"><input type="checkbox" id="typeAndToggle" class="sr-only"><div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner toggle-bg"></div></div></label>
                  </div>
                 <div id="typeFilter" class="grid grid-cols-3 sm:grid-cols-6 gap-2"></div>
             </details>
 
-            <details class="group border-t border-gray-200 dark:border-gray-700 pt-4">
+            <details id="stat-section" class="group border-t border-gray-200 dark:border-gray-700 pt-4">
                 <summary class="flex justify-between items-center cursor-pointer list-none">
-                    <div class="flex items-center">
+                     <div class="flex items-center flex-grow min-w-0">
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Stat Filters</h3>
-                        <span id="stat-summary-badge" class="summary-badge hidden"></span>
+                        <span id="stat-summary-badge" class="summary-badge"></span>
                     </div>
-                    <svg class="details-arrow h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                     <div class="flex items-center flex-shrink-0">
+                         <button class="section-reset-btn hidden p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700" title="Clear stat filters">
+                           <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <svg class="details-arrow h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                     </div>
                 </summary>
                 <div class="mt-4 stat-grid"></div>
             </details>
@@ -134,12 +143,8 @@
         let sortState = { key: 'name', direction: 'asc' };
 
         function parseData() {
-            if (typeof rawPokemonData === 'undefined' || !rawPokemonData) {
-                console.error("Data not found.");
-                return;
-            }
-            const lines = rawPokemonData.trim().split('\n');
-            allPokemon = lines.map(line => {
+            if (typeof rawPokemonData === 'undefined' || !rawPokemonData) { console.error("Data not found."); return; }
+            allPokemon = rawPokemonData.trim().split('\n').map(line => {
                 const p = {};
                 const dataPairs = line.replace('Pokemon: ', '').split(' - ');
                 p.name = dataPairs[0];
@@ -165,14 +170,10 @@
 
         function initializeUI() {
             const tierContainer = document.getElementById('tierFilter');
-            const tiers = [...new Set(allPokemon.map(p => p.tier))].sort();
-            tierContainer.innerHTML = tiers.map(tier => `<button class="filter-btn tier-btn px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full" data-tier="${tier}">${tier}</button>`).join('');
+            tierContainer.innerHTML = [...new Set(allPokemon.map(p => p.tier))].sort().map(tier => `<button class="filter-btn tier-btn px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full" data-tier="${tier}">${tier}</button>`).join('');
 
-            const typeContainer = document.getElementById('typeFilter');
-            typeContainer.innerHTML = Object.keys(typeColors).map(type => `<button class="type-btn text-white text-xs font-bold uppercase rounded-md shadow py-2 ${typeColors[type]}" data-type="${type}">${type}</button>`).join('');
-
-            const statContainer = document.querySelector('.stat-grid');
-            statContainer.innerHTML = numericStats.map(stat => `
+            document.getElementById('typeFilter').innerHTML = Object.keys(typeColors).map(type => `<button class="type-btn text-white text-xs font-bold uppercase rounded-md shadow py-2 ${typeColors[type]}" data-type="${type}">${type}</button>`).join('');
+            document.querySelector('#stat-section .stat-grid').innerHTML = numericStats.map(stat => `
                 <div>
                     <label class="block text-xs font-medium text-gray-600 dark:text-gray-400">${stat.label}</label>
                     <div class="flex items-center gap-1 mt-1">
@@ -181,10 +182,9 @@
                     </div>
                 </div>`).join('');
             
-            const sortSelect = document.getElementById('sortSelect');
-            sortSelect.innerHTML = [{key: 'name', label: 'Name'}, ...numericStats].map(opt => `<option value="${opt.key}">${opt.label}</option>`).join('');
+            document.getElementById('sortSelect').innerHTML = [{key: 'name', label: 'Name'}, ...numericStats].map(opt => `<option value="${opt.key}">${opt.label}</option>`).join('');
         }
-
+        
         function renderResults(pokemonList) {
             const resultsContainer = document.getElementById('pokemonResults');
             resultsContainer.innerHTML = pokemonList.length === 0 
@@ -193,9 +193,9 @@
                     const typesHtml = p.type.split('/').map(t => `<span class="px-2 py-0.5 text-xs font-semibold text-white ${typeColors[t.trim()]} rounded-full">${t.trim()}</span>`).join('');
                     return `
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-3 space-y-2">
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between items-start">
                             <h3 class="font-bold text-lg text-gray-900 dark:text-white">${p.name}</h3>
-                            <div class="flex items-center gap-2 flex-wrap">
+                            <div class="flex items-center gap-2 flex-wrap justify-end flex-shrink-0 ml-2">
                                 ${typesHtml}
                                 <span class="px-2 py-0.5 text-xs font-bold bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full">Tier ${p.tier}</span>
                             </div>
@@ -213,34 +213,44 @@
         }
         
         function updateSummaryBadges(filters) {
-            const { selectedTiers, selectedTypes, statFiltersCount, monoTypeOnly, typeAndLogic } = filters;
+            const { selectedTiers, selectedTypes, statFilters, monoTypeOnly, typeAndLogic } = filters;
             
             const tierBadge = document.getElementById('tier-summary-badge');
+            const tierResetBtn = document.querySelector('#tier-section .section-reset-btn');
             if (selectedTiers.length > 0) {
-                tierBadge.textContent = `${selectedTiers.length} active`;
-                tierBadge.classList.remove('hidden');
-            } else tierBadge.classList.add('hidden');
+                tierBadge.textContent = selectedTiers.join(', ');
+                tierResetBtn.classList.remove('hidden');
+            } else {
+                tierBadge.textContent = '';
+                tierResetBtn.classList.add('hidden');
+            }
             
             const typeBadge = document.getElementById('type-summary-badge');
-            let typeFilters = [];
-            if (selectedTypes.length > 0) typeFilters.push(`${selectedTypes.length} types`);
-            if (monoTypeOnly) typeFilters.push('mono');
-            if (typeAndLogic) typeFilters.push('AND');
-            if(typeFilters.length > 0) {
-                typeBadge.textContent = typeFilters.join(', ');
-                typeBadge.classList.remove('hidden');
-            } else typeBadge.classList.add('hidden');
+            const typeResetBtn = document.querySelector('#type-section .section-reset-btn');
+            let typeSummary = [];
+            if (selectedTypes.length > 0) typeSummary.push(selectedTypes.join(', '));
+            if (monoTypeOnly) typeSummary.push('mono');
+            if (typeAndLogic) typeSummary.push('AND');
+            if(typeSummary.length > 0) {
+                typeBadge.textContent = typeSummary.join('; ');
+                typeResetBtn.classList.remove('hidden');
+            } else {
+                typeBadge.textContent = '';
+                typeResetBtn.classList.add('hidden');
+            }
 
             const statBadge = document.getElementById('stat-summary-badge');
-            if (statFiltersCount > 0) {
-                statBadge.textContent = `${statFiltersCount} active`;
-                statBadge.classList.remove('hidden');
-            } else statBadge.classList.add('hidden');
+            const statResetBtn = document.querySelector('#stat-section .section-reset-btn');
+            if (statFilters.length > 0) {
+                statBadge.textContent = statFilters.join(', ');
+                statResetBtn.classList.remove('hidden');
+            } else {
+                statBadge.textContent = '';
+                statResetBtn.classList.add('hidden');
+            }
         }
 
         function applyFiltersAndSort() {
-            let filtered = [...allPokemon];
-
             const nameFilterValue = document.getElementById('nameFilter').value.toLowerCase();
             const namesToFilter = nameFilterValue.split(',').map(n => n.trim()).filter(n => n);
             const monoTypeOnly = document.getElementById('monoTypeToggle').checked;
@@ -248,12 +258,25 @@
             const selectedTiers = Array.from(document.querySelectorAll('.tier-btn.active')).map(el => el.dataset.tier);
             const selectedTypes = Array.from(document.querySelectorAll('.type-btn.active')).map(el => el.dataset.type);
             
-            let statFiltersCount = 0;
-            document.querySelectorAll('.stat-input').forEach(input => {
-                if(input.value) statFiltersCount++;
+            let statFilters = [];
+            let filtered = [...allPokemon];
+
+            numericStats.forEach(stat => {
+                const minInput = document.getElementById(`${stat.key}Min`);
+                const maxInput = document.getElementById(`${stat.key}Max`);
+                const minVal = parseFloat(minInput.value);
+                const maxVal = parseFloat(maxInput.value);
+                if (!isNaN(minVal)) {
+                    filtered = filtered.filter(p => p[stat.key] >= minVal);
+                    statFilters.push(`${stat.label}>${minVal}`);
+                }
+                if (!isNaN(maxVal)) {
+                    filtered = filtered.filter(p => p[stat.key] <= maxVal);
+                    statFilters.push(`${stat.label}<${maxVal}`);
+                }
             });
 
-            updateSummaryBadges({selectedTiers, selectedTypes, statFiltersCount, monoTypeOnly, typeAndLogic});
+            updateSummaryBadges({selectedTiers, selectedTypes, statFilters, monoTypeOnly, typeAndLogic});
 
             if (namesToFilter.length > 0) {
                 filtered = filtered.filter(p => namesToFilter.some(searchTerm => p.name.toLowerCase().includes(searchTerm)));
@@ -270,18 +293,11 @@
                     : selected => pTypes => selected.some(st => pTypes.includes(st));
                  filtered = filtered.filter(p => logicFn(selectedTypes)(p.type.split('/').map(t => t.trim())));
             }
-            
-            numericStats.forEach(stat => {
-                const minVal = parseFloat(document.getElementById(`${stat.key}Min`).value);
-                const maxVal = parseFloat(document.getElementById(`${stat.key}Max`).value);
-                if (!isNaN(minVal)) filtered = filtered.filter(p => p[stat.key] >= minVal);
-                if (!isNaN(maxVal)) filtered = filtered.filter(p => p[stat.key] <= maxVal);
-            });
 
             filtered.sort((a, b) => {
                 const valA = a[sortState.key];
                 const valB = b[sortState.key];
-                let comparison = (typeof valA === 'string') ? valA.localeCompare(valB) : (valA || 0) - (valB || 0);
+                const comparison = (typeof valA === 'string') ? valA.localeCompare(valB) : (valA || 0) - (valB || 0);
                 return sortState.direction === 'asc' ? comparison : -comparison;
             });
 
@@ -294,14 +310,36 @@
             target.classList.toggle('active');
             applyFiltersAndSort();
         }
+        
+        function handleSectionReset(event) {
+            const target = event.target.closest('.section-reset-btn');
+            if(!target) return;
+            event.stopPropagation(); // Prevent details from closing
+            
+            const section = target.closest('details');
+            if(!section) return;
+
+            if(section.id === 'tier-section') {
+                section.querySelectorAll('.tier-btn.active').forEach(b => b.classList.remove('active'));
+            } else if (section.id === 'type-section') {
+                section.querySelectorAll('.type-btn.active').forEach(b => b.classList.remove('active'));
+                section.querySelector('#monoTypeToggle').checked = false;
+                section.querySelector('#typeAndToggle').checked = false;
+            } else if (section.id === 'stat-section') {
+                 section.querySelectorAll('.stat-input').forEach(i => i.value = '');
+            }
+            applyFiltersAndSort();
+        }
 
         function setupEventListeners() {
             document.getElementById('filter-controls').addEventListener('input', applyFiltersAndSort);
-            document.getElementById('filter-controls').addEventListener('click', handleFilterClick);
+            document.getElementById('filter-controls').addEventListener('click', (e) => {
+                handleFilterClick(e);
+                handleSectionReset(e);
+            });
             
             document.getElementById('sortSelect').addEventListener('change', (e) => {
-                const newKey = e.target.value;
-                sortState.key = newKey;
+                sortState.key = e.target.value;
                 applyFiltersAndSort();
             });
 
