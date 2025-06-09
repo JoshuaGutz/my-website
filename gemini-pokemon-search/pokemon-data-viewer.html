@@ -68,7 +68,7 @@
         input[type="number"] { -moz-appearance: textfield; }
         
         .details-arrow { transition: transform 0.3s ease; }
-        details[open] .details-arrow { transform: rotate(90deg); }
+        details[open] > summary .details-arrow { transform: rotate(90deg); }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -81,31 +81,42 @@
 
         <!-- Filter Controls -->
         <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg mb-6 space-y-4" id="filter-controls">
-            <input type="text" id="nameFilter" placeholder="Search by name..." class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tiers</label>
-                <div id="tierFilter" class="flex flex-wrap gap-2"></div>
+            <!-- Name Search & Reset -->
+            <div class="flex items-center gap-2">
+                <input type="text" id="nameFilter" placeholder="Search: absol, aipom..." class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button id="resetButton" class="flex-shrink-0 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">Reset</button>
             </div>
+            
+            <!-- Collapsible Tier Filters -->
+            <details class="group border-t border-gray-200 dark:border-gray-700 pt-4" open>
+                <summary class="flex justify-between items-center cursor-pointer list-none">
+                    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Tiers</h3>
+                    <svg class="details-arrow h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </summary>
+                <div id="tierFilter" class="flex flex-wrap gap-2 mt-4"></div>
+            </details>
 
-            <div>
-                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Types</label>
-                 <div class="flex flex-wrap gap-2 mb-3">
+            <!-- Collapsible Type Filters -->
+            <details class="group border-t border-gray-200 dark:border-gray-700 pt-4" open>
+                <summary class="flex justify-between items-center cursor-pointer list-none">
+                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Types</h3>
+                     <svg class="details-arrow h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </summary>
+                 <div class="flex flex-wrap gap-2 mt-4 mb-3">
                      <button id="allTypesBtn" class="px-3 py-1 text-xs font-semibold bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 text-white rounded-full">All Types</button>
                      <button id="monoTypeBtn" class="filter-btn px-3 py-1 text-xs font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full">Mono-type Only</button>
                  </div>
                 <div id="typeFilter" class="grid grid-cols-3 sm:grid-cols-6 gap-2"></div>
-            </div>
+            </details>
 
+            <!-- Collapsible Stat Filters -->
             <details class="group border-t border-gray-200 dark:border-gray-700 pt-4">
                 <summary class="flex justify-between items-center cursor-pointer list-none">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Stat Filters</h3>
-                    <svg class="details-arrow h-5 w-5 text-gray-500 group-hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    <svg class="details-arrow h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                 </summary>
                 <div class="mt-4 stat-grid"></div>
             </details>
-
-            <button id="resetButton" class="w-full px-4 py-2 mt-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">Reset Filters</button>
         </div>
 
         <!-- Results -->
@@ -140,7 +151,6 @@
         let sortState = { key: 'name', direction: 'asc' };
 
         function parseData() {
-            // Check if rawPokemonData exists from the external file
             if (typeof rawPokemonData === 'undefined' || !rawPokemonData) {
                 console.error("Pokémon data not found. Make sure 'pokemon-data.js' is loaded correctly.");
                 document.getElementById('pokemonResults').innerHTML = `<p class="text-center col-span-full text-red-500 py-8">Error: Could not load pokemon-data.js</p>`;
@@ -228,14 +238,21 @@
         function applyFiltersAndSort() {
             let filtered = [...allPokemon];
 
-            const nameFilter = document.getElementById('nameFilter').value.toLowerCase();
+            const nameFilterValue = document.getElementById('nameFilter').value.toLowerCase();
+            const namesToFilter = nameFilterValue.split(',').map(n => n.trim()).filter(n => n);
             const monoTypeOnly = document.getElementById('monoTypeBtn').classList.contains('active');
             const selectedTiers = Array.from(document.querySelectorAll('.tier-btn.active')).map(el => el.dataset.tier);
             const selectedTypes = Array.from(document.querySelectorAll('.type-btn.active')).map(el => el.dataset.type);
 
-            if (nameFilter) filtered = filtered.filter(p => p.name.toLowerCase().includes(nameFilter));
-            if (monoTypeOnly) filtered = filtered.filter(p => !p.type.includes('/'));
-            if (selectedTiers.length > 0) filtered = filtered.filter(p => selectedTiers.includes(p.tier));
+            if (namesToFilter.length > 0) {
+                filtered = filtered.filter(p => namesToFilter.some(searchTerm => p.name.toLowerCase().includes(searchTerm)));
+            }
+            if (monoTypeOnly) {
+                filtered = filtered.filter(p => !p.type.includes('/'));
+            }
+            if (selectedTiers.length > 0) {
+                filtered = filtered.filter(p => selectedTiers.includes(p.tier));
+            }
             if (selectedTypes.length > 0) {
                  filtered = filtered.filter(p => p.type.split('/').map(t => t.trim()).some(pt => selectedTypes.includes(pt)));
             }
@@ -261,10 +278,6 @@
             const target = event.target.closest('.filter-btn, .type-btn');
             if (!target) return;
             target.classList.toggle('active');
-            // If it's a type button, remove the grayscale filter when active
-            if(target.classList.contains('type-btn')) {
-                 target.style.filter = target.classList.contains('active') ? 'grayscale(0)' : 'grayscale(1)';
-            }
             applyFiltersAndSort();
         }
 
@@ -286,12 +299,15 @@
             document.getElementById('allTypesBtn').addEventListener('click', () => {
                 const allTypeButtons = document.querySelectorAll('.type-btn');
                 const allActive = Array.from(allTypeButtons).every(b => b.classList.contains('active'));
-                allTypeButtons.forEach(b => b.classList.toggle('active', !allActive));
+                allTypeButtons.forEach(b => {
+                    b.classList.toggle('active', !allActive);
+                });
                 applyFiltersAndSort();
             });
 
             document.getElementById('resetButton').addEventListener('click', () => {
-                document.getElementById('filter-controls').querySelectorAll('input').forEach(input => input.value = '');
+                document.getElementById('filter-controls').querySelector('input[type="text"]').value = '';
+                document.getElementById('filter-controls').querySelectorAll('input[type="number"]').forEach(input => input.value = '');
                 document.querySelectorAll('.filter-btn.active, .type-btn.active').forEach(btn => btn.classList.remove('active'));
                 applyFiltersAndSort();
             });
