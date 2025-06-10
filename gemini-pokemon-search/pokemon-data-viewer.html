@@ -45,15 +45,11 @@
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
     <div class="container mx-auto p-4 max-w-3xl">
-        <!-- <header class="text-center mb-6"> -->
-            <!-- <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Pokémon Viewer</h1> -->
-            <!-- <p class="text-md text-gray-600 dark:text-gray-400">Advanced mobile experience</p> -->
-        <!-- </header> -->
-
         <!-- Filter Controls -->
         <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg mb-6 space-y-1" id="filter-controls">
             <div class="flex items-center gap-2">
                 <input type="text" id="nameFilter" placeholder="Search: absol, aipom..." class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button id="totwButton" title="Load Team of the Week" class="flex-shrink-0 px-4 py-2 bg-sky-500 text-white font-semibold rounded-lg shadow-md hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-400">TOTW</button>
                 <button id="resetButton" title="Reset All Filters" class="flex-shrink-0 p-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">
                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
@@ -128,6 +124,11 @@
     <script src="pokemon-data.js"></script>
     
     <script>
+        // --- TEAM OF THE WEEK ---
+        // Easily update this variable each week with the new team.
+        const TEAM_OF_THE_WEEK = "Rotom (Fan), Alakazam, His Goodra, Dracovish, Conkeldurr, Mamoswine";
+
+        // --- DATA AND CONFIG ---
         const typeColors = {
             normal: 'bg-slate-400', fighting: 'bg-red-600', flying: 'bg-indigo-400', poison: 'bg-purple-600', ground: 'bg-amber-500',
             rock: 'bg-yellow-600', bug: 'bg-lime-500', ghost: 'bg-indigo-700', steel: 'bg-slate-500', fire: 'bg-orange-500',
@@ -347,6 +348,11 @@
                 const allTypeButtons = document.querySelectorAll('.type-btn');
                 const allActive = Array.from(allTypeButtons).every(b => b.classList.contains('active'));
                 allTypeButtons.forEach(b => b.classList.toggle('active', !allActive));
+                applyFiltersAndSort();
+            });
+
+            document.getElementById('totwButton').addEventListener('click', () => {
+                document.getElementById('nameFilter').value = TEAM_OF_THE_WEEK;
                 applyFiltersAndSort();
             });
 
