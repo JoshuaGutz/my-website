@@ -91,6 +91,7 @@
         <div class="flex justify-between items-center mb-2">
             <p id="resultsCount" class="text-sm text-gray-600 dark:text-gray-400 font-medium"></p>
             <div class="flex items-center text-sm">
+                 <label for="showStatsToggle" class="flex items-center cursor-pointer mr-4"><span class="mr-2 text-gray-600 dark:text-gray-400">Stats</span><div class="relative"><input type="checkbox" id="showStatsToggle" class="sr-only"><div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner toggle-bg"></div></div></label>
                  <label for="showEffectivenessToggle" class="flex items-center cursor-pointer mr-4"><span class="mr-2 text-gray-600 dark:text-gray-400">Effectiveness</span><div class="relative"><input type="checkbox" id="showEffectivenessToggle" class="sr-only"><div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner toggle-bg"></div></div></label>
                 <label for="sortSelect" class="mr-2 text-gray-600 dark:text-gray-400">Sort by:</label>
                 <select id="sortSelect" class="text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md focus:ring-indigo-500 focus:border-indigo-500"></select>
@@ -153,10 +154,16 @@
         }
         
         function renderResults(pokemonList) {
+            const showStats = document.getElementById('showStatsToggle').checked;
             const showEffectiveness = document.getElementById('showEffectivenessToggle').checked;
+            
             let resultsHtml = pokemonList.length === 0 ? `<p class="text-center col-span-full text-gray-500 dark:text-gray-400 py-8">No Pokémon match filters.</p>` : pokemonList.map(p => {
                 const typesHtml = p.type.split('/').map(t => `<span class="px-2 py-0.5 text-xs font-semibold text-white ${typeColors[t.trim()]} rounded-full">${t.trim()}</span>`).join('');
                 
+                const statsHtml = `<div class="stats-details grid grid-cols-4 gap-x-2 gap-y-1 text-xs text-center mt-2 ${showStats ? '' : 'hidden'}">
+                        ${numericStats.map(stat => `<div class="bg-gray-100 dark:bg-gray-700/50 rounded p-1"><strong class="text-gray-900 dark:text-white">${p[stat.key] !== undefined ? p[stat.key].toFixed(stat.key === 'weight' ? 1 : 0) : 'N/A'}</strong><span class="block text-gray-500 dark:text-gray-400">${stat.label}</span></div>`).join('')}
+                    </div>`;
+
                 let effectivenessHtml = '';
                 if (p.effectiveness) {
                     const effectivenessOrder = ['4', '2', '1/2', '1/4', '0'];
@@ -180,9 +187,7 @@
                             <span class="px-2 py-0.5 text-xs font-bold bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full">Tier ${p.tier}</span>
                         </div>
                     </div>
-                    <div class="grid grid-cols-4 gap-x-2 gap-y-1 text-xs text-center mt-2">
-                        ${numericStats.map(stat => `<div class="bg-gray-100 dark:bg-gray-700/50 rounded p-1"><strong class="text-gray-900 dark:text-white">${p[stat.key] !== undefined ? p[stat.key].toFixed(stat.key === 'weight' ? 1 : 0) : 'N/A'}</strong><span class="block text-gray-500 dark:text-gray-400">${stat.label}</span></div>`).join('')}
-                    </div>
+                    ${statsHtml}
                     ${effectivenessHtml}
                 </div>`;
             }).join('');
@@ -286,6 +291,11 @@
                 applyFiltersAndSort();
             });
             
+            document.getElementById('showStatsToggle').addEventListener('change', (e) => {
+                const isChecked = e.target.checked;
+                document.querySelectorAll('.stats-details').forEach(el => el.classList.toggle('hidden', !isChecked));
+            });
+
             document.getElementById('showEffectivenessToggle').addEventListener('change', (e) => {
                 const isChecked = e.target.checked;
                 document.querySelectorAll('.effectiveness-details').forEach(el => el.classList.toggle('hidden', !isChecked));
