@@ -9,13 +9,13 @@ body, html {
     height: 100%;
     font-family: Arial, sans-serif; /* You can change this later */
     background-color: #f0f0f0; /* Example background */
-    overflow-x: hidden; /* Prevent horizontal scroll on body */
+    overflow: hidden; /* Prevent vertical and horizontal scroll on the page */
 }
 
 .page-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Full viewport height */
+    height: 100vh; /* Set a fixed height to the viewport height */
     width: 100%;
 }
 
@@ -27,6 +27,7 @@ body, html {
     padding: 0px;
     background-color: #ddd; /* Placeholder background */
     gap: 1px; /* Space between countdown and sprite */
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .countdown-text {
@@ -78,7 +79,7 @@ body, html {
 
 .chat-embed-area iframe {
     width: 100%;
-    /*height: 100%;*/
+    height: 100%; /* Make iframe fill its container */
     border: none;
 }
 
