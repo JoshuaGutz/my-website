@@ -15,8 +15,11 @@ body, html {
 .page-container {
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Set a fixed height to the viewport height */
+    /* Use dvh for the default state, JS will override when keyboard is up */
+    height: 100dvh; 
     width: 100%;
+    /* Transition can help smooth the resize, but can be buggy on some browsers */
+    /* transition: height 0.1s ease-in-out; */
 }
 
 /* --- TOP SECTION --- */
@@ -39,12 +42,9 @@ body, html {
 }
 
 .sprite-container {
-    /* This container will help manage the sprite's height relative to the text */
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Let's aim to match the text height. If countdown-text font-size is 80px,
-       its height might be around 80-90px. Adjust as needed. */
     height: 50px; /* Adjust this to match countdown text actual height */
     padding: 0px;
 }
@@ -65,21 +65,22 @@ body, html {
     background-color: #ccc; /* Placeholder background */
     overflow: hidden; /* Important for containing the chat iframe */
     margin: 1px 0; /* Minimal vertical margin */
+    min-height: 0; /* Allows this flex item to shrink properly */
 }
 
 .chat-embed-area {
     flex-grow: 1; /* Chat area takes up available space within middle-section */
     display: flex;
     justify-content: center;
-    /*align-items: center;*/
     background-color: #222; /* Darker background for chat area */
     overflow: hidden; /* Ensure iframe doesn't cause overflow */
     padding: 1px; /* Minimal padding */
+    min-height: 0; /* Allows this flex item to shrink properly */
 }
 
 .chat-embed-area iframe {
     width: 100%;
-    /*height: 100%; /* Make iframe fill its container */
+    height: 100%; /* Make iframe fill its container */
     border: none;
 }
 
@@ -98,21 +99,19 @@ body, html {
 }
 
 .tab {
-    display: flex; /* Changed to flex to align name and close button */
-    align-items: center; /* Vertically center content in tab */
-    justify-content: space-between; /* Pushes name and 'x' apart if tab has extra space */
-    padding: 60px 5px 60px 10px; /* Adjusted padding: LTRB T:8, R:5(for x), B:8, L:10 ADJUST_HERE */
+    display: flex; 
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 5px 10px 10px;
     cursor: pointer;
     background-color: #eee;
     border: none;
     border-right: 1px solid #ccc;
     font-size: 14px;
-    flex: 0 1 auto; /* Don't grow, shrink if needed, based on content */
-    min-width: 80px; /* Minimum width, adjust as needed with close button */
-    text-align: left; /* Align text to left, ellipsis will handle overflow */
-    overflow: hidden; /* This will be handled by tab-name now */
-    /* text-overflow: ellipsis; NO LONGER HERE, MOVED TO .tab-name */
-    /* white-space: nowrap; NO LONGER HERE, MOVED TO .tab-name */
+    flex: 0 1 auto;
+    min-width: 80px;
+    text-align: left;
+    overflow: hidden;
 }
 .tab:last-child {
     border-right: none;
@@ -122,32 +121,32 @@ body, html {
     font-weight: bold;
 }
 .tab.new-tab-btn {
-    background-color: #d0e0d0; /* Different color for "New" tab */
+    background-color: #d0e0d0;
     font-weight: bold;
-    justify-content: center; /* Center the "New +" text */
+    justify-content: center;
 }
-.tab:hover:not(.active):not(.new-tab-btn) { /* Avoid hover on active/new if different style desired */
+.tab:hover:not(.active):not(.new-tab-btn) {
     background-color: #ddd;
 }
 
 .tab-name {
-    flex-grow: 1; /* Allow name to take available space */
+    flex-grow: 1;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* Ensure text within tab-name doesn't wrap */
-    margin-right: 1px; /* Space between name and close button */
+    white-space: nowrap;
+    margin-right: 1px;
 }
 
 .close-tab-btn {
-    padding: 1px 4px; /* Small padding for the 'x' */
-    font-size: 16px;  /* Make 'x' a bit larger */
+    padding: 1px 4px;
+    font-size: 16px;
     line-height: 1;
     background-color: transparent;
     border: none;
     color: #777;
     cursor: pointer;
-    flex-shrink: 0; /* Prevent 'x' from shrinking */
-    border-radius: 3px; /* Optional: slightly rounded hover effect */
+    flex-shrink: 0;
+    border-radius: 3px;
 }
 
 .close-tab-btn:hover {
@@ -160,22 +159,23 @@ body, html {
     padding: 1px;
     background-color: #ddd; /* Placeholder background */
     flex-shrink: 0; /* Prevent shrinking */
+    display: block; /* Default display */
 }
 
 .main-nav {
     display: flex;
-    justify-content: space-around; /* Distribute links evenly */
+    justify-content: space-around;
     align-items: center;
 }
 
 .main-nav a {
-    padding: 60px 5px; /* Compact padding ADJUST_HERE */
+    padding: 5px 5px;
     text-decoration: none;
-    color: #333; /* You can change this */
-    font-size: 14px; /* Adjust for mobile */
-    flex: 1; /* Allow links to take equal space */
+    color: #333;
+    font-size: 14px;
+    flex: 1;
     text-align: center;
-    border-left: 1px solid #ccc; /* Minimal separator */
+    border-left: 1px solid #ccc;
 }
 .main-nav a:first-child {
     border-left: none;
@@ -229,3 +229,5 @@ body, html {
     background-color: #f44336; /* Red */
     color: white;
 }
+
+/* Keyboard visibility class is no longer needed for hiding elements */
