@@ -47,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
         iframe.style.border = 'none';
         iframe.style.display = 'none'; // Initially hidden
         const twitchParent = window.location.hostname || 'localhost'; // Dynamically get parent domain
+        // const twitchParent = window.location.hostname;
+        // alert("Twitch parent domain is: " + twitchParent);
         iframe.src = `https://www.twitch.tv/embed/${channelId}/chat?parent=${twitchParent}&darkpopout`;
 
         chatEmbedArea.appendChild(iframe);
