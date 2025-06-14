@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Awesome Mobile-First SPA</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/spawn-watch.css">
+</head>
+<body>
+    <!-- Top bar visible on all pages -->
+    <div id="top-bar">
+      <div id="countdown">mm:ss</div>
+      <!-- Updated sprite image source to a placeholder with 50x50 dimensions -->
+      <img id="sprite-image" src="https://dev.bframework.de/static/pokedex/sprites/question.png" alt="Sprite" />
+    </div>
+
+    <!-- Main container for content -->
+    <main id="app-content">
+      <!-- Content will be dynamically injected here by JavaScript -->
+      <!-- This section is now empty as requested, to be filled by app.js from content/home.html -->
+    </main>
+
+    <!-- Bottom nav bar -->
+    <nav class="bottom-nav">
+        <!-- Container for main navigation links -->
+        <div class="nav-links-container">
+            <ul>
+                <li><a href="#home" class="nav-link" data-path="home">
+                    <span class="icon">🏠</span>
+                    <span class="label">Home</span>
+                </a></li>
+                <li><a href="#about" class="nav-link" data-path="about">
+                    <span class="icon">ℹ️</span>
+                    <span class="label">About</span>
+                </a></li>
+                <li><a href="#page1" class="nav-link" data-path="page1">
+                    <span class="icon">2️⃣</span>
+                    <span class="label">Page 1</span>
+                </a></li>
+                <li><a href="#page2" class="nav-link" data-path="page2">
+                    <span class="icon">3️⃣</span>
+                    <span class="label">Page 2</span>
+                </a></li>
+                <!-- New list item for Chat -->
+                <li><a href="#chat" class="nav-link" data-path="chat">
+                    <span class="icon">💬</span>
+                    <span class="label">Chat</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- Container for settings/action buttons -->
+        <div class="nav-settings-container">
+            <ul>
+                <li><button type="button" class="nav-button" data-action="toggle-top-bar">
+                    <span class="icon">👁️</span>
+                    <span class="label">Timer</span>
+                </button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- JavaScript files linked at the end of body for performance -->
+    <script src="js/app.js"></script>
+    <script src="js/toggleTopBar.js"></script>
+
+    <script src="js/spawn-watch.js"></script>
+    <script src="js/bettertimer.js"></script>
+    <script src="js/sprite.js"></script>
+    <script src="js/modals.js"></script>
+
+</body>
+</html>
