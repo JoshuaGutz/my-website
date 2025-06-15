@@ -1,5 +1,33 @@
-// spawned-pokemon-id
-// spawnedPokemonIdElement
+let csvData = [];
+
+async function loadCSV() {
+  const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQGDH_-fnudK5_paOFc0mvl061ZyxOR2nXZ7GAJ4GGnyV0xVNn46sItanxBSziuQgNAqAwJFKYo9tUJ/pub?gid=651047664&single=true&output=csv');
+  const text = await response.text();
+
+  const lines = text.trim().split('\n');
+  for (let i = 1; i < lines.length; i++) { // Skip header row
+    csvData.push(lines[i].split(','));
+  }
+}
+
+function getColumnByPokedexId(pokedexId, columnIndex) {
+  const row = csvData.find(r => r[0] === pokedexId.toString());
+  return row ? row[columnIndex] : null;
+}
+
+// Wait for the CSV to load first
+window.onload = async () => {
+  await loadCSV();
+
+  // Example: Get Tier (column 2) for Pokedex ID 3
+  const tier = getColumnByPokedexId(3, 2);
+  console.log("Tier:", tier);
+
+  // Example: Get Pretty Name (column 5) for Pokedex ID 3
+  const name = getColumnByPokedexId(3, 5);
+  console.log("Name:", name);
+};
+
 const backend_url = "https://poketwitch.bframework.de/";
 const image_url = "https://dev.bframework.de/";
 var sprite = document.getElementById("sprite-image")
@@ -36,7 +64,9 @@ function update_image() {
 
             // update and return if the pokedex id didn't update
             sprite.src = image_url + "static/pokedex/sprites/front/" + pokedex_id + ".gif";
-            spawnedPokemonIdElement.textContent = `ID: ${pokedex_id}`;
+            let tier = getColumnByPokedexId(pokedex_id, 2);
+            let name = getColumnByPokedexId(pokedex_id, 5);
+            spawnedPokemonIdElement.textContent = `Name:${name} ID:${pokedex_id} Tier:${tier}`;
 
             // bild nach den 90 sekunden verstecken
             var hide_picture_seconds = next_spawn - 810
