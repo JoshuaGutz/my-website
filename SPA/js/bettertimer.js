@@ -60,7 +60,14 @@ async function startCountdownLoop() {
   startCountdownLoop();
 }
 
+/*
 window.onload = async () => {
   await fetchAndSetEndTime();
   startCountdownLoop().catch(console.error);
 };
+*/
+
+window.addEventListener('load', async () => {
+  await fetchAndSetEndTime();
+  startCountdownLoop().catch(console.error);
+});

@@ -111,6 +111,7 @@ function update_image() {
 // update_image();
 
 // Wait for the CSV to load first
+/*
 window.onload = async () => {
   await loadCSV();
 
@@ -124,3 +125,18 @@ window.onload = async () => {
 
   update_image();
 };
+*/
+
+window.addEventListener('load', async () => {
+  await loadCSV();
+
+  // Example: Get Tier (column 2) for Pokedex ID 3
+  const tier = getColumnByPokedexId(3, 2);
+  console.log("Tier:", tier);
+
+  // Example: Get Pretty Name (column 5) for Pokedex ID 3
+  const name = getColumnByPokedexId(3, 5);
+  console.log("Name:", name);
+
+  update_image();
+});
