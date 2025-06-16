@@ -17,6 +17,7 @@ body {
 }
 
 #countdown {
+  font-family: "Times New Roman", Times, serif;
   font-size: 100px;
   line-height: 100px;
 }
