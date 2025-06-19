@@ -66,7 +66,8 @@ function update_image() {
             sprite.src = image_url + "static/pokedex/sprites/front/" + pokedex_id + ".gif";
             let tier = getColumnByPokedexId(pokedex_id, 2);
             let name = getColumnByPokedexId(pokedex_id, 5);
-            spawnedPokemonIdElement.textContent = `Name:${name} ID:${pokedex_id} Tier:${tier}`;
+            let gen = getColumnByPokedexId(pokedex_id, 4);
+            spawnedPokemonIdElement.textContent = `${name} Tier:${tier} Gen:${gen} ${pokedex_id}`; // Furfrou-heart Tier:B Gen:6 ID:10344
 
             // bild nach den 90 sekunden verstecken
             var hide_picture_seconds = next_spawn - 810
