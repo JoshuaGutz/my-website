@@ -25,20 +25,6 @@ function display_questionmark() {
     sprite.style["display"] = "block";
     sprite.src = image_url + question_url;
     spawnedPokemonIdElement.textContent = `No current spawn`;
-    // sprite.src = image_url + "static/pokedex/sprites/front/" + "1" + ".gif";
-/*
-    fetch(backend_url + 'info/events/last_spawn/').then(function (response) {
-        return response.json();
-    }).then(function (data) {
-        var next_spawn = data.next_spawn
-        var pokedex_id = data.pokedex_id
-        var order = data.order
-
-        let tier = getColumnByPokedexId(pokedex_id, 2);
-        let name = getColumnByPokedexId(pokedex_id, 5);
-        spawnedPokemonIdElement.textContent = `Name:${name} ID:${pokedex_id} Tier:${tier}`;
-    });
-*/
 }
 
 var last_pokedex_id = 0;
@@ -67,7 +53,7 @@ function update_image() {
             let tier = getColumnByPokedexId(pokedex_id, 2);
             let name = getColumnByPokedexId(pokedex_id, 5);
             let gen = getColumnByPokedexId(pokedex_id, 4);
-            spawnedPokemonIdElement.textContent = `${name} Tier:${tier} Gen:${gen} ${pokedex_id}`; // Furfrou-heart Tier:B Gen:6 ID:10344
+            spawnedPokemonIdElement.textContent = `${name} Tier:${tier} Gen:${gen} ID:${pokedex_id}`; // Furfrou-heart Tier:B Gen:6 ID:10344
 
             // bild nach den 90 sekunden verstecken
             var hide_picture_seconds = next_spawn - 810
@@ -108,36 +94,16 @@ function update_image() {
 
 }
 
-// startup script on load
-// update_image();
-
-// Wait for the CSV to load first
-/*
-window.onload = async () => {
-  await loadCSV();
-
-  // Example: Get Tier (column 2) for Pokedex ID 3
-  const tier = getColumnByPokedexId(3, 2);
-  console.log("Tier:", tier);
-
-  // Example: Get Pretty Name (column 5) for Pokedex ID 3
-  const name = getColumnByPokedexId(3, 5);
-  console.log("Name:", name);
-
-  update_image();
-};
-*/
-
 window.addEventListener('load', async () => {
   await loadCSV();
 
   // Example: Get Tier (column 2) for Pokedex ID 3
-  const tier = getColumnByPokedexId(3, 2);
-  console.log("Tier:", tier);
+  // const tier = getColumnByPokedexId(3, 2);
+  // console.log("Tier:", tier);
 
   // Example: Get Pretty Name (column 5) for Pokedex ID 3
-  const name = getColumnByPokedexId(3, 5);
-  console.log("Name:", name);
+  // const name = getColumnByPokedexId(3, 5);
+  // console.log("Name:", name);
 
   update_image();
 });
