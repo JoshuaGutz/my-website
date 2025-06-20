@@ -17,10 +17,10 @@
     <!-- Container for all page content sections. Content is loaded here by JavaScript on initial app load. -->
     <div id="app-content-wrapper">
         <section id="home-page-section" class="app-page-section" data-path="home"></section>
-        <section id="about-page-section" class="app-page-section" data-path="about"></section>
+        <section id="chat-page-section" class="app-page-section" data-path="chat"></section>
         <section id="page1-page-section" class="app-page-section" data-path="page1"></section>
         <section id="page2-page-section" class="app-page-section" data-path="page2"></section>
-        <section id="chat-page-section" class="app-page-section" data-path="chat"></section>
+        <section id="about-page-section" class="app-page-section" data-path="about"></section>
     </div>
 
     <nav class="bottom-nav">
@@ -31,9 +31,9 @@
                     <span class="icon">🏠</span>
                     <span class="label">Home</span>
                 </a></li>
-                <li><a href="#about" class="nav-link" data-path="about">
-                    <span class="icon">ℹ️</span>
-                    <span class="label">About</span>
+                <li><a href="#chat" class="nav-link" data-path="chat">
+                    <span class="icon">💬</span>
+                    <span class="label">Chat</span>
                 </a></li>
                 <li><a href="#page1" class="nav-link" data-path="page1">
                     <span class="icon">2️⃣</span>
@@ -43,9 +43,9 @@
                     <span class="icon">3️⃣</span>
                     <span class="label">Page 2</span>
                 </a></li>
-                <li><a href="#chat" class="nav-link" data-path="chat">
-                    <span class="icon">💬</span>
-                    <span class="label">Chat</span>
+                <li><a href="#about" class="nav-link" data-path="about">
+                    <span class="icon">ℹ️</span>
+                    <span class="label">About</span>
                 </a></li>
             </ul>
         </div>
@@ -62,7 +62,7 @@
     </nav>
 
     <!-- JavaScript files linked at the end of body for performance -->
-    <script type="module" src="js/app.js"></script> <!-- Added type="module" -->
+    <script type="module" src="js/app.js"></script>
     <script src="js/toggleTopBar.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/bettertimer.js"></script>
