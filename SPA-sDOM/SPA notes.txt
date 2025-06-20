@@ -7,6 +7,11 @@ pages are "snippets" or "SPA Content Snippet"
 
 This is often called a "tabbed interface" or "single DOM" SPA architecture.
 
+"pre-loading" or "single-DOM" architecture 
+where all page content is fetched once on initial load, 
+injected into its respective section in the main HTML document, 
+and then its visibility is toggled using JavaScript.
+
 
 
 
