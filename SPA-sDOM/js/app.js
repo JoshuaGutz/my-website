@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    // Application Version - Manually update this string with each significant push to 'main'
+    const VERSION = "1.0.0-alpha.5"; // Example: Increment this with each push (e.g., 1.0.0-alpha.1, 1.0.0-alpha.2, etc.)
+
     const appPageSections = document.querySelectorAll('.app-page-section');
     const navItems = document.querySelectorAll('.nav-link, .nav-button');
 
@@ -7,10 +10,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         'chat': {
             init: window.initChatPage,
             cleanup: window.cleanupChatPage
+        },
+        'about': {
+            init: () => {
+                // Get the span element for the version and update its text content
+                const appVersionElement = document.getElementById('app-version');
+                if (appVersionElement) {
+                    appVersionElement.textContent = VERSION;
+                } else {
+                    console.warn("Element with ID 'app-version' not found on the About page.");
+                }
+            },
+            cleanup: () => {
+                // No specific cleanup needed for the About page's JS in this case
+            }
         }
-        // Add other page modules here if they need specific init/cleanup (e.g., 'home', 'about')
+        // Add other page modules here if they need specific init/cleanup (e.g., 'home', 'page1', 'page2')
         // 'home': { init: window.initHomePage, cleanup: window.cleanupHomePage },
-        // 'about': { init: window.initAboutPage, cleanup: window.cleanupAboutPage }
+        // 'page1': { init: window.initPage1, cleanup: window.cleanupPage1 },
+        // 'page2': { init: window.initPage2, cleanup: window.cleanupPage2 }
     };
 
     let currentPageId = null; // Stores the ID of the currently active page section (e.g., 'home-page-section')
@@ -65,8 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (!targetSection) {
             console.error(`Page section with ID "${targetSectionId}" not found in DOM.`);
-            // Fallback to home page if target section doesn't exist
-            showPage('home');
+            showPage('home'); // Fallback to home page
             return;
         }
 
@@ -124,7 +141,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showPage(path); // Show the new page
             });
         }
-        // The toggle-top-bar button logic remains in toggleTopBar.js
     });
 
     // Handle initial page load and back/forward button events
