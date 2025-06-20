@@ -5,19 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Awesome Mobile-First SPA</title>
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/chat.css"> <!-- New: Link to chat.css -->
+    <link rel="stylesheet" href="css/chat.css">
 </head>
 <body>
-    <!-- Top bar visible on all pages -->
     <div id="top-bar">
       <div id="countdown">mm:ss</div>
-      <!-- New element for spawned Pokémon ID -->
       <div id="spawned-pokemon-id">Fetching data...</div>
-      <!-- Updated sprite image source -->
       <img id="sprite-image" src="https://dev.bframework.de/static/pokedex/sprites/question.png" alt="Sprite" />
     </div>
 
-    <!-- All page content sections will be loaded into these blank sections initially by JS -->
+    <!-- Container for all page content sections. Content is loaded here by JavaScript on initial app load. -->
     <div id="app-content-wrapper">
         <section id="home-page-section" class="app-page-section" data-path="home"></section>
         <section id="about-page-section" class="app-page-section" data-path="about"></section>
@@ -26,9 +23,8 @@
         <section id="chat-page-section" class="app-page-section" data-path="chat"></section>
     </div>
 
-    <!-- Bottom nav bar -->
     <nav class="bottom-nav">
-        <!-- Container for main navigation links -->
+        <!-- Main navigation links container -->
         <div class="nav-links-container">
             <ul>
                 <li><a href="#home" class="nav-link" data-path="home">
@@ -47,7 +43,6 @@
                     <span class="icon">3️⃣</span>
                     <span class="label">Page 2</span>
                 </a></li>
-                <!-- New list item for Chat -->
                 <li><a href="#chat" class="nav-link" data-path="chat">
                     <span class="icon">💬</span>
                     <span class="label">Chat</span>
@@ -55,7 +50,7 @@
             </ul>
         </div>
 
-        <!-- Container for settings/action buttons -->
+        <!-- Settings and action buttons container -->
         <div class="nav-settings-container">
             <ul>
                 <li><button type="button" class="nav-button" data-action="toggle-top-bar">
