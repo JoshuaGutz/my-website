@@ -10,7 +10,10 @@
     <!-- Top bar visible on all pages -->
     <div id="top-bar">
       <div id="countdown">mm:ss</div>
-      <img id="sprite-image" src="https://placehold.co/50x50/cccccc/000000?text=S" alt="Sprite" />
+      <!-- New element for spawned Pokémon ID -->
+      <div id="spawned-pokemon-id">Fetching data...</div>
+      <!-- Updated sprite image source -->
+      <img id="sprite-image" src="https://dev.bframework.de/static/pokedex/sprites/question.png" alt="Sprite" />
     </div>
 
     <!-- All page content sections, loaded initially -->
@@ -104,5 +107,7 @@
     <script src="js/app.js"></script>
     <script src="js/toggleTopBar.js"></script>
     <script src="js/chat.js"></script>
+    <script src="js/bettertimer.js"></script> <!-- Added bettertimer.js -->
+    <script src="js/sprite-and-spawned-pokemon.js"></script>
 </body>
 </html>
