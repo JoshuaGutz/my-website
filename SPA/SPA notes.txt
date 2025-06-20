@@ -4,6 +4,12 @@ SPA--Single Page App
 pages are "snippets" or "SPA Content Snippet"
 
 
+
+This is often called a "tabbed interface" or "single DOM" SPA architecture.
+
+
+
+
 /
 ├── index.html            ← the only page the browser loads
 ├── pages/
