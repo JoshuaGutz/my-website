@@ -74,8 +74,8 @@ html, body {
 #app-content-wrapper {
     position: relative; /* Establishes a positioning context for absolutely positioned child sections */
     padding: 15px; /* Adds internal padding around the content sections */
-    /* Calculates height: 100% of viewport height MINUS top bar height MINUS bottom nav height */
-    height: calc(100vh - var(--top-bar-height) - var(--bottom-nav-height));
+    /* Calculates height: 100% of dynamic viewport height MINUS top bar height MINUS bottom nav height */
+    height: calc(100dvh - var(--top-bar-height) - var(--bottom-nav-height));
     margin-top: var(--top-bar-height); /* Creates space at the top to clear the fixed top bar */
     background-color: var(--secondary-bg-color); /* Sets background color using a CSS variable */
     color: var(--text-color-light); /* Sets text color using a CSS variable */
@@ -257,7 +257,7 @@ body.top-bar-hidden #top-bar {
 
 body.top-bar-hidden #app-content-wrapper {
     margin-top: 0; /* Removes the top margin, allowing content to move up */
-    height: calc(100vh - var(--bottom-nav-height)); /* Expands content wrapper to fill the height, minus only the bottom nav */
+    height: calc(100dvh - var(--bottom-nav-height)); /* Expands content wrapper to fill the height, minus only the bottom nav */
 }
 
 /* Media query for larger screens (e.g., tablets and desktops) */
@@ -265,8 +265,8 @@ body.top-bar-hidden #app-content-wrapper {
     /* Main content wrapper padding and height for larger screens */
     #app-content-wrapper {
         padding: 30px 50px; /* More internal padding for larger screens */
-        /* Calculates height: 100% of viewport height MINUS top bar height MINUS bottom nav height (same as mobile logic) */
-        height: calc(100vh - var(--top-bar-height) - var(--bottom-nav-height));
+        /* Calculates height: 100% of dynamic viewport height MINUS top bar height MINUS bottom nav height (same as mobile logic) */
+        height: calc(100dvh - var(--top-bar-height) - var(--bottom-nav-height));
     }
 
     /* Top bar padding for larger screens */
