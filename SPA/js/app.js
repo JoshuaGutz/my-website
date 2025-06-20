@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Select the main content area and all navigation links and buttons
     const appContent = document.getElementById('app-content');
-    const navItems = document.querySelectorAll('.nav-link, .nav-button'); // Select both links and buttons
+    const navItems = document.querySelectorAll('.nav-link, .nav-button');
+
+    // Store a reference to the currently active page's cleanup function
+    // This will be null if no page-specific cleanup is needed for the current page
+    let currentPageCleanupFunction = null;
 
     /**
      * Loads content dynamically into the app-content area.
@@ -9,60 +12,76 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {string} path - The path corresponding to the content snippet (e.g., 'home', 'about').
      */
     async function loadContent(path) {
-        // Always update highlighting first, regardless of content loading success
-        // Remove 'active' class from all true navigation links
+        // --- STEP 1: Perform cleanup for the old page, if any ---
+        if (currentPageCleanupFunction && typeof currentPageCleanupFunction === 'function') {
+            currentPageCleanupFunction(); // Call cleanup function for the page being exited
+            currentPageCleanupFunction = null; // Reset the reference
+        }
+
+        // --- STEP 2: Update highlighting for the new page ---
         navItems.forEach(item => {
-            // Only remove 'active' from actual navigation links (<a> tags with .nav-link class)
             if (item.classList.contains('nav-link')) {
                 item.classList.remove('active');
             }
         });
-
-        // Add 'active' class to the currently selected navigation link
         const currentNavLink = document.querySelector(`.nav-link[data-path="${path}"]`);
         if (currentNavLink) {
             currentNavLink.classList.add('active');
         }
 
+        // --- STEP 3: Load new content ---
         try {
-            // Construct the path to your content snippet
             const response = await fetch(`content/${path}.html`);
-
-            // Check if the network response was successful (status code 200-299)
             if (!response.ok) {
-                // If not successful, throw an error
                 throw new Error(`Could not load content for ${path}: ${response.statusText}`);
             }
-
-            // Get the response body as plain text (HTML string)
             const html = await response.text();
-            // Inject the fetched HTML content into the main content area
             appContent.innerHTML = html;
 
-            // Add a class to the appContent for page-specific styling
             appContent.className = `page-${path}`;
-
-            // Update the document title to reflect the current page
             document.title = `My Site - ${path.charAt(0).toUpperCase() + path.slice(1)}`;
-
-            // Scroll to the top of the content area after loading new content
             appContent.scrollTop = 0;
 
+            // --- STEP 4: Initialize new page's JavaScript, if available ---
+            switch (path) {
+                case 'chat':
+                    // Check if the chat.js script has loaded and exposed initChatPage globally
+                    if (window.initChatPage && typeof window.initChatPage === 'function') {
+                        window.initChatPage(); // Initialize the chat page
+                        currentPageCleanupFunction = window.cleanupChatPage; // Store its cleanup function
+                    } else {
+                        console.warn("initChatPage function not found. Ensure chat.js is loaded and properly defines it.");
+                    }
+                    break;
+                // Add cases for other pages if they need specific JS initialization
+                // case 'page1':
+                //     if (window.initPage1 && typeof window.initPage1 === 'function') {
+                //         window.initPage1();
+                //         currentPageCleanupFunction = window.cleanupPage1;
+                //     }
+                //     break;
+                // case 'home':
+                //     if (window.initHomePage && typeof window.initHomePage === 'function') {
+                //         window.initHomePage();
+                //         currentPageCleanupFunction = window.cleanupHomePage;
+                //     }
+                //     break;
+            }
+
         } catch (error) {
-            // Catch and log any errors during the fetch or DOM manipulation
             console.error('Error loading content:', error);
-            // Display an error message to the user
             appContent.innerHTML = '<p>Error loading content. Please try again.</p>';
             document.title = 'My Site - Error';
+            // If content loading fails, we might still want to ensure cleanup happens
+            // or consider what the "active" state means for a failed load.
         }
     }
 
     // Handle navigation clicks for elements with data-path (actual navigation links)
-    // The 'toggle-top-bar' action will now be handled directly in toggleTopBar.js
     navItems.forEach(item => {
         if (item.dataset.path) { // Only attach click listener for navigation links
             item.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevent default link behavior (full reload)
+                event.preventDefault();
                 const path = event.currentTarget.dataset.path;
                 history.pushState({ path: path }, '', `#${path}`);
                 loadContent(path);
@@ -70,19 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-
-    // Handle initial page load and browser's back/forward button events
-
-    // Determine the initial path from the URL hash (e.g., #home, #about)
+    // Handle initial page load and back/forward button events
     const initialPath = window.location.hash.substring(1) || 'home';
-    // Load the content for the initial path
-    loadContent(initialPath); // This will also highlight the initial active link
+    loadContent(initialPath);
 
-    // Listen for the 'popstate' event, which fires when the browser's back/forward buttons are used
     window.addEventListener('popstate', (event) => {
-        // Get the path from the history state (if available) or default to 'home'
         const path = event.state && event.state.path ? event.state.path : 'home';
-        // Load the content for the path retrieved from the history
         loadContent(path);
     });
 });
