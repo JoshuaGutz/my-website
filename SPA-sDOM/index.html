@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Awesome Mobile-First SPA</title>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/chat.css"> <!-- New: Link to chat.css -->
 </head>
 <body>
     <!-- Top bar visible on all pages -->
@@ -16,51 +17,13 @@
       <img id="sprite-image" src="https://dev.bframework.de/static/pokedex/sprites/question.png" alt="Sprite" />
     </div>
 
-    <!-- All page content sections, loaded initially -->
+    <!-- All page content sections will be loaded into these blank sections initially by JS -->
     <div id="app-content-wrapper">
-        <!-- Home Page Section -->
-        <section id="home-page-section" class="app-page-section active-page">
-            <!-- Content for Home Page -->
-        </section>
-
-        <!-- About Page Section -->
-        <section id="about-page-section" class="app-page-section">
-            <!-- Content for About Page -->
-        </section>
-
-        <!-- Page 1 Section -->
-        <section id="page1-page-section" class="app-page-section">
-            <!-- Content for Page 1 -->
-        </section>
-
-        <!-- Page 2 Section -->
-        <section id="page2-page-section" class="app-page-section">
-            <!-- Content for Page 2 -->
-        </section>
-
-        <!-- Chat Page Section (content directly from your chat.html) -->
-        <section id="chat-page-section" class="app-page-section">
-            <div class="page-container">
-                <main class="middle-section">
-                    <div id="chat-embed-area" class="chat-embed-area">
-                        <!-- <p class="no-chat-selected">Select a channel to view chat.</p> -->
-                    </div>
-                    <div id="tabs-container" class="tabs-container">
-                    </div>
-                </main>
-            </div>
-
-            <div id="new-channel-popup" class="popup-overlay" style="display: none;">
-                <div class="popup-content">
-                    <h3>Add New Twitch Channel</h3>
-                    <input type="text" id="new-channel-name" placeholder="Enter channel name">
-                    <div class="popup-buttons">
-                        <button type="button" id="add-channel-btn">Add Channel</button>
-                        <button type="button" id="cancel-add-channel-btn">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <section id="home-page-section" class="app-page-section" data-path="home"></section>
+        <section id="about-page-section" class="app-page-section" data-path="about"></section>
+        <section id="page1-page-section" class="app-page-section" data-path="page1"></section>
+        <section id="page2-page-section" class="app-page-section" data-path="page2"></section>
+        <section id="chat-page-section" class="app-page-section" data-path="chat"></section>
     </div>
 
     <!-- Bottom nav bar -->
@@ -107,7 +70,7 @@
     <script src="js/app.js"></script>
     <script src="js/toggleTopBar.js"></script>
     <script src="js/chat.js"></script>
-    <script src="js/bettertimer.js"></script> <!-- Added bettertimer.js -->
+    <script src="js/bettertimer.js"></script>
     <script src="js/sprite-and-spawned-pokemon.js"></script>
 </body>
 </html>

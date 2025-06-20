@@ -1,21 +1,58 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const appPageSections = document.querySelectorAll('.app-page-section');
     const navItems = document.querySelectorAll('.nav-link, .nav-button');
 
-    // Object to hold initialization and cleanup functions for each page
-    // Keys should match the section IDs (without '-section') and data-path attributes
+    // Object to hold initialization and cleanup functions for each page module
     const pageModules = {
         'chat': {
-            init: window.initChatPage,    // Function from chat.js
-            cleanup: window.cleanupChatPage // Function from chat.js
+            init: window.initChatPage,
+            cleanup: window.cleanupChatPage
         }
-        // Add other page modules here if they need specific init/cleanup
+        // Add other page modules here if they need specific init/cleanup (e.g., 'home', 'about')
         // 'home': { init: window.initHomePage, cleanup: window.cleanupHomePage },
         // 'about': { init: window.initAboutPage, cleanup: window.cleanupAboutPage }
     };
 
     let currentPageId = null; // Stores the ID of the currently active page section (e.g., 'home-page-section')
-    let currentPageCleanupFunction = null; // Stores the cleanup function for the currently active page
+
+    /**
+     * Fetches HTML content for a given path and injects it into the target element.
+     * @param {string} path - The path to the HTML snippet (e.g., 'home', 'chat').
+     * @param {HTMLElement} targetElement - The DOM element where the content will be injected.
+     * @returns {Promise<boolean>} Resolves to true on success, false on error.
+     */
+    async function fetchAndInjectContent(path, targetElement) {
+        try {
+            const response = await fetch(`content/${path}.html`);
+            if (!response.ok) {
+                console.error(`Could not load content for ${path}: ${response.statusText}`);
+                targetElement.innerHTML = `<p>Error loading content for ${path}. Please try again.</p>`;
+                return false;
+            }
+            const html = await response.text();
+            targetElement.innerHTML = html;
+            return true;
+        } catch (error) {
+            console.error(`Error fetching or injecting content for ${path}:`, error);
+            targetElement.innerHTML = `<p>Error loading content for ${path}. Please try again.</p>`;
+            return false;
+        }
+    }
+
+    /**
+     * Performs initial content loading for all page sections.
+     */
+    async function initialContentLoad() {
+        const loadPromises = [];
+        appPageSections.forEach(section => {
+            const path = section.dataset.path;
+            if (path) {
+                loadPromises.push(fetchAndInjectContent(path, section));
+            }
+        });
+        await Promise.all(loadPromises);
+        console.log("All page content snippets loaded into DOM.");
+    }
 
     /**
      * Shows a specific page section and hides all others.
@@ -27,16 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetSection = document.getElementById(targetSectionId);
 
         if (!targetSection) {
-            console.error(`Page section with ID "${targetSectionId}" not found.`);
-            // Handle error: maybe redirect to home or show an error page
-            showPage('home'); // Fallback to home page
+            console.error(`Page section with ID "${targetSectionId}" not found in DOM.`);
+            // Fallback to home page if target section doesn't exist
+            showPage('home');
             return;
         }
 
         // 1. Cleanup old page's JavaScript (if any and if it's a different page)
         if (currentPageId && currentPageId !== targetSectionId) {
             const oldPagePath = currentPageId.replace('-page-section', '');
-            if (pageModules[oldPagePath] && pageModules[oldPagePath].cleanup) {
+            if (pageModules[oldPagePath] && typeof pageModules[oldPagePath].cleanup === 'function') {
                 console.log(`Cleaning up ${oldPagePath} page...`);
                 pageModules[oldPagePath].cleanup();
             }
@@ -45,12 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Hide all page sections
         appPageSections.forEach(section => {
             section.classList.remove('active-page');
-            section.style.display = 'none'; // Ensure it's hidden
+            section.style.display = 'none'; // Explicitly hide
         });
 
         // 3. Show the target page section
         targetSection.classList.add('active-page');
-        targetSection.style.display = 'block'; // Ensure it's visible
+        targetSection.style.display = 'block'; // Explicitly show
 
         // 4. Update navigation highlighting
         navItems.forEach(item => {
@@ -64,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 5. Initialize new page's JavaScript (if any)
-        if (pageModules[targetPath] && pageModules[targetPath].init) {
+        if (pageModules[targetPath] && typeof pageModules[targetPath].init === 'function') {
             console.log(`Initializing ${targetPath} page...`);
             pageModules[targetPath].init();
         }
@@ -73,6 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPageId = targetSectionId;
         document.title = `My Site - ${targetPath.charAt(0).toUpperCase() + targetPath.slice(1)}`;
     }
+
+    // --- Main application startup sequence ---
+    await initialContentLoad(); // Wait for all content to be loaded initially
 
     // Handle navigation clicks
     navItems.forEach(item => {
@@ -89,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle initial page load and back/forward button events
     const initialPath = window.location.hash.substring(1) || 'home';
-    showPage(initialPath); // Show the initial page
+    showPage(initialPath); // Show the initial page after all content is loaded
 
     window.addEventListener('popstate', (event) => {
         const path = event.state && event.state.path ? event.state.path : 'home';

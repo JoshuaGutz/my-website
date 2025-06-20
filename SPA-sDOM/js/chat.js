@@ -3,7 +3,7 @@
 // Encapsulate all chat page logic within an object or a single init function
 // to prevent global variable pollution and allow for easy initialization/cleanup.
 (function() {
-    // Declare variables that will be populated when initChatPage is called
+    // Declare variables that will be populated upon first initialization of the module
     let chatEmbedArea;
     let tabsContainer;
     let pageContainer; // Refers to the .chat-page-content .page-container from chat.html
@@ -13,12 +13,12 @@
     let cancelAddChannelBtn;
     let bottomSection; // Reference to the main bottom nav from index.html
 
-    let chatPageInitialized = false; // Flag to ensure init runs only once globally for the chat module
-    let chatPageCurrentlyActive = false; // Flag to track if chat page is currently shown
+    let chatModuleInitialized = false; // Flag to ensure module's DOM references and static listeners run only once
+    let chatPageCurrentlyActive = false; // Flag to track if chat page is currently shown/visible
 
     // Debug mode switch: Set to `true` to use solid color iframes for testing.
     // Set to `false` to use actual Twitch embeds.
-    const debugMode = true; // <--- Set this to false for actual Twitch embeds
+    const debugMode = false; // <--- Set this to false for actual Twitch embeds
 
     // Initial channels (could eventually be loaded from storage)
     let channels = [
@@ -28,13 +28,13 @@
 
     let activeChannelId = null;
 
-    // Store references to event listeners so they can be properly removed
-    let newChannelInputKeydownListener;
-    let addChannelBtnClickListener;
-    let cancelAddChannelBtnClickListener;
-    let newChannelPopupClickListener;
-    let popupEscapeKeyListener;
-    let visualViewportResizeListener; // This one is tied to window.visualViewport
+    // Store references to event listener functions for proper removal (if needed globally)
+    let newChannelInputKeydownListener; // For Enter key in popup
+    let addChannelBtnClickListener; // For Add Channel button
+    let cancelAddChannelBtnClickListener; // For Cancel button
+    let newChannelPopupClickListener; // For clicking outside popup
+    let popupEscapeKeyListener; // For Escape key
+    let visualViewportResizeListener; // For mobile keyboard detection
 
     /**
      * Helper function to create a random hex color for debug mode.
@@ -49,15 +49,16 @@
     }
 
     /**
-     * Helper function to create an iframe for a channel.
-     * In this single-DOM architecture, iframes are created once and stay in chatEmbedArea.
+     * Creates an iframe for a given channel ID if it doesn't already exist.
+     * Appends the iframe directly to chatEmbedArea.
      * @param {string} channelId - The ID of the Twitch channel.
      * @returns {HTMLIFrameElement} The created or existing iframe element.
      */
     function createIframe(channelId) {
         let iframe = document.getElementById(`iframe-${channelId}`);
         if (iframe) {
-            // If iframe already exists in the DOM, return it
+            // If iframe already exists in the DOM (e.g., from a previous visit), return it.
+            // It will already be a child of chatEmbedArea.
             return iframe;
         }
 
@@ -72,7 +73,7 @@
         iframe.style.position = 'absolute'; // Position within chat-embed-area
         iframe.style.top = '0';
         iframe.style.left = '0';
-        iframe.style.zIndex = '1'; // Default z-index
+        iframe.style.zIndex = '1'; // Default z-index for inactive iframes
 
         if (debugMode) {
             const color = getRandomColor();
@@ -82,12 +83,12 @@
             iframe.src = `https://www.twitch.tv/embed/${channelId}/chat?parent=${twitchParent}&darkpopout`;
         }
 
+        // Append the iframe directly to the chatEmbedArea (which is now always in DOM)
         if (chatEmbedArea) {
             chatEmbedArea.appendChild(iframe);
         } else {
-            console.error("chatEmbedArea not found when creating iframe. Cannot append.");
-            // Fallback, though ideally chatEmbedArea is present before this runs
-            document.body.appendChild(iframe);
+            // This error should ideally not happen in this SPA architecture
+            console.error("chatEmbedArea not found when creating iframe. Iframe might not be properly placed.");
         }
         return iframe;
     }
@@ -100,6 +101,7 @@
     function displayNoChatSelectedMessage(messageText) {
         if (!chatEmbedArea) return;
 
+        // Hide all iframes that are children of chatEmbedArea
         const allIframes = chatEmbedArea.querySelectorAll('iframe');
         allIframes.forEach(frame => frame.style.display = 'none');
 
@@ -138,7 +140,7 @@
             closeBtn.innerHTML = '&times;'; // 'x' icon
             closeBtn.title = `Close ${channel.name} tab`;
             const closeListener = (event) => {
-                event.stopPropagation();
+                event.stopPropagation(); // Prevent tab selection when closing
                 removeChannel(channel.id);
             };
             closeBtn.addEventListener('click', closeListener);
@@ -183,15 +185,17 @@
         const iframesInChatArea = chatEmbedArea.querySelectorAll('iframe');
         iframesInChatArea.forEach(frame => {
             frame.style.display = 'none';
+            frame.style.zIndex = '1'; // Reset z-index
         });
 
         const selectedChannelObject = channels.find(ch => ch.id === channelId);
         if (selectedChannelObject) {
             activeChannelId = selectedChannelObject.id;
-            const targetIframe = document.getElementById(`iframe-${selectedChannelObject.id}`); // Get existing iframe
+            const targetIframe = document.getElementById(`iframe-${selectedChannelObject.id}`);
 
             if (targetIframe) {
                 targetIframe.style.display = 'block'; // Show selected iframe
+                targetIframe.style.zIndex = '2'; // Bring active iframe to front
             } else {
                 displayNoChatSelectedMessage(`Error: Iframe for ${selectedChannelObject.name} not found.`);
                 console.error(`Iframe for channel ID: ${selectedChannelObject.id} was not found in DOM.`);
@@ -204,8 +208,7 @@
     }
 
     /**
-     * Removes a channel and its associated iframe and tab.
-     * The iframe is removed from the DOM completely here.
+     * Removes a channel and its associated iframe and tab from the DOM.
      * @param {string} channelIdToRemove - The ID of the channel to remove.
      */
     function removeChannel(channelIdToRemove) {
@@ -335,7 +338,61 @@
     // --- Global Init and Cleanup for SPA Integration ---
 
     /**
-     * Initializes the chat page logic when its HTML content is made visible.
+     * Initializes the chat page module for its first-time setup (DOM references, static listeners).
+     * This runs once when chat.js is loaded by the browser.
+     */
+    function initializeChatModuleOnce() {
+        if (chatModuleInitialized) return;
+        chatModuleInitialized = true;
+        console.log("Chat Page Module: First-time global initialization.");
+
+        // Get DOM references (they now always exist since content is loaded into index.html)
+        chatEmbedArea = document.getElementById('chat-embed-area');
+        tabsContainer = document.getElementById('tabs-container');
+        pageContainer = document.querySelector('#chat-page-section .page-container'); // Selector within its section
+        bottomSection = document.querySelector('.bottom-nav'); // This is the main bottom nav from index.html
+        newChannelPopup = document.getElementById('new-channel-popup');
+        newChannelNameInput = document.getElementById('new-channel-name');
+        addChannelBtn = document.getElementById('add-channel-btn');
+        cancelAddChannelBtn = document.getElementById('cancel-add-channel-btn');
+
+        if (!chatEmbedArea || !tabsContainer || !pageContainer || !newChannelPopup || !newChannelNameInput || !addChannelBtn || !cancelAddChannelBtn) {
+            console.error("One or more required chat page DOM elements not found during initial setup.");
+            return;
+        }
+
+        // Attach core event listeners ONCE for elements that are always in the DOM
+        newChannelNameInput.addEventListener('keydown', (newChannelInputKeydownListener = (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handleAddNewChannel();
+            }
+        }));
+
+        addChannelBtn.addEventListener('click', (addChannelBtnClickListener = handleAddNewChannel));
+        cancelAddChannelBtn.addEventListener('click', (cancelAddChannelBtnClickListener = hideNewChannelPopup));
+        newChannelPopup.addEventListener('click', (newChannelPopupClickListener = (event) => {
+            if (event.target === newChannelPopup) hideNewChannelPopup();
+        }));
+
+        // Set up keyboard visibility resize listener ONCE
+        if (window.visualViewport) {
+            initialWindowHeight = window.visualViewport.height;
+            visualViewportResizeListener = handleVisualViewportResize;
+            window.visualViewport.addEventListener('resize', visualViewportResizeListener);
+        }
+
+        // Create iframes for initial channels
+        channels.forEach(channel => {
+            createIframe(channel.id);
+        });
+        // Select initial channel (will be hidden until initChatPage is called to activate)
+        // This ensures iframes are created and ready from the start.
+        selectChannel(channels.length > 0 ? channels[0].id : null);
+    }
+
+    /**
+     * Activates the chat page's logic when it becomes visible.
      * This function should be called by app.js.
      */
     window.initChatPage = function() {
@@ -346,70 +403,24 @@
         chatPageCurrentlyActive = true;
         console.log("Activating Chat Page...");
 
-        // Ensure DOM elements are referenced only once upon first initialization
-        // if this module needs to manage them across its entire lifecycle
-        if (!chatPageInitialized) {
-            chatPageInitialized = true;
-            console.log("Chat Page Module: First-time initialization.");
-
-            // Get DOM references (they now always exist since content is in index.html)
-            chatEmbedArea = document.getElementById('chat-embed-area');
-            tabsContainer = document.getElementById('tabs-container');
-            pageContainer = document.querySelector('#chat-page-section .page-container'); // Selector within its section
-            bottomSection = document.querySelector('.bottom-nav'); // This is the main bottom nav from index.html
-            newChannelPopup = document.getElementById('new-channel-popup');
-            newChannelNameInput = document.getElementById('new-channel-name');
-            addChannelBtn = document.getElementById('add-channel-btn');
-            cancelAddChannelBtn = document.getElementById('cancel-add-channel-btn');
-
-            if (!chatEmbedArea || !tabsContainer || !pageContainer || !newChannelPopup || !newChannelNameInput || !addChannelBtn || !cancelAddChannelBtn) {
-                console.error("One or more required chat page DOM elements not found during initial setup.");
-                return;
-            }
-
-            // Attach core event listeners ONCE
-            newChannelNameInput.addEventListener('keydown', (newChannelInputKeydownListener = (event) => {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    handleAddNewChannel();
-                }
-            }));
-
-            addChannelBtn.addEventListener('click', (addChannelBtnClickListener = handleAddNewChannel));
-            cancelAddChannelBtn.addEventListener('click', (cancelAddChannelBtnClickListener = hideNewChannelPopup));
-            newChannelPopup.addEventListener('click', (newChannelPopupClickListener = (event) => {
-                if (event.target === newChannelPopup) hideNewChannelPopup();
-            }));
-
-            // Create iframes for initial channels
-            channels.forEach(channel => {
-                createIframe(channel.id);
-            });
-
-            // Set up keyboard visibility resize listener ONCE
-            if (window.visualViewport) {
-                initialWindowHeight = window.visualViewport.height;
-                visualViewportResizeListener = handleVisualViewportResize;
-                window.visualViewport.addEventListener('resize', visualViewportResizeListener);
-            }
-        }
-
-        // Actions to perform every time the chat page becomes active/visible
+        // Ensure current active iframe is shown and others hidden
         selectChannel(activeChannelId || (channels.length > 0 ? channels[0].id : null));
+
         // Re-adjust pageContainer height on activation to handle initial orientation/keyboard state
         handleVisualViewportResize();
     };
 
     /**
-     * Cleans up the chat page logic when navigating away.
-     * Hides all iframes. This function should be called by app.js.
+     * Deactivates the chat page's logic when navigating away.
+     * Hides all iframes and resets UI state.
+     * This function should be called by app.js.
      */
     window.cleanupChatPage = function() {
         if (!chatPageCurrentlyActive) return;
         chatPageCurrentlyActive = false;
         console.log("Deactivating Chat Page...");
 
-        // Hide all iframes
+        // Hide all iframes that are children of chatEmbedArea
         if (chatEmbedArea) {
             const allIframes = chatEmbedArea.querySelectorAll('iframe');
             allIframes.forEach(frame => {
@@ -422,12 +433,13 @@
         if (pageContainer) pageContainer.style.height = '100%'; // Reset chat page wrapper height
         hideNewChannelPopup(); // Ensure popup is hidden when leaving page
 
-        // Event listeners attached to elements within the chat page (like popup buttons, new channel input)
-        // are now persistent because their DOM elements are persistent.
-        // So, explicit removal here is less about memory leaks across page *loads* and more about
-        // ensuring logic is not active when page is hidden.
-        // For simplicity and since we only init once, we can leave these listeners as persistent.
-        // If there were listeners on elements that are frequently removed/re-added within the chat page itself,
-        // then they would need more fine-grained management.
+        // Note: Global listeners (like resize or keydown for popup) are attached once
+        // by initializeChatModuleOnce and not removed here, as the elements persist.
+        // The conditional logic within their handlers (e.g., if chatPageCurrentlyActive)
+        // ensures they only act when the page is relevant.
     };
+
+    // Execute the one-time global module initialization when the script loads
+    initializeChatModuleOnce();
+
 })();
