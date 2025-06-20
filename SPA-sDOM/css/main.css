@@ -1,271 +1,291 @@
 /* Base styles - Mobile first */
+:root {
+    /* Define CSS Custom Properties for reusable values */
+    /* Calculated height of the top bar including padding: 50px (countdown/sprite height) + 10px (top padding) + 10px (bottom padding) */
+    --top-bar-height: 70px;
+    /* Fixed height for the bottom navigation bar */
+    --bottom-nav-height: 60px;
+
+    /* Define common colors for easier management */
+    --primary-bg-color: #1d1d1d; /* Dark background for top bar and body */
+    --secondary-bg-color: rgb(54, 54, 54); /* Background for main content area */
+    --accent-color: #ff444b; /* Red accent color for navigation and headings */
+    --text-color-light: #ffffff; /* White text for primary elements */
+    --text-color-faded: rgba(255, 255, 255, 0.7); /* Faded white for secondary text/icons */
+    --hover-bg-light: rgba(255, 255, 255, 0.2); /* Light background for hover states */
+    --active-bg-light: rgba(255, 255, 255, 0.3); /* Light background for active/selected states */
+}
+
 html, body {
-    height: 100%; /* Ensure html and body take full viewport height */
-    overflow: hidden; /* Prevent scrolling on the html/body level */
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-    background-color: #1d1d1d; /* Matches top bar for consistent background outside main content */
-    transition: padding-top 0.3s ease-in-out; /* Smooth transition for content when top bar hides */
+    height: 100%; /* Ensures html and body take up the full viewport height */
+    overflow: hidden; /* Prevents scrolling on the entire page, content within sections will scroll */
+    margin: 0; /* Removes default browser margin */
+    padding: 0; /* Removes default browser padding */
+    font-family: Arial, sans-serif; /* Sets a common sans-serif font */
+    box-sizing: border-box; /* Includes padding and border in the element's total width and height, simplifying layout calculations */
+    background-color: var(--primary-bg-color); /* Sets the primary background color using a CSS variable */
+    transition: padding-top 0.3s ease-in-out; /* Smooth transition for content when top bar hides/shows */
 }
 
 /* Top Bar Styling */
 #top-bar {
-    position: fixed; /* Keep top bar fixed at the top */
-    top: 0;
-    left: 0;
-    width: 100%;
-    display: flex; /* Use flexbox for internal alignment */
-    justify-content: space-between; /* Space out items */
-    align-items: center; /* Vertically align items */
-    padding: 10px 15px;
-    background-color: #1d1d1d; /* Specified background color */
-    color: #ffffff; /* White text for top bar */
-    z-index: 1000; /* Ensure it stays on top of other content */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth */
-    box-sizing: border-box;
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Smooth transition for hiding/showing */
+    position: fixed; /* Positions the element relative to the viewport, keeping it in place when scrolling */
+    top: 0; /* Aligns the top edge of the element to the top of the viewport */
+    left: 0; /* Aligns the left edge of the element to the left of the viewport */
+    width: 100%; /* Makes the top bar span the full width of the viewport */
+    height: var(--top-bar-height); /* Sets the explicit height of the top bar using a CSS variable */
+    display: flex; /* Enables Flexbox for arranging child items */
+    justify-content: space-between; /* Distributes child items with space between them */
+    align-items: center; /* Vertically centers child items within the flex container */
+    padding: 10px 15px; /* Adds internal spacing (top/bottom 10px, left/right 15px). Included in height due to box-sizing. */
+    background-color: var(--primary-bg-color); /* Sets background color using a CSS variable */
+    color: var(--text-color-light); /* Sets text color using a CSS variable */
+    z-index: 1000; /* Ensures the top bar stays on top of other content layers */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Adds a subtle shadow for depth */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total dimensions */
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Smooth transition for hiding/showing the top bar */
 }
 
 #top-bar #countdown {
-    font-size: 50px; /* Set countdown text size to 50px */
-    font-weight: bold;
-    line-height: 1; /* Adjust line-height to prevent extra spacing */
-    height: 50px; /* Explicitly set height to match sprite */
-    display: flex; /* Use flex to center text vertically if needed */
-    align-items: center;
+    font-size: 50px; /* Sets the font size of the countdown text */
+    font-weight: bold; /* Makes the countdown text bold */
+    line-height: 1; /* Adjusts line-height to prevent extra spacing around text */
+    height: 50px; /* Explicitly sets height to match the sprite image for vertical alignment */
+    display: flex; /* Uses flex for centering text vertically if needed */
+    align-items: center; /* Vertically centers the text within its own container */
 }
 
 #top-bar #spawned-pokemon-id {
-    font-size: 1.2em; /* Adjust font size as needed */
-    color: #ffffff;
-    margin: 0 10px; /* Some horizontal spacing */
+    font-size: 1.2em; /* Sets the font size relative to the parent font size */
+    color: var(--text-color-light); /* Sets text color using a CSS variable */
+    margin: 0 10px; /* Adds horizontal margin (10px left/right) for spacing */
+    white-space: pre-line; /* Preserves newline characters in the text, collapsing other whitespace */
 }
 
 #top-bar #sprite-image {
-    width: 50px;
-    height: 50px; /* Set sprite image height to 50px */
-    border-radius: 50%; /* Make sprite image round */
-    object-fit: cover; /* Ensure image covers the area */
+    width: 50px; /* Sets the width of the sprite image */
+    height: 50px; /* Sets the height of the sprite image */
+    border-radius: 50%; /* Makes the image perfectly round */
+    object-fit: cover; /* Ensures the image covers the element area without distortion */
 }
 
-/* Main Content Wrapper */
+/* Main Content Wrapper - Holds all page sections */
 #app-content-wrapper {
-    position: relative; /* Needed for positioning child sections */
-    padding: 15px; /* Default padding for mobile */
-    /* Dynamically calculate height: 100vh - top bar height - bottom nav height */
-    height: calc(100vh - 70px - 60px); /* 70px for top bar, 60px for bottom nav */
-    margin-top: 70px; /* Space for fixed top bar */
-    background-color: rgb(54, 54, 54); /* Specified background color */
-    color: white; /* Specified text color */
-    line-height: 1.6;
-    box-sizing: border-box;
-    overflow-y: hidden; /* Prevent wrapper from scrolling, individual sections will scroll */
-    transition: margin-top 0.3s ease-in-out, height 0.3s ease-in-out; /* Smooth transition for content when top bar hides */
+    position: relative; /* Establishes a positioning context for absolutely positioned child sections */
+    padding: 15px; /* Adds internal padding around the content sections */
+    /* Calculates height: 100% of viewport height MINUS top bar height MINUS bottom nav height */
+    height: calc(100vh - var(--top-bar-height) - var(--bottom-nav-height));
+    margin-top: var(--top-bar-height); /* Creates space at the top to clear the fixed top bar */
+    background-color: var(--secondary-bg-color); /* Sets background color using a CSS variable */
+    color: var(--text-color-light); /* Sets text color using a CSS variable */
+    line-height: 1.6; /* Sets line height for readability */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total dimensions */
+    overflow-y: hidden; /* Prevents vertical scrolling on the wrapper itself; individual sections will handle their own scrolling */
+    transition: margin-top 0.3s ease-in-out, height 0.3s ease-in-out; /* Smooth transitions for margin and height changes when top bar hides/shows */
 }
 
 /* Styling for all individual page sections within the wrapper */
 .app-page-section {
-    position: absolute; /* Position sections on top of each other */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none; /* Hidden by default */
-    overflow-y: auto; /* Allow individual sections to scroll if their content overflows */
-    padding: 15px; /* Re-apply padding removed from wrapper */
-    box-sizing: border-box; /* Include padding in dimensions */
+    position: absolute; /* Positions sections on top of each other within their relative parent (#app-content-wrapper) */
+    top: 0; /* Aligns the top edge to the top of the parent */
+    left: 0; /* Aligns the left edge to the left of the parent */
+    width: 100%; /* Makes the section span the full width of the parent */
+    height: 100%; /* Makes the section span the full height of the parent */
+    display: none; /* Hides the section by default */
+    overflow-y: auto; /* Allows vertical scrolling within the section if its content overflows */
+    padding: 15px; /* Re-applies internal padding to the content within each section */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total dimensions */
 }
 
-/* Show the active page section */
+/* Rule to display the active page section */
 .app-page-section.active-page {
-    display: block; /* Show only the active page */
+    display: block; /* Overrides 'display: none' to show only the active page */
 }
 
 /* Headings within the app content wrapper */
 #app-content-wrapper h2 {
-    color: #ff444b; /* A contrasting color for headings */
-    margin-bottom: 15px;
+    color: var(--accent-color); /* Sets heading color using a CSS variable */
+    margin-bottom: 15px; /* Adds space below headings */
 }
 
 /* Bottom Navigation Bar Styling */
 .bottom-nav {
-    position: fixed; /* Keep bottom nav bar fixed at the bottom */
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #ff444b; /* Specified background color */
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth */
-    z-index: 1000; /* Ensure it stays on top of other content */
-    display: flex; /* Use flexbox to arrange inner containers */
-    justify-content: space-between; /* Space out the nav links and settings containers */
-    align-items: center; /* Vertically align content */
-    height: 60px; /* Fixed height for the nav bar */
-    padding: 0 10px; /* Add some horizontal padding inside the nav bar */
+    position: fixed; /* Positions the element relative to the viewport, keeping it in place */
+    bottom: 0; /* Aligns the bottom edge of the element to the bottom of the viewport */
+    left: 0; /* Aligns the left edge of the element to the left of the viewport */
+    width: 100%; /* Makes the navigation bar span the full width of the viewport */
+    background-color: var(--accent-color); /* Sets background color using a CSS variable */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2); /* Adds a subtle shadow above the nav bar */
+    z-index: 1000; /* Ensures the nav bar stays on top of other content layers */
+    display: flex; /* Enables Flexbox for arranging inner containers */
+    justify-content: space-between; /* Distributes the main nav links and settings containers with space between them */
+    align-items: center; /* Vertically centers content within the nav bar */
+    height: var(--bottom-nav-height); /* Sets the fixed height of the navigation bar using a CSS variable */
+    padding: 0 10px; /* Adds internal horizontal padding to the nav bar */
 }
 
-/* Styling for the container holding navigation links */
+/* Container for main navigation links (Home, About, Page 1, Page 2, Chat) */
 .nav-links-container {
-    flex-grow: 1; /* Allows this container to take all available space */
-    display: flex; /* Use flexbox for its internal ul */
-    height: 100%; /* Make it fill parent height */
+    flex-grow: 1; /* Allows this container to take up all available space */
+    display: flex; /* Enables Flexbox for arranging its internal <ul> */
+    height: 100%; /* Makes the container fill its parent's height */
 }
 
-/* Styling for the container holding settings/action buttons */
+/* Container for settings/action buttons (e.g., Timer) */
 .nav-settings-container {
-    flex-shrink: 0; /* Prevent it from shrinking */
-    flex-grow: 0; /* Ensure it doesn't try to grow */
-    display: flex; /* Use flexbox for its internal ul */
-    height: 100%; /* Make it fill parent height */
-    /* margin-left: 10px; */ /* This was commented out by user */
-    margin-right: 10px; /* Added margin-right as requested by user */
+    flex-shrink: 0; /* Prevents this container from shrinking smaller than its content */
+    flex-grow: 0; /* Prevents this container from growing larger than its content */
+    display: flex; /* Enables Flexbox for arranging its internal <ul> */
+    height: 100%; /* Makes the container fill its parent's height */
+    /* margin-left: 10px; */ /* User commented out: original attempt for spacing */
+    margin-right: 10px; /* User requested: Adds external margin to the right of this container for desired spacing */
 }
 
 .bottom-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex; /* Flexbox for horizontal alignment */
-    align-items: center; /* Vertically center items */
-    height: 100%; /* Make the ul fill its parent div height */
-    width: 100%; /* Ensure ul takes full width of its parent container */
+    list-style: none; /* Removes default list bullets */
+    padding: 0; /* Removes default list padding */
+    margin: 0; /* Removes default list margin */
+    display: flex; /* Enables Flexbox for horizontal arrangement of list items */
+    align-items: center; /* Vertically centers list items within the ul */
+    height: 100%; /* Makes the ul fill its parent div's height */
+    width: 100%; /* Makes the ul fill its parent div's width */
 }
 
-/* Specific styling for the nav links ul */
+/* Specific styling for the ul within the main navigation links container */
 .nav-links-container ul {
-    justify-content: space-around; /* Distribute items with space around them */
+    justify-content: space-around; /* Distributes navigation items evenly with space around them */
 }
 
-/* Specific styling for the settings ul (only one item) */
+/* Specific styling for the ul within the settings container (only one item) */
 .nav-settings-container ul {
-    justify-content: flex-end; /* Align the single item to the right within its ul */
+    justify-content: flex-end; /* Aligns the single item to the right within its ul */
 }
 
-/* General list item (li) styling */
+/* General list item (li) styling within the bottom navigation */
 .bottom-nav li {
-    text-align: center;
+    text-align: center; /* Centers the content within each list item */
 }
 
-/* Styling for list items specifically in nav-links-container */
+/* Styling for list items specifically in the main navigation links container */
 .nav-links-container li {
-    flex: 1; /* Make these list items equally share space within their flex container */
+    flex: 1; /* Allows these list items to equally share and grow to fill space within their flex container */
 }
 
-/* Styling for list items specifically in nav-settings-container */
+/* Styling for list items specifically in the settings container */
 .nav-settings-container li {
-    flex: none; /* This list item should not grow or shrink, just size to its content */
-    margin-right: 10px; /* Added margin-right as requested by user */
+    flex: none; /* Prevents this list item from growing or shrinking, sizing it to its content */
+    margin-right: 10px; /* User requested: Adds external margin to the right of the item for desired spacing */
 }
 
 /* Styling for navigation links (<a> tags) */
 .bottom-nav a.nav-link {
-    text-decoration: none;
-    color: white; /* White text for nav links */
-    display: flex; /* Flex for icon and label */
-    flex-direction: column; /* Stack icon and label vertically */
-    align-items: center; /* Center horizontally */
-    justify-content: center; /* Center vertically */
-    padding: 5px 0; /* Add some padding for touch targets */
-    height: 100%; /* Make the whole area clickable within the li */
-    width: 100%; /* Make the link fill its parent li */
-    font-size: 0.8em; /* Smaller font for labels */
-    white-space: nowrap; /* Prevent text wrapping */
+    text-decoration: none; /* Removes underline from links */
+    color: var(--text-color-light); /* Sets link color using a CSS variable */
+    display: flex; /* Enables Flexbox for icon and label arrangement */
+    flex-direction: column; /* Stacks the icon and label vertically */
+    align-items: center; /* Centers items horizontally within the link */
+    justify-content: center; /* Centers items vertically within the link */
+    padding: 5px 0; /* Adds vertical padding for better touch target size */
+    height: 100%; /* Makes the entire link area clickable within its list item */
+    width: 100%; /* Makes the link fill its parent list item's width */
+    font-size: 0.8em; /* Sets a smaller font size for labels */
+    white-space: nowrap; /* Prevents text from wrapping to the next line */
 }
 
 /* Highlight for active navigation link */
 .bottom-nav a.nav-link.active {
-    background-color: rgba(255, 255, 255, 0.3); /* Stronger highlight for active link */
-    border-radius: 8px; /* Consistent rounded corners */
+    background-color: var(--active-bg-light); /* Sets background for active link using a CSS variable */
+    border-radius: 8px; /* Applies consistent rounded corners */
 }
 
 /* Hover/Focus effects for navigation links */
 .bottom-nav a.nav-link:hover,
 .bottom-nav a.nav-link:focus {
-    background-color: rgba(255, 255, 255, 0.2); /* Subtle hover effect */
-    border-radius: 8px; /* Rounded corners on hover */
+    background-color: var(--hover-bg-light); /* Sets background for hover/focus using a CSS variable */
+    border-radius: 8px; /* Applies rounded corners on hover */
 }
 
 /* Styling for navigation buttons (<button> tags) */
 .bottom-nav button.nav-button {
-    background: none; /* Remove default button background */
-    border: none; /* Remove default button border */
-    color: white; /* Inherit text color from parent */
-    cursor: pointer; /* Indicate it's clickable */
-    position: relative; /* Needed for pseudo-elements */
-    display: flex; /* Flex for icon and label */
-    flex-direction: column; /* Stack icon and label vertically */
-    align-items: center; /* Center horizontally */
-    justify-content: center; /* Center vertically */
-    padding: 5px 5px; /* Changed padding as requested by user */
-    height: 100%; /* Make the whole area clickable within the li */
-    width: 100%; /* Make the button fill its parent li */
-    font-size: 0.8em; /* Smaller font for labels */
-    font-family: inherit; /* Inherit font family */
-    outline: none; /* Explicitly remove outline for all states by default */
-    -webkit-appearance: none; /* Remove default button appearance on WebKit browsers */
-    -moz-appearance: none; /* Remove default button appearance on Mozilla browsers */
+    background: none; /* Removes default button background */
+    border: none; /* Removes default button border */
+    color: var(--text-color-light); /* Sets button text color using a CSS variable */
+    cursor: pointer; /* Changes cursor to a pointer to indicate clickability */
+    position: relative; /* Establishes a positioning context (if needed for pseudo-elements/overlays) */
+    display: flex; /* Enables Flexbox for icon and label arrangement */
+    flex-direction: column; /* Stacks the icon and label vertically */
+    align-items: center; /* Centers items horizontally within the button */
+    justify-content: center; /* Centers items vertically within the button */
+    padding: 5px 5px; /* Adds padding (user requested) to the button for better touch target */
+    height: 100%; /* Makes the entire button area clickable within its list item */
+    width: 100%; /* Makes the button fill its parent list item's width */
+    font-size: 0.8em; /* Sets a smaller font size for labels */
+    font-family: inherit; /* Inherits font family from parent */
+    outline: none; /* Explicitly removes focus outline for all states by default */
+    -webkit-appearance: none; /* Removes default button appearance on WebKit browsers */
+    -moz-appearance: none; /* Removes default button appearance on Mozilla browsers */
     appearance: none; /* Standard property for removing default button appearance */
     touch-action: manipulation; /* Optimizes touch interactions for responsiveness */
-    white-space: nowrap; /* Prevent text wrapping */
+    white-space: nowrap; /* Prevents text from wrapping to the next line */
 }
 
 /* Apply subtle background to hover and active states (when actively pressed/hovered) */
 .bottom-nav button.nav-button:hover,
 .bottom-nav button.nav-button:active {
-    background-color: rgba(255, 255, 255, 0.2); /* Subtle hover/press effect */
-    border-radius: 8px; /* Rounded corners on hover/press */
+    background-color: var(--hover-bg-light); /* Sets background for hover/active using a CSS variable */
+    border-radius: 8px; /* Applies rounded corners on hover/press */
 }
 
-/* Ensure focus state (when not hovered/active) has transparent background */
+/* Ensure focus state has transparent background */
 .bottom-nav button.nav-button:focus {
     background-color: transparent; /* No background on focus by default */
 }
 
-/* Icon styling within nav elements */
+/* Icon styling within navigation elements */
 .bottom-nav .icon {
-    font-size: 1.5em; /* Larger icons */
-    margin-bottom: 2px; /* Small space between icon and label */
+    font-size: 1.5em; /* Sets a larger font size for icons */
+    margin-bottom: 2px; /* Adds small space between icon and label */
 }
 
-/* Styles for when the top bar is hidden (applies to body class) */
+/* Styles for when the top bar is hidden (applies when 'body.top-bar-hidden' class is active) */
 body.top-bar-hidden #top-bar {
-    transform: translateY(-100%); /* Move top bar completely out of view */
-    opacity: 0; /* Fade it out */
-    pointer-events: none; /* Disable interactions when hidden */
+    transform: translateY(-100%); /* Moves the top bar completely out of view upwards */
+    opacity: 0; /* Fades the top bar out */
+    pointer-events: none; /* Disables all mouse events on the hidden top bar */
 }
 
 body.top-bar-hidden #app-content-wrapper {
-    margin-top: 0; /* Remove margin-top when top bar is hidden */
-    height: calc(100vh - 60px); /* Fill the full height minus only the bottom nav */
+    margin-top: 0; /* Removes the top margin, allowing content to move up */
+    height: calc(100vh - var(--bottom-nav-height)); /* Expands content wrapper to fill the height, minus only the bottom nav */
 }
 
 /* Media query for larger screens (e.g., tablets and desktops) */
 @media (min-width: 768px) {
     /* Main content wrapper padding and height for larger screens */
     #app-content-wrapper {
-        padding: 30px 50px; /* More padding for larger screens */
-        height: calc(100vh - 70px - 60px); /* Recalculate height for desktop, same logic as mobile */
+        padding: 30px 50px; /* More internal padding for larger screens */
+        /* Calculates height: 100% of viewport height MINUS top bar height MINUS bottom nav height (same as mobile logic) */
+        height: calc(100vh - var(--top-bar-height) - var(--bottom-nav-height));
     }
 
     /* Top bar padding for larger screens */
     #top-bar {
-        padding: 15px 30px;
+        padding: 15px 30px; /* Adjusts top bar padding for larger screens */
     }
 
     /* Bottom nav fixed width and centering for larger screens */
     .bottom-nav {
-        max-width: 960px; /* Constrain width on very large screens */
-        margin: 0 auto; /* Center the entire bottom nav */
+        max-width: 960px; /* Constrains the maximum width of the bottom navigation bar */
+        margin: 0 auto; /* Centers the entire bottom nav horizontally on larger screens */
     }
 
     /* Navigation links centering for larger screens */
     .nav-links-container ul {
-        justify-content: center; /* Center main nav links on desktop */
+        justify-content: center; /* Centers main navigation links on desktop screens */
     }
 
     /* Settings buttons alignment for larger screens */
     .nav-settings-container ul {
-        justify-content: flex-end; /* Keep settings right-aligned */
+        justify-content: flex-end; /* Keeps settings buttons right-aligned on desktop screens */
     }
 }
