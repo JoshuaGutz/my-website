@@ -13,6 +13,7 @@
     let newChannelNameInput;
     let addChannelBtn;
     let cancelAddChannelBtn;
+    let iframeCache; // Reference to the hidden iframe cache container
     let chatPageActive = false; // Flag to track if chat page is active
 
     // Initial channels (could eventually be loaded from storage)
@@ -34,19 +35,19 @@
     /**
      * Helper function to create and store an iframe for a channel.
      * Ensures an iframe exists for a given channelId.
+     * If not found, creates it and appends to iframeCache.
      * @param {string} channelId - The ID of the Twitch channel.
      * @returns {HTMLIFrameElement} The created or existing iframe element.
      */
     function createAndStoreIframe(channelId) {
-        // Only create if chatEmbedArea exists and iframe doesn't already exist
-        // Note: document.getElementById checks the entire document, so even if the chat page is not
-        // currently active, but its iframe was previously created, this will find it.
-        // This is good for keeping iframes loaded when switching pages.
-        if (document.getElementById(`iframe-${channelId}`)) {
-            return document.getElementById(`iframe-${channelId}`);
+        let iframe = document.getElementById(`iframe-${channelId}`);
+        if (iframe) {
+            // If iframe already exists anywhere in the DOM, return it
+            return iframe;
         }
 
-        const iframe = document.createElement('iframe');
+        // If iframe doesn't exist, create it
+        iframe = document.createElement('iframe');
         iframe.id = `iframe-${channelId}`;
         iframe.dataset.channelId = channelId;
         iframe.style.width = '100%';
@@ -56,37 +57,28 @@
         const twitchParent = window.location.hostname || 'localhost';
         iframe.src = `https://www.twitch.tv/embed/${channelId}/chat?parent=${twitchParent}&darkpopout`;
 
-        // Crucial: Append the iframe to the *main app content area* (or a hidden part of index.html)
-        // rather than chatEmbedArea if you want them to persist across page loads.
-        // For now, let's append to a hidden container in index.html to keep them alive.
-        // This requires an element like <div id="iframe-cache" style="display:none;"></div> in index.html
-        // Or, more simply, append to document.body or a dedicated hidden container on the main index.html page
-        // and only move them into chatEmbedArea when needed.
-        // For now, I'll assume you want them removed from the chatEmbedArea's *view* but not destroyed from DOM.
-        // Given your latest instruction, they should NOT be removed by chat.js itself.
-        // They will be removed when app.js loads a new content snippet into #app-content.
-        // So, this line appending to chatEmbedArea is still correct for initial placement.
-        if (chatEmbedArea) { // Ensure chatEmbedArea exists before appending
-            chatEmbedArea.appendChild(iframe);
+        // Append new iframe to the hidden cache
+        if (iframeCache) {
+            iframeCache.appendChild(iframe);
         } else {
-            // Fallback: If chatEmbedArea isn't ready yet (e.g., first iframe created before initChatPage runs fully)
-            // append to body, but this should ideally not happen if initChatPage is called correctly.
+            // Fallback if iframeCache is not yet available, append to body
             document.body.appendChild(iframe);
-            console.warn("chatEmbedArea not found when creating iframe, appended to body. Ensure initChatPage runs correctly.");
+            console.warn("iframeCache not found when creating iframe, appended to body. Ensure initChatPage runs correctly.");
         }
-
         return iframe;
     }
 
     /**
      * Displays a message when no chat is selected or an error occurs.
-     * Hides all iframes.
+     * Hides all iframes currently in chatEmbedArea.
      * @param {string} messageText - The message to display.
      */
     function displayNoChatSelectedMessage(messageText) {
         if (!chatEmbedArea) return; // Ensure element exists before manipulating
-        const allIframes = chatEmbedArea.querySelectorAll('iframe');
-        allIframes.forEach(frame => frame.style.display = 'none');
+
+        // Hide all iframes that might be visible in chatEmbedArea
+        const iframesInChatArea = chatEmbedArea.querySelectorAll('iframe');
+        iframesInChatArea.forEach(frame => frame.style.display = 'none');
 
         let placeholder = chatEmbedArea.querySelector('p.no-chat-selected');
         if (!placeholder) {
@@ -95,7 +87,6 @@
             placeholder.style.color = '#fff';
             placeholder.style.textAlign = 'center';
             placeholder.style.width = '100%';
-            // Add some padding to prevent text from being too close to edges
             placeholder.style.padding = '20px';
             chatEmbedArea.appendChild(placeholder);
         }
@@ -123,14 +114,12 @@
             closeBtn.classList.add('close-tab-btn');
             closeBtn.innerHTML = '&times;'; // 'x' icon
             closeBtn.title = `Close ${channel.name} tab`;
-            // Store reference to this listener for potential removal
             const closeListener = (event) => {
-                event.stopPropagation(); // Prevent tab selection when closing
+                event.stopPropagation();
                 removeChannel(channel.id);
             };
             closeBtn.addEventListener('click', closeListener);
-            // Attach unique ID or store listener for removal if needed
-            tab.closeListener = closeListener; // Store for easy removal if individual tabs need to be cleaned up
+            tab.closeListener = closeListener; // Store for easy removal
 
             tab.appendChild(closeBtn);
 
@@ -138,7 +127,6 @@
                 tab.classList.add('active'); // Highlight active tab
             }
 
-            // Store reference to this listener for potential removal
             const selectListener = () => selectChannel(channel.id);
             tab.addEventListener('click', selectListener);
             tab.selectListener = selectListener; // Store for easy removal
@@ -150,7 +138,6 @@
         const newTabBtn = document.createElement('button');
         newTabBtn.classList.add('tab', 'new-tab-btn');
         newTabBtn.textContent = 'New +';
-        // Store reference to this listener
         const newTabBtnListener = showNewChannelPopup;
         newTabBtn.addEventListener('click', newTabBtnListener);
         tabsContainer.appendChild(newTabBtn);
@@ -159,45 +146,38 @@
 
     /**
      * Selects and displays a specific chat channel's iframe.
+     * Moves iframes between chatEmbedArea and iframeCache.
      * @param {string|null} channelId - The ID of the channel to select, or null to show placeholder.
      */
     function selectChannel(channelId) {
-        if (!chatEmbedArea) return; // Ensure element exists
+        if (!chatEmbedArea || !iframeCache) return; // Ensure elements exist
 
         const placeholder = chatEmbedArea.querySelector('p.no-chat-selected');
         if (placeholder) {
             placeholder.style.display = 'none'; // Hide placeholder
         }
 
-        const allIframes = chatEmbedArea.querySelectorAll('iframe');
-        allIframes.forEach(frame => {
-            frame.style.display = 'none'; // Hide all iframes first
+        // Move all currently visible iframes from chatEmbedArea back to iframeCache
+        // and hide them.
+        const visibleIframes = chatEmbedArea.querySelectorAll('iframe');
+        visibleIframes.forEach(frame => {
+            frame.style.display = 'none';
+            iframeCache.appendChild(frame); // Move to cache
         });
 
         const selectedChannelObject = channels.find(ch => ch.id === channelId);
         if (selectedChannelObject) {
             activeChannelId = selectedChannelObject.id;
-            let targetIframe = document.getElementById(`iframe-${selectedChannelObject.id}`);
-            if (!targetIframe) {
-                // If iframe does not exist in the DOM (e.g., was removed by app.js when navigating away)
-                // we should re-create it.
-                targetIframe = createAndStoreIframe(selectedChannelObject.id);
-            } else {
-                // If the iframe already exists but is currently outside chatEmbedArea (e.g., in body)
-                // move it back into chatEmbedArea.
-                if (targetIframe.parentElement !== chatEmbedArea) {
-                    chatEmbedArea.appendChild(targetIframe);
-                }
-            }
+            let targetIframe = createAndStoreIframe(selectedChannelObject.id); // Get or create from cache
 
             if (targetIframe) {
+                chatEmbedArea.appendChild(targetIframe); // Move to active view
                 targetIframe.style.display = 'block'; // Show selected iframe
             } else {
                 displayNoChatSelectedMessage(`Error: Could not load chat for ${selectedChannelObject.name}.`);
             }
         } else {
             activeChannelId = null;
-            // Display appropriate message if no channels or no channel selected
             displayNoChatSelectedMessage(channels.length === 0 ? "No channels. Add a new channel to begin." : "Select a channel to view chat.");
         }
         renderTabs(); // Re-render tabs to update active state
@@ -205,17 +185,17 @@
 
     /**
      * Removes a channel and its associated iframe and tab.
-     * Note: This function only removes the iframe from the DOM if the channel is closed.
-     * If the SPA navigates to a new page, app.js will automatically remove this content.
+     * The iframe is also removed from the DOM here.
      * @param {string} channelIdToRemove - The ID of the channel to remove.
      */
     function removeChannel(channelIdToRemove) {
         const indexToRemove = channels.findIndex(ch => ch.id === channelIdToRemove);
         if (indexToRemove === -1) return; // Channel not found
 
-        // Removed the line: if (iframeToRemove) { iframeToRemove.remove(); }
-        // The iframe will be removed when the entire chat content section is replaced by app.js
-        // or if explicitly handled by the SPA's dynamic page management (e.g., iframes moved to a cache).
+        const iframeToRemove = document.getElementById(`iframe-${channelIdToRemove}`);
+        if (iframeToRemove) {
+            iframeToRemove.remove(); // Remove iframe completely from DOM
+        }
 
         const wasActive = (activeChannelId === channelIdToRemove); // Check if the removed channel was active
         channels.splice(indexToRemove, 1); // Remove channel from array
@@ -245,7 +225,7 @@
             }
 
             channels.push({ name: newName, id: newChannelId }); // Add new channel
-            createAndStoreIframe(newChannelId); // Create iframe for it
+            createAndStoreIframe(newChannelId); // Create iframe for it (appends to cache)
             hideNewChannelPopup(); // Hide popup
             selectChannel(newChannelId); // Select the new channel
         } else {
@@ -271,7 +251,6 @@
         newChannelNameInput.value = ''; // Clear input
         newChannelPopup.style.display = 'flex'; // Show popup
         newChannelNameInput.focus(); // Focus input field
-        // Add event listener for escape key
         popupEscapeKeyListener = handlePopupEscapeKey; // Store reference
         document.addEventListener('keydown', popupEscapeKeyListener);
     }
@@ -282,7 +261,6 @@
     function hideNewChannelPopup() {
         if (!newChannelPopup) return; // Ensure element exists
         newChannelPopup.style.display = 'none'; // Hide popup
-        // Remove event listener for escape key to prevent memory leaks
         if (popupEscapeKeyListener) {
             document.removeEventListener('keydown', popupEscapeKeyListener);
             popupEscapeKeyListener = null; // Clear reference
@@ -290,11 +268,8 @@
     }
 
     // --- Keyboard Visibility & Resizing Logic (Mobile Keyboard Detection) ---
-    // This logic needs to consider if the SPA's main content area is dynamically sized.
-    // It's currently operating on pageContainer, bottomSection, and tabsContainer.
-    // Ensure these elements are part of the chat.html content or correctly selected from main index.html
-    let initialWindowHeight = window.innerHeight; // Store initial height on page load
-    let currentVisualViewportHeight = window.innerHeight; // To track changes
+    let initialWindowHeight = window.innerHeight;
+    let currentVisualViewportHeight = window.innerHeight;
 
     function handleVisualViewportResize() {
         if (!pageContainer) {
@@ -303,22 +278,18 @@
         }
 
         const newHeight = window.visualViewport.height;
-        currentVisualViewportHeight = newHeight; // Update current height
+        currentVisualViewportHeight = newHeight;
 
-        // Define a threshold for keyboard detection (e.g., if height shrinks by more than 10%)
         const keyboardThreshold = initialWindowHeight * 0.9;
 
         if (newHeight < keyboardThreshold) {
-            // Keyboard is open or virtual keyboard causing shrink
-            pageContainer.style.height = `${newHeight}px`; // Shrink page container
-            if (tabsContainer) tabsContainer.style.display = 'none'; // Hide tabs
-            if (bottomSection) bottomSection.style.display = 'none'; // Hide bottom nav (if it's the one targeted)
+            pageContainer.style.height = `${newHeight}px`;
+            if (tabsContainer) tabsContainer.style.display = 'none';
+            if (bottomSection) bottomSection.style.display = 'none';
         } else {
-            // Keyboard is closed, revert to original layout.
-            // Use 100% of the visual viewport height or adapt based on fixed elements
-            pageContainer.style.height = '100dvh'; // Use dynamic viewport height for full height
-            if (tabsContainer) tabsContainer.style.display = 'flex'; // Show tabs
-            if (bottomSection) bottomSection.style.display = 'flex'; // Show bottom nav (assuming flex)
+            pageContainer.style.height = '100dvh';
+            if (tabsContainer) tabsContainer.style.display = 'flex';
+            if (bottomSection) bottomSection.style.display = 'flex';
         }
     }
 
@@ -337,20 +308,17 @@
         // Get DOM references *after* the HTML for chat.html has been injected
         chatEmbedArea = document.getElementById('chat-embed-area');
         tabsContainer = document.getElementById('tabs-container');
-        // IMPORTANT: bottomSection and pageContainer might refer to elements in index.html,
-        // or a wrapper within chat.html. Adjust selectors if necessary.
-        // Assuming pageContainer is the section containing main chat content, e.g., the .page-container div in chat.html
-        pageContainer = document.querySelector('.chat-page-content .page-container'); // Corrected selector to find within chat content
+        pageContainer = document.querySelector('.chat-page-content .page-container');
         bottomSection = document.querySelector('.bottom-nav'); // This is the main bottom nav from index.html
-
         newChannelPopup = document.getElementById('new-channel-popup');
         newChannelNameInput = document.getElementById('new-channel-name');
         addChannelBtn = document.getElementById('add-channel-btn');
         cancelAddChannelBtn = document.getElementById('cancel-add-channel-btn');
+        iframeCache = document.getElementById('iframe-cache'); // Get reference to the cache
 
-        if (!chatEmbedArea || !tabsContainer || !newChannelPopup || !newChannelNameInput || !addChannelBtn || !cancelAddChannelBtn) {
+        if (!chatEmbedArea || !tabsContainer || !newChannelPopup || !newChannelNameInput || !addChannelBtn || !cancelAddChannelBtn || !iframeCache) {
             console.error("One or more required chat page DOM elements not found after initialization.");
-            return; // Exit if critical elements are missing
+            return;
         }
 
         // Attach event listeners
@@ -373,18 +341,14 @@
         };
         newChannelPopup.addEventListener('click', newChannelPopupClickListener);
 
-        // Initialize channels and select first one
-        // If iframes already exist (from a previous visit to the chat page), don't recreate, just select
+        // Ensure all initial channels have their iframes created and moved to cache
         channels.forEach(channel => {
-            if (!document.getElementById(`iframe-${channel.id}`)) { // Only create if not already in global DOM
-                createAndStoreIframe(channel.id);
-            }
+            createAndStoreIframe(channel.id); // This now appends to iframeCache
         });
-        selectChannel(channels.length > 0 ? channels[0].id : null);
+        selectChannel(activeChannelId || (channels.length > 0 ? channels[0].id : null));
 
-        // Set up keyboard visibility resize listener
         if (window.visualViewport) {
-            initialWindowHeight = window.visualViewport.height; // Capture initial height correctly
+            initialWindowHeight = window.visualViewport.height;
             visualViewportResizeListener = handleVisualViewportResize;
             window.visualViewport.addEventListener('resize', visualViewportResizeListener);
         }
@@ -392,19 +356,25 @@
 
     /**
      * Cleans up the chat page logic when navigating away.
+     * Moves visible iframes back to cache and removes event listeners.
      * This function should be called by app.js.
      */
     window.cleanupChatPage = function() {
-        if (!chatPageActive) return; // Only cleanup if active
+        if (!chatPageActive) return;
         chatPageActive = false;
         console.log("Cleaning up Chat Page...");
 
-        // NO LONGER REMOVING DYNAMICALLY CREATED IFRAMES HERE
-        // The iframes are meant to persist so their state is maintained.
-        // They will be removed from the DOM when app.js loads new content into #app-content.
-        // Iframes themselves maintain state across DOM removal/re-addition (browser dependent to some extent).
+        // Move all currently visible iframes from chatEmbedArea back to iframeCache
+        // and hide them.
+        if (chatEmbedArea && iframeCache) {
+            const iframesInChatArea = chatEmbedArea.querySelectorAll('iframe');
+            iframesInChatArea.forEach(frame => {
+                frame.style.display = 'none';
+                iframeCache.appendChild(frame); // Move to cache
+            });
+        }
 
-        // Remove event listeners to prevent memory leaks
+        // Remove event listeners
         if (newChannelNameInput && newChannelInputKeydownListener) {
             newChannelNameInput.removeEventListener('keydown', newChannelInputKeydownListener);
         }
@@ -425,7 +395,6 @@
         }
 
         // Clean up individual tab listeners
-        // This is important because these are on buttons that might be recreated
         if (tabsContainer) {
             tabsContainer.querySelectorAll('.tab').forEach(tab => {
                 if (tab.closeListener) tab.removeEventListener('click', tab.closeListener);
@@ -434,8 +403,7 @@
             });
         }
 
-        // Reset DOM element references to null to prevent stale closures.
-        // These elements will be re-selected by initChatPage when the page is revisited.
+        // Reset DOM element references to null
         chatEmbedArea = null;
         tabsContainer = null;
         bottomSection = null;
@@ -444,5 +412,6 @@
         newChannelNameInput = null;
         addChannelBtn = null;
         cancelAddChannelBtn = null;
+        iframeCache = null; // Also clear cache reference
     };
 })();
