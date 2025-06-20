@@ -1,8 +1,10 @@
 /* Base styles - Mobile first */
 :root {
     /* Define CSS Custom Properties for reusable values */
-    /* Calculated height of the top bar including padding: 50px (countdown/sprite height) + 10px (top padding) + 10px (bottom padding) */
+    /* Overall fixed height of the top bar including padding */
     --top-bar-height: 70px;
+    /* Fixed height for elements *inside* the top bar (e.g., countdown, sprite) */
+    --top-bar-element-height: 50px;
     /* Fixed height for the bottom navigation bar */
     --bottom-nav-height: 60px;
 
@@ -50,9 +52,10 @@ html, body {
     font-size: 50px; /* Sets the font size of the countdown text */
     font-weight: bold; /* Makes the countdown text bold */
     line-height: 1; /* Adjusts line-height to prevent extra spacing around text */
-    height: 50px; /* Explicitly sets height to match the sprite image for vertical alignment */
+    height: var(--top-bar-element-height); /* Sets height using the new CSS variable */
     display: flex; /* Uses flex for centering text vertically if needed */
     align-items: center; /* Vertically centers the text within its own container */
+    font-family: "Times New Roman", Times, serif; /* Sets the font family to Times New Roman with fallbacks */
 }
 
 #top-bar #spawned-pokemon-id {
@@ -63,10 +66,8 @@ html, body {
 }
 
 #top-bar #sprite-image {
-    width: 50px; /* Sets the width of the sprite image */
-    height: 50px; /* Sets the height of the sprite image */
-    border-radius: 50%; /* Makes the image perfectly round */
-    object-fit: cover; /* Ensures the image covers the element area without distortion */
+    height: var(--top-bar-element-height); /* Sets height using the new CSS variable */
+    width: auto; /* Allows the width to adjust dynamically to maintain the image's aspect ratio */
 }
 
 /* Main Content Wrapper - Holds all page sections */
