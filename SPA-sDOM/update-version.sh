@@ -1,15 +1,12 @@
 #!/bin/bash
 
-# A simple Git Bash script to update the version.js file with a timestamp.
-# This script should be run in your project's root directory before committing.
+# A simple Git Bash script to update the version.js file with a timestamp,
+# then add, commit, and push the changes.
+# This script should be run in your project's root directory.
+
+# --- 1. Generate and update version.js ---
 
 # Get the current date and time in YYYYMMDDHHMMSS format
-# %Y: Year (e.g., 2023)
-# %m: Month (01-12)
-# %d: Day (01-31)
-# %H: Hour (00-23)
-# %M: Minute (00-59)
-# %S: Second (00-60)
 current_timestamp=$(date +%Y%m%d%H%M%S)
 
 # Define the content for version.js
@@ -26,3 +23,20 @@ output_file="js/version.js"
 echo "${version_content}" > "${output_file}"
 
 echo "Version updated to ${current_timestamp} in ${output_file}"
+
+# --- 2. Git Operations ---
+
+# Add the updated version.js file to the staging area
+git add "${output_file}"
+echo "${output_file} added to staging."
+
+# Commit the changes.
+commit_message="chore: Update app version to ${current_timestamp}"
+git commit -m "${commit_message}"
+echo "Changes committed with message: '${commit_message}'"
+
+# Push the changes to the remote repository directly.
+git push
+echo "Changes pushed to remote repository."
+
+echo "Script finished."
