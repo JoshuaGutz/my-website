@@ -1,0 +1,74 @@
+
+SPA--Single Page App
+
+pages are "snippets" or "SPA Content Snippet"
+
+
+
+This is often called a "tabbed interface" or "single DOM" SPA architecture.
+
+
+
+
+/
+├── index.html            ← the only page the browser loads
+├── pages/
+│   ├── battle.html       ← page fragment
+│   ├── spawns.html
+├── css/
+│   ├── main.css          ← shared styles
+│   ├── battle.css        ← page-specific styles (optional)
+├── js/
+│   ├── router.js         ← handles navigation
+│   ├── init.js           ← sets up event listeners, etc.
+
+
+
+my-spa-website/
+├── index.html
+├── css/
+│   └── main.css
+├── js/
+│   └── app.js
+└── content/
+    ├── home.html
+    ├── about.html
+    ├── services.html
+    └── contact.html
+
+
+these are my files. 
+
+
+first a few hard rules. dont put css in html files. dont put js in html files. this is how my previous project got so messy. css belongs in separate css files. js belongs in separate js files.
+
+correct my files so the bottom nav bar is always visible at the bottom.
+
+add a button in the bottom nav bar to toggle on/off the top bar. 
+
+make the main section have background-color: rgb(54, 54, 54) and white text.
+
+make the bottom nav bar have background-color of #ff444b.
+
+make top bar have background of #1d1d1d.
+
+please add a section at the top above the main content section that by default is shown with every page, but there's a special button in the bottom nav bar that just hides/shows it if i want the main content section to have that much more space. this top section will have a countdown timer (id="countdown") and a sprite (id="sprite-image"). i have the js to populate those ids, for now just make the countdown say "mm:ss" and the sprite have no src. let's say the countdown text will be 50px and the sprite should also be 50px high so that the two items align nicely 
+
+
+
+
+
+ to set it apart. also, now when i click buttons in the bottom navigation the text is highlighted briefly and underlined and stays underlined. i dont like that. i want it to be a visual click, but dont underline the text like an old hyperlink. make the selected button be visually different.
+
+
+
+please add a section at the top above the main content section that by default is shown with every page, but there's a special button in the bottom nav bar that just hides/shows it if i want the main content section to have that much more space. this top section will have a countdown timer (id="countdown") and a sprite (id="sprite-image"). i have the js to populate those ids, for now just make the countdown say "mm:ss" and the sprite have no src. let's say the countdown text will be 50px and the sprite should also be 50px high so that the two items align nicely 
+
+
+
+
+the top bar section should by default be shown with every page, but there's a special button in the bottom nav bar that just hides/shows it if i want the main content section to have that much more space. make the countdown text be 50px and the sprite should also be 50px high so that the two items align nicely 
+
+the timer button still stays highlighted after being pressed until i tap anywhere else on the screen.
+
+

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Awesome Mobile-First SPA</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <!-- Top bar visible on all pages -->
+    <div id="top-bar">
+      <div id="countdown">mm:ss</div>
+      <img id="sprite-image" src="https://placehold.co/50x50/cccccc/000000?text=S" alt="Sprite" />
+    </div>
+
+    <!-- All page content sections, loaded initially -->
+    <div id="app-content-wrapper">
+        <!-- Home Page Section -->
+        <section id="home-page-section" class="app-page-section active-page">
+            <!-- Content for Home Page -->
+        </section>
+
+        <!-- About Page Section -->
+        <section id="about-page-section" class="app-page-section">
+            <!-- Content for About Page -->
+        </section>
+
+        <!-- Page 1 Section -->
+        <section id="page1-page-section" class="app-page-section">
+            <!-- Content for Page 1 -->
+        </section>
+
+        <!-- Page 2 Section -->
+        <section id="page2-page-section" class="app-page-section">
+            <!-- Content for Page 2 -->
+        </section>
+
+        <!-- Chat Page Section (content directly from your chat.html) -->
+        <section id="chat-page-section" class="app-page-section">
+            <div class="page-container">
+                <main class="middle-section">
+                    <div id="chat-embed-area" class="chat-embed-area">
+                        <!-- <p class="no-chat-selected">Select a channel to view chat.</p> -->
+                    </div>
+                    <div id="tabs-container" class="tabs-container">
+                    </div>
+                </main>
+            </div>
+
+            <div id="new-channel-popup" class="popup-overlay" style="display: none;">
+                <div class="popup-content">
+                    <h3>Add New Twitch Channel</h3>
+                    <input type="text" id="new-channel-name" placeholder="Enter channel name">
+                    <div class="popup-buttons">
+                        <button type="button" id="add-channel-btn">Add Channel</button>
+                        <button type="button" id="cancel-add-channel-btn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Bottom nav bar -->
+    <nav class="bottom-nav">
+        <!-- Container for main navigation links -->
+        <div class="nav-links-container">
+            <ul>
+                <li><a href="#home" class="nav-link" data-path="home">
+                    <span class="icon">🏠</span>
+                    <span class="label">Home</span>
+                </a></li>
+                <li><a href="#about" class="nav-link" data-path="about">
+                    <span class="icon">ℹ️</span>
+                    <span class="label">About</span>
+                </a></li>
+                <li><a href="#page1" class="nav-link" data-path="page1">
+                    <span class="icon">2️⃣</span>
+                    <span class="label">Page 1</span>
+                </a></li>
+                <li><a href="#page2" class="nav-link" data-path="page2">
+                    <span class="icon">3️⃣</span>
+                    <span class="label">Page 2</span>
+                </a></li>
+                <!-- New list item for Chat -->
+                <li><a href="#chat" class="nav-link" data-path="chat">
+                    <span class="icon">💬</span>
+                    <span class="label">Chat</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- Container for settings/action buttons -->
+        <div class="nav-settings-container">
+            <ul>
+                <li><button type="button" class="nav-button" data-action="toggle-top-bar">
+                    <span class="icon">👁️</span>
+                    <span class="label">Timer</span>
+                </button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- JavaScript files linked at the end of body for performance -->
+    <script src="js/app.js"></script>
+    <script src="js/toggleTopBar.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html>

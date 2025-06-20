@@ -1,0 +1,448 @@
+/* Base styles - Mobile first */
+html, body {
+    height: 100%; /* Ensure html and body take full viewport height */
+    overflow: hidden; /* Prevent scrolling on the html/body level */
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    background-color: #1d1d1d; /* Matches top bar for consistent background outside main content */
+    transition: padding-top 0.3s ease-in-out; /* Smooth transition for content when top bar hides */
+}
+
+/* Top Bar Styling */
+#top-bar {
+    position: fixed; /* Keep top bar fixed at the top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex; /* Use flexbox for internal alignment */
+    justify-content: space-between; /* Space out items */
+    align-items: center; /* Vertically align items */
+    padding: 10px 15px;
+    background-color: #1d1d1d; /* Specified background color */
+    color: #ffffff; /* White text for top bar */
+    z-index: 1000; /* Ensure it stays on top of other content */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+    box-sizing: border-box;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Smooth transition for hiding/showing */
+}
+
+#top-bar #countdown {
+    font-size: 50px; /* Set countdown text size to 50px */
+    font-weight: bold;
+    line-height: 1; /* Adjust line-height to prevent extra spacing */
+    height: 50px; /* Explicitly set height to match sprite */
+    display: flex; /* Use flex to center text vertically if needed */
+    align-items: center;
+}
+
+#top-bar #sprite-image {
+    width: 50px;
+    height: 50px; /* Set sprite image height to 50px */
+    border-radius: 50%; /* Make sprite image round */
+    object-fit: cover; /* Ensure image covers the area */
+}
+
+/* Main Content Wrapper */
+#app-content-wrapper {
+    position: relative; /* Needed for absolute positioning if child sections need it (not now, but for future) */
+    padding: 15px; /* Default padding for mobile */
+    /* Dynamically calculate height: 100vh - top bar height - bottom nav height */
+    height: calc(100vh - 70px - 60px); /* 70px for top bar, 60px for bottom nav */
+    margin-top: 70px; /* Space for fixed top bar */
+    background-color: rgb(54, 54, 54); /* Specified background color */
+    color: white; /* Specified text color */
+    line-height: 1.6;
+    box-sizing: border-box;
+    overflow-y: auto; /* Allow content inside the wrapper to scroll if it overflows its height */
+    transition: margin-top 0.3s ease-in-out, height 0.3s ease-in-out; /* Smooth transition for content when top bar hides */
+}
+
+
+/* Styling for all individual page sections */
+.app-page-section {
+    display: none; /* Hidden by default */
+    height: 100%; /* Make each section fill the wrapper's height */
+    width: 100%; /* Make each section fill the wrapper's width */
+    overflow-y: auto; /* Allow individual sections to scroll if their content overflows */
+    padding-right: 15px; /* Adjust padding for scrollbar space if needed */
+    box-sizing: border-box; /* Include padding in dimensions */
+}
+
+/* Show the active page section */
+.app-page-section.active-page {
+    display: block; /* Show only the active page */
+}
+
+
+#app-content-wrapper h2 {
+    color: #ff444b; /* A contrasting color for headings */
+    margin-bottom: 15px;
+}
+
+/* Bottom Navigation Bar Styling */
+.bottom-nav {
+    position: fixed; /* Keep bottom nav bar fixed at the bottom */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ff444b; /* Specified background color */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+    z-index: 1000; /* Ensure it stays on top of other content */
+    display: flex; /* Use flexbox to arrange inner containers */
+    justify-content: space-between; /* Space out the nav links and settings containers */
+    align-items: center; /* Vertically align content */
+    height: 60px; /* Fixed height for the nav bar */
+    padding: 0 10px; /* Add some horizontal padding inside the nav bar */
+}
+
+/* Styling for the container holding navigation links */
+.nav-links-container {
+    flex-grow: 1; /* Allows this container to take all available space */
+    display: flex; /* Use flexbox for its internal ul */
+    height: 100%; /* Make it fill parent height */
+}
+
+/* Styling for the container holding settings/action buttons */
+.nav-settings-container {
+    flex-shrink: 0; /* Prevent it from shrinking */
+    flex-grow: 0; /* Ensure it doesn't try to grow */
+    display: flex; /* Use flexbox for its internal ul */
+    height: 100%; /* Make it fill parent height */
+    /* margin-left: 10px; */ /* This was commented out */
+    margin-right: 10px; /* Added margin-right as requested */
+}
+
+
+.bottom-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* Flexbox for horizontal alignment */
+    align-items: center; /* Vertically center items */
+    height: 100%; /* Make the ul fill its parent div height */
+    width: 100%; /* Ensure ul takes full width of its parent container */
+}
+
+/* Specific styling for the nav links ul */
+.nav-links-container ul {
+    justify-content: space-around; /* Distribute items with space around them */
+}
+
+/* Specific styling for the settings ul (only one item) */
+.nav-settings-container ul {
+    justify-content: flex-end; /* Align the single item to the right within its ul */
+}
+
+/* General list item (li) styling */
+.bottom-nav li {
+    text-align: center;
+}
+
+/* Styling for list items specifically in nav-links-container */
+.nav-links-container li {
+    flex: 1; /* Make these list items equally share space within their flex container */
+}
+
+/* Styling for list items specifically in nav-settings-container */
+.nav-settings-container li {
+    flex: none; /* This list item should not grow or shrink, just size to its content */
+    margin-right: 10px; /* Added margin-right as requested */
+}
+
+
+/* Styling for navigation links (<a> tags) */
+.bottom-nav a.nav-link {
+    text-decoration: none;
+    color: white; /* White text for nav links */
+    display: flex; /* Flex for icon and label */
+    flex-direction: column; /* Stack icon and label vertically */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    padding: 5px 0; /* Add some padding for touch targets */
+    height: 100%; /* Make the whole area clickable within the li */
+    width: 100%; /* Make the link fill its parent li */
+    font-size: 0.8em; /* Smaller font for labels */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Highlight for active navigation link */
+.bottom-nav a.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.3); /* Stronger highlight for active link */
+    border-radius: 8px; /* Consistent rounded corners */
+}
+
+.bottom-nav a.nav-link:hover,
+.bottom-nav a.nav-link:focus {
+    background-color: rgba(255, 255, 255, 0.2); /* Subtle hover effect */
+    border-radius: 8px; /* Rounded corners on hover */
+}
+
+/* Styling for navigation buttons (<button> tags) */
+.bottom-nav button.nav-button {
+    background: none; /* Remove default button background */
+    border: none; /* Remove default button border */
+    color: white; /* Inherit text color from parent */
+    cursor: pointer; /* Indicate it's clickable */
+    position: relative; /* Needed for pseudo-elements */
+    display: flex; /* Flex for icon and label */
+    flex-direction: column; /* Stack icon and label vertically */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    padding: 5px 5px; /* Changed padding as requested */
+    height: 100%; /* Make the whole area clickable within the li */
+    width: 100%; /* Make the button fill its parent li */
+    font-size: 0.8em; /* Smaller font for labels */
+    font-family: inherit; /* Inherit font family */
+    outline: none; /* Explicitly remove outline for all states by default */
+    -webkit-appearance: none; /* Remove default button appearance on WebKit browsers */
+    -moz-appearance: none; /* Remove default button appearance on Mozilla browsers */
+    appearance: none; /* Standard property for removing default button appearance */
+    touch-action: manipulation; /* Optimizes touch interactions for responsiveness */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Apply subtle background to hover and active states (when actively pressed/hovered) */
+.bottom-nav button.nav-button:hover,
+.bottom-nav button.nav-button:active {
+    background-color: rgba(255, 255, 255, 0.2); /* Subtle hover/press effect */
+    border-radius: 8px; /* Rounded corners on hover/press */
+}
+
+/* Ensure focus state (when not hovered/active) has transparent background */
+.bottom-nav button.nav-button:focus {
+    background-color: transparent; /* No background on focus by default */
+    /* Outline is already `none` on the base button, so no need to repeat */
+}
+
+
+.bottom-nav .icon {
+    font-size: 1.5em; /* Larger icons */
+    margin-bottom: 2px; /* Small space between icon and label */
+}
+
+/* Styles for when the top bar is hidden */
+body.top-bar-hidden #top-bar {
+    transform: translateY(-100%); /* Move top bar completely out of view */
+    opacity: 0; /* Fade it out */
+    pointer-events: none; /* Disable interactions when hidden */
+}
+
+/* Adjust wrapper height when top bar is hidden */
+body.top-bar-hidden #app-content-wrapper {
+    margin-top: 0; /* Remove margin-top when top bar is hidden */
+    height: calc(100vh - 60px); /* Fill the full height minus only the bottom nav */
+}
+
+/* Styling for the iframe cache container and iframes within it (NO LONGER USED IN THIS ARCHITECTURE) */
+/*
+#iframe-cache {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+#iframe-cache iframe {
+    position: absolute;
+    display: none;
+    border: none;
+    top: 0;
+    left: 0;
+    z-index: 999;
+}
+*/
+
+/* Styles for chat embed area and iframes within it */
+.chat-embed-area {
+    position: relative; /* Essential for absolute positioning of iframes inside it */
+    width: 100%;
+    /* Calculate remaining height for chat content area:
+       (app-content-wrapper height) - (tabs-container height) - (middle-section padding top/bottom)
+       Let's assume tabs-container is ~40-50px.
+       The middle-section itself also has padding.
+    */
+    height: calc(100% - 50px); /* Example: 50px for tabs container height, adjust as needed */
+    background-color: #2c2c2c; /* Background for chat area */
+    border-radius: 8px;
+    overflow: hidden; /* Ensure iframes don't overflow this area */
+}
+
+.chat-embed-area iframe {
+    position: absolute; /* Position iframe directly within chat-embed-area */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none; /* Hidden by default, shown by JS */
+}
+
+.tabs-container {
+    display: flex;
+    overflow-x: auto; /* Allow tabs to scroll horizontally if many */
+    padding: 5px 0;
+    margin-top: 10px; /* Space above tabs */
+    background-color: #3a3a3a;
+    border-radius: 8px;
+}
+
+.tabs-container .tab {
+    flex-shrink: 0; /* Prevent tabs from shrinking */
+    padding: 8px 15px;
+    margin-right: 5px;
+    background-color: #555;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.tabs-container .tab.active {
+    background-color: #ff444b; /* Highlight active tab */
+    font-weight: bold;
+}
+
+.tabs-container .tab:hover {
+    background-color: #666;
+}
+
+.tabs-container .tab.active:hover {
+    background-color: #cc3333;
+}
+
+.tabs-container .new-tab-btn {
+    background-color: #007bff;
+}
+
+.tabs-container .new-tab-btn:hover {
+    background-color: #0056b3;
+}
+
+.tabs-container .close-tab-btn {
+    margin-left: 5px;
+    font-size: 1.2em;
+    line-height: 0.8;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.tabs-container .close-tab-btn:hover {
+    color: white;
+}
+
+/* Popup styles */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001; /* Above everything else */
+}
+
+.popup-content {
+    background-color: #333;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+    color: white;
+    text-align: center;
+}
+
+.popup-content h3 {
+    margin-top: 0;
+    color: #ff444b;
+}
+
+.popup-content input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #444;
+    color: white;
+    font-size: 1em;
+}
+
+.popup-buttons button {
+    background-color: #ff444b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin: 0 10px;
+}
+
+.popup-buttons button:hover {
+    background-color: #cc3333;
+}
+
+
+/* Specific styles for .chat-page-content */
+#chat-page-section .page-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Make the chat page content fill its section */
+    box-sizing: border-box;
+    padding: 15px; /* Internal padding for the chat page */
+}
+
+#chat-page-section .middle-section {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Allow middle section to fill remaining height */
+    overflow: hidden; /* Contains the chat-embed-area and tabs-container */
+}
+
+
+/* Media query for larger screens (e.g., tablets and desktops) */
+@media (min-width: 768px) {
+    /* No changes needed for html, body overflow/height here, as they are global */
+
+    #app-content-wrapper {
+        padding: 30px 50px; /* More padding for larger screens */
+        /* Recalculate height for desktop, same logic as mobile */
+        height: calc(100vh - 70px - 60px);
+    }
+
+    /* Top bar for larger screens if needed, though often similar */
+    #top-bar {
+        padding: 15px 30px;
+    }
+
+    /* Bottom nav remains fixed, but might adjust spacing */
+    .bottom-nav {
+        max-width: 960px; /* Constrain width on very large screens */
+        margin: 0 auto; /* Center the entire bottom nav */
+    }
+
+    .nav-links-container ul {
+        justify-content: center; /* Center main nav links on desktop */
+    }
+
+    .nav-settings-container ul {
+        justify-content: flex-end; /* Keep settings right-aligned */
+    }
+
+    body.top-bar-hidden #app-content-wrapper {
+        height: calc(100vh - 60px); /* Recalculate height for desktop too when top bar is hidden */
+    }
+}
