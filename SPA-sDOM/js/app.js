@@ -1,7 +1,7 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    // Application Version - Manually update this string with each significant push to 'main'
-    const VERSION = "1.0.0-alpha.5"; // Example: Increment this with each push (e.g., 1.0.0-alpha.1, 1.0.0-alpha.2, etc.)
+// Import the VERSION constant from the auto-generated version.js file
+import { VERSION } from './version.js';
 
+document.addEventListener('DOMContentLoaded', async () => {
     const appPageSections = document.querySelectorAll('.app-page-section');
     const navItems = document.querySelectorAll('.nav-link, .nav-button');
 
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Get the span element for the version and update its text content
                 const appVersionElement = document.getElementById('app-version');
                 if (appVersionElement) {
-                    appVersionElement.textContent = VERSION;
+                    appVersionElement.textContent = VERSION; // Use the imported VERSION
                 } else {
                     console.warn("Element with ID 'app-version' not found on the About page.");
                 }
