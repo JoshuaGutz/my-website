@@ -6,8 +6,8 @@
 
 # --- 1. Generate and update version.js ---
 
-# Get the current date and time in YYYYMMDDHHMMSS format
-current_timestamp=$(date +%Y%m%d%H%M%S)
+# Get the current date and time in YYYY-MM-DD HH:MM:SS format
+current_timestamp=$(date +'%Y-%m-%d %H:%M:%S')
 
 # Define the content for version.js
 # The 'export const' syntax is for JavaScript modules (ES Modules)
