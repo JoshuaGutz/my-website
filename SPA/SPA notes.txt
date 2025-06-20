@@ -1,7 +1,7 @@
 
 SPA--Single Page App
 
-
+pages are "snippets" or "SPA Content Snippet"
 
 
 /
