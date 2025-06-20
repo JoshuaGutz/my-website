@@ -65,8 +65,7 @@ html, body {
     transition: margin-top 0.3s ease-in-out, height 0.3s ease-in-out; /* Smooth transition for content when top bar hides */
 }
 
-
-/* Styling for all individual page sections */
+/* Styling for all individual page sections within the wrapper */
 .app-page-section {
     position: absolute; /* Position sections on top of each other */
     top: 0;
@@ -82,10 +81,9 @@ html, body {
 /* Show the active page section */
 .app-page-section.active-page {
     display: block; /* Show only the active page */
-    /* z-index can be used if elements from hidden pages are bleeding through */
 }
 
-
+/* Headings within the app content wrapper */
 #app-content-wrapper h2 {
     color: #ff444b; /* A contrasting color for headings */
     margin-bottom: 15px;
@@ -120,10 +118,9 @@ html, body {
     flex-grow: 0; /* Ensure it doesn't try to grow */
     display: flex; /* Use flexbox for its internal ul */
     height: 100%; /* Make it fill parent height */
-    /* margin-left: 10px; */ /* This was commented out */
-    margin-right: 10px; /* Added margin-right as requested */
+    /* margin-left: 10px; */ /* This was commented out by user */
+    margin-right: 10px; /* Added margin-right as requested by user */
 }
-
 
 .bottom-nav ul {
     list-style: none;
@@ -158,9 +155,8 @@ html, body {
 /* Styling for list items specifically in nav-settings-container */
 .nav-settings-container li {
     flex: none; /* This list item should not grow or shrink, just size to its content */
-    margin-right: 10px; /* Added margin-right as requested */
+    margin-right: 10px; /* Added margin-right as requested by user */
 }
-
 
 /* Styling for navigation links (<a> tags) */
 .bottom-nav a.nav-link {
@@ -183,6 +179,7 @@ html, body {
     border-radius: 8px; /* Consistent rounded corners */
 }
 
+/* Hover/Focus effects for navigation links */
 .bottom-nav a.nav-link:hover,
 .bottom-nav a.nav-link:focus {
     background-color: rgba(255, 255, 255, 0.2); /* Subtle hover effect */
@@ -200,7 +197,7 @@ html, body {
     flex-direction: column; /* Stack icon and label vertically */
     align-items: center; /* Center horizontally */
     justify-content: center; /* Center vertically */
-    padding: 5px 5px; /* Changed padding as requested */
+    padding: 5px 5px; /* Changed padding as requested by user */
     height: 100%; /* Make the whole area clickable within the li */
     width: 100%; /* Make the button fill its parent li */
     font-size: 0.8em; /* Smaller font for labels */
@@ -223,23 +220,21 @@ html, body {
 /* Ensure focus state (when not hovered/active) has transparent background */
 .bottom-nav button.nav-button:focus {
     background-color: transparent; /* No background on focus by default */
-    /* Outline is already `none` on the base button, so no need to repeat */
 }
 
-
+/* Icon styling within nav elements */
 .bottom-nav .icon {
     font-size: 1.5em; /* Larger icons */
     margin-bottom: 2px; /* Small space between icon and label */
 }
 
-/* Styles for when the top bar is hidden */
+/* Styles for when the top bar is hidden (applies to body class) */
 body.top-bar-hidden #top-bar {
     transform: translateY(-100%); /* Move top bar completely out of view */
     opacity: 0; /* Fade it out */
     pointer-events: none; /* Disable interactions when hidden */
 }
 
-/* Adjust wrapper height when top bar is hidden */
 body.top-bar-hidden #app-content-wrapper {
     margin-top: 0; /* Remove margin-top when top bar is hidden */
     height: calc(100vh - 60px); /* Fill the full height minus only the bottom nav */
@@ -247,34 +242,30 @@ body.top-bar-hidden #app-content-wrapper {
 
 /* Media query for larger screens (e.g., tablets and desktops) */
 @media (min-width: 768px) {
-    /* No changes needed for html, body overflow/height here, as they are global */
-
+    /* Main content wrapper padding and height for larger screens */
     #app-content-wrapper {
         padding: 30px 50px; /* More padding for larger screens */
-        /* Recalculate height for desktop, same logic as mobile */
-        height: calc(100vh - 70px - 60px);
+        height: calc(100vh - 70px - 60px); /* Recalculate height for desktop, same logic as mobile */
     }
 
-    /* Top bar for larger screens if needed, though often similar */
+    /* Top bar padding for larger screens */
     #top-bar {
         padding: 15px 30px;
     }
 
-    /* Bottom nav remains fixed, but might adjust spacing */
+    /* Bottom nav fixed width and centering for larger screens */
     .bottom-nav {
         max-width: 960px; /* Constrain width on very large screens */
         margin: 0 auto; /* Center the entire bottom nav */
     }
 
+    /* Navigation links centering for larger screens */
     .nav-links-container ul {
         justify-content: center; /* Center main nav links on desktop */
     }
 
+    /* Settings buttons alignment for larger screens */
     .nav-settings-container ul {
         justify-content: flex-end; /* Keep settings right-aligned */
-    }
-
-    body.top-bar-hidden #app-content-wrapper {
-        height: calc(100vh - 60px); /* Recalculate height for desktop too when top bar is hidden */
     }
 }
