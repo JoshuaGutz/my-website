@@ -37,6 +37,9 @@ function updateCountdownDisplay(remainingSeconds) {
   countdownElement.textContent = formatTime(remainingSeconds);
 }
 
+// State variable to control vibration
+let isVibrationEnabled = true; // Vibration is ON by default
+
 async function startCountdownLoop() {
   let remainingTime = getRemainingTime();
   updateCountdownDisplay(remainingTime);
@@ -44,11 +47,13 @@ async function startCountdownLoop() {
     await delay(1000);
     remainingTime = getRemainingTime();
     updateCountdownDisplay(remainingTime);
-    if (remainingTime == 5) {
+    // Check if vibration is enabled AND remaining time is 5 seconds
+    if (isVibrationEnabled && remainingTime === 5) {
       // Check for Vibration API support
       if ('vibrate' in navigator) {
         // Vibrate the phone for 5 seconds
         navigator.vibrate(5000);
+        console.log("Vibrating for 5 seconds."); // Log when vibration occurs
       } else {
         // Vibration not supported
         console.log("Vibration not supported in this browser.");
@@ -70,4 +75,33 @@ window.onload = async () => {
 window.addEventListener('load', async () => {
   await fetchAndSetEndTime();
   startCountdownLoop().catch(console.error);
+
+  // Add event listener for the vibration toggle button
+  const vibrateButton = document.querySelector('.nav-button[data-action="toggle-vibration"]');
+  const vibrateIcon = vibrateButton ? vibrateButton.querySelector('.icon') : null; // Find the icon span
+
+  // Function to update the button's appearance based on vibration state
+  function updateVibrationButtonAppearance() {
+      if (vibrateButton) {
+          vibrateButton.classList.toggle('vibration-disabled', !isVibrationEnabled);
+          vibrateButton.title = `Vibration ${isVibrationEnabled ? 'ON' : 'OFF'}`;
+          if (vibrateIcon) {
+              vibrateIcon.textContent = isVibrationEnabled ? '📳' : '📴'; // Change icon text
+          }
+      }
+  }
+
+  if (vibrateButton) {
+    vibrateButton.addEventListener('click', () => {
+      isVibrationEnabled = !isVibrationEnabled; // Toggle the state
+      console.log(`Vibration is now ${isVibrationEnabled ? 'ON' : 'OFF'}`);
+      updateVibrationButtonAppearance(); // Update appearance
+    });
+
+    // Set initial state on button appearance when the page loads
+    updateVibrationButtonAppearance();
+
+  } else {
+    console.warn("Vibration toggle button with data-action='toggle-vibration' not found.");
+  }
 });

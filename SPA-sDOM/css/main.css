@@ -241,6 +241,11 @@ html, body {
     /* border-radius: 8px; Applies rounded corners on hover/press */
 }
 
+/* Style for the vibration button when vibration is disabled */
+.bottom-nav button.nav-button.vibration-disabled {
+    background-color: #555; /* Dark grey background */
+}
+
 /* Ensure focus state has transparent background */
 .bottom-nav button.nav-button:focus {
     background-color: transparent; /* No background on focus by default */
