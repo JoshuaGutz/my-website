@@ -85,6 +85,12 @@ html, body {
     transition: margin-top 0.3s ease-in-out, height 0.3s ease-in-out; /* Smooth transitions for margin and height changes when top bar hides/shows */
 }
 
+/* Headings within the app content wrapper */
+#app-content-wrapper h2 {
+    color: var(--accent-color); /* Sets heading color using a CSS variable */
+    margin-bottom: 15px; /* Adds space below headings */
+}
+
 /* Styling for all individual page sections within the wrapper */
 .app-page-section {
     position: absolute; /* Positions sections on top of each other within their relative parent (#app-content-wrapper) */
@@ -94,7 +100,7 @@ html, body {
     height: 100%; /* Makes the section span the full height of the parent */
     display: none; /* Hides the section by default */
     overflow-y: auto; /* Allows vertical scrolling within the section if its content overflows */
-    padding: 15px; /* Re-applies internal padding to the content within each section */
+    /* padding: 15px; Re-applies internal padding to the content within each section */
     box-sizing: border-box; /* Ensures padding and border are included in the element's total dimensions */
 }
 
@@ -103,45 +109,25 @@ html, body {
     display: block; /* Overrides 'display: none' to show only the active page */
 }
 
-/* Headings within the app content wrapper */
-#app-content-wrapper h2 {
-    color: var(--accent-color); /* Sets heading color using a CSS variable */
-    margin-bottom: 15px; /* Adds space below headings */
-}
-
 /* Bottom Navigation Bar Styling */
 .bottom-nav {
     position: fixed; /* Positions the element relative to the viewport, keeping it in place */
     bottom: 0; /* Aligns the bottom edge of the element to the bottom of the viewport */
     left: 0; /* Aligns the left edge of the element to the left of the viewport */
     width: 100%; /* Makes the navigation bar span the full width of the viewport */
-    background-color: var(--accent-color); /* Sets background color using a CSS variable */
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2); /* Adds a subtle shadow above the nav bar */
-    z-index: 1000; /* Ensures the nav bar stays on top of other content layers */
+    height: var(--bottom-nav-height); /* Sets the fixed height of the navigation bar using a CSS variable */
     display: flex; /* Enables Flexbox for arranging inner containers */
     justify-content: space-between; /* Distributes the main nav links and settings containers with space between them */
     align-items: center; /* Vertically centers content within the nav bar */
-    height: var(--bottom-nav-height); /* Sets the fixed height of the navigation bar using a CSS variable */
+    background-color: var(--accent-color); /* Sets background color using a CSS variable */
+    color: var(--text-color-light); /* Sets text color using a CSS variable */
+    z-index: 1000; /* Ensures the nav bar stays on top of other content layers */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2); /* Adds a subtle shadow above the nav bar */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total dimensions */
     padding: 0 10px; /* Adds internal horizontal padding to the nav bar */
 }
 
-/* Container for main navigation links (Home, About, Page 1, Page 2, Chat) */
-.nav-links-container {
-    flex-grow: 1; /* Allows this container to take up all available space */
-    display: flex; /* Enables Flexbox for arranging its internal <ul> */
-    height: 100%; /* Makes the container fill its parent's height */
-}
-
-/* Container for settings/action buttons (e.g., Timer) */
-.nav-settings-container {
-    flex-shrink: 0; /* Prevents this container from shrinking smaller than its content */
-    flex-grow: 0; /* Prevents this container from growing larger than its content */
-    display: flex; /* Enables Flexbox for arranging its internal <ul> */
-    height: 100%; /* Makes the container fill its parent's height */
-    /* margin-left: 10px; */ /* User commented out: original attempt for spacing */
-    margin-right: 10px; /* User requested: Adds external margin to the right of this container for desired spacing */
-}
-
+/* General unordered list (ul) styling within the bottom navigation */
 .bottom-nav ul {
     list-style: none; /* Removes default list bullets */
     padding: 0; /* Removes default list padding */
@@ -152,6 +138,29 @@ html, body {
     width: 100%; /* Makes the ul fill its parent div's width */
 }
 
+/* General list item (li) styling within the bottom navigation */
+.bottom-nav li {
+    text-align: center; /* Centers the content within each list item */
+}
+
+/* Container for main navigation links (Home, Chat, Page 1, Page 2, About) */
+.nav-links-container {
+    flex-grow: 1; /* Allows this container to take up all available space */
+    display: flex; /* Enables Flexbox for arranging its internal <ul> */
+    height: 100%; /* Makes the container fill its parent's height */
+}
+
+/* Container for settings/action buttons (e.g., Timer) */
+.nav-settings-container {
+    background-color: darkred; /* Sets a distinct background color for the settings container */
+    flex-shrink: 0; /* Prevents this container from shrinking smaller than its content */
+    flex-grow: 0; /* Prevents this container from growing larger than its content */
+    display: flex; /* Enables Flexbox for arranging its internal <ul> */
+    height: 100%; /* Makes the container fill its parent's height */
+    /* margin-left: 10px; */ /* User commented out: original attempt for spacing */
+    /* margin-right: 10px; User requested: Adds external margin to the right of this container for desired spacing */
+}
+
 /* Specific styling for the ul within the main navigation links container */
 .nav-links-container ul {
     justify-content: space-around; /* Distributes navigation items evenly with space around them */
@@ -159,12 +168,7 @@ html, body {
 
 /* Specific styling for the ul within the settings container (only one item) */
 .nav-settings-container ul {
-    justify-content: flex-end; /* Aligns the single item to the right within its ul */
-}
-
-/* General list item (li) styling within the bottom navigation */
-.bottom-nav li {
-    text-align: center; /* Centers the content within each list item */
+    justify-content: space-around; /* Distributes items evenly with space around them */
 }
 
 /* Styling for list items specifically in the main navigation links container */
@@ -175,7 +179,7 @@ html, body {
 /* Styling for list items specifically in the settings container */
 .nav-settings-container li {
     flex: none; /* Prevents this list item from growing or shrinking, sizing it to its content */
-    margin-right: 10px; /* User requested: Adds external margin to the right of the item for desired spacing */
+    /* margin-right: 10px; User requested: Adds external margin to the right of the item for desired spacing */
 }
 
 /* Styling for navigation links (<a> tags) */
@@ -196,14 +200,14 @@ html, body {
 /* Highlight for active navigation link */
 .bottom-nav a.nav-link.active {
     background-color: var(--active-bg-light); /* Sets background for active link using a CSS variable */
-    border-radius: 8px; /* Applies consistent rounded corners */
+    /* border-radius: 8px; Applies consistent rounded corners */
 }
 
 /* Hover/Focus effects for navigation links */
 .bottom-nav a.nav-link:hover,
 .bottom-nav a.nav-link:focus {
     background-color: var(--hover-bg-light); /* Sets background for hover/focus using a CSS variable */
-    border-radius: 8px; /* Applies rounded corners on hover */
+    /* border-radius: 8px; Applies rounded corners on hover */
 }
 
 /* Styling for navigation buttons (<button> tags) */
@@ -234,7 +238,7 @@ html, body {
 .bottom-nav button.nav-button:hover,
 .bottom-nav button.nav-button:active {
     background-color: var(--hover-bg-light); /* Sets background for hover/active using a CSS variable */
-    border-radius: 8px; /* Applies rounded corners on hover/press */
+    /* border-radius: 8px; Applies rounded corners on hover/press */
 }
 
 /* Ensure focus state has transparent background */
