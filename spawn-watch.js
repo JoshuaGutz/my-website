@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial channels
     let channels = [
         { name: "malice_dumpling", id: "malice_dumpling" },
-        { name: "deemonrider", id: "deemonrider" },
-        { name: "cpayne881", id: "cpayne881" }
+        { name: "deemonrider", id: "deemonrider" }
     ];
 
     let activeChannelId = null;
