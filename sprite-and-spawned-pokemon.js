@@ -65,7 +65,7 @@ function update_image() {
             let tier = getColumnByPokedexId(pokedex_id, 2);
             let name = getColumnByPokedexId(pokedex_id, 5);
             let gen = getColumnByPokedexId(pokedex_id, 4);
-            spawnedPokemonIdElement.textContent = `${name} Tier:${tier} Gen:${gen} ID:${pokedex_id}`; // ex Furfrou-heart Tier:B Gen:6 ID:10344
+            spawnedPokemonIdElement.textContent = `${name}\nTier:${tier} Gen:${gen} ID:${pokedex_id}`; // ex Furfrou-heart Tier:B Gen:6 ID:10344
 
             // bild nach den 90 sekunden verstecken
             var hide_picture_seconds = next_spawn - 810

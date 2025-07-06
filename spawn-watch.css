@@ -41,6 +41,13 @@ body, html {
     padding: 0px; /* Minimal padding */
 }
 
+#spawned-pokemon-id {
+    font-size: 1.2em; /* Sets the font size relative to the parent font size */
+    /*color: var(--text-color-light); /* Sets text color using a CSS variable */*/
+    /*margin: 0 10px; /* Adds horizontal margin (10px left/right) for spacing */*/
+    white-space: pre-line; /* Preserves newline characters in the text, collapsing other whitespace */
+}
+
 .sprite-container {
     display: flex;
     align-items: center;
