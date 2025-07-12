@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // { name: "anne_dyari", id: "anne_dyari" },
         { name: "deemonrider", id: "deemonrider" },
         // { name: "jonaswagern", id: "jonaswagern" }
-        { name: "zigzagclaw", id: "zigzagclaw" }
+        { name: "gamester366", id: "gamester366" }
     ];
 
     let activeChannelId = null;
