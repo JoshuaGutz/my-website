@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spawn Watch</title>
+    <link rel="stylesheet" href="spawn-watch.css">
+</head>
+<body>
+    <div class="page-container">
+        <header class="top-section">
+            <div id="countdown" class="countdown-text">mm:ss</div>
+            <div id="spawned-pokemon-id">No current spawn (html)</div>
+            <div class="sprite-container">
+                <img id="sprite-image" src="https://dev.bframework.de/static/pokedex/sprites/question.png" alt="Sprite">
+            </div>
+        </header>
+    </div>
+
+    <div id="new-channel-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3>Add New Twitch Channel</h3>
+            <input type="text" id="new-channel-name" placeholder="Enter channel name">
+            <div class="popup-buttons">
+                <button type="button" id="add-channel-btn">Add Channel</button>
+                <button type="button" id="cancel-add-channel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="bettertimer.js"></script>
+    <script src="sprite-and-spawned-pokemon-aggresive.js"></script>
+</body>
+</html>
