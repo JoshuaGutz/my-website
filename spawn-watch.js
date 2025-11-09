@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let channels = [
         { name: "malice_dumpling", id: "malice_dumpling" },
         { name: "deemonrider", id: "deemonrider" },
-        { name: "cpayne881 ", id: "cpayne881 " }
+        { name: "cpayne881", id: "cpayne881" }
         // { name: "jonaswagern", id: "jonaswagern" }
         // { name: "gamester366", id: "gamester366" }
     ];
