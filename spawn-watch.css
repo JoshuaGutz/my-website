@@ -167,11 +167,12 @@ body, html {
     background-color: #ddd; /* Placeholder background */
     flex-shrink: 0; /* Prevent shrinking */
     display: block; /* Default display */
-    display: none; /* Default display */
+    display: none;
 }
 
 .main-nav {
-    display: flex;
+    /*display: flex;*/
+    display: none; /*hiding main-nav*/
     justify-content: space-around;
     align-items: center;
 }
@@ -184,9 +185,11 @@ body, html {
     flex: 1;
     text-align: center;
     border-left: 1px solid #ccc;
+    display: none; /*hiding main-nav,  tired of seeing it*/
 }
 .main-nav a:first-child {
     border-left: none;
+    display: none; /*hiding main-nav,  tired of seeing it*/
 }
 
 
