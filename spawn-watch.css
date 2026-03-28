@@ -167,6 +167,7 @@ body, html {
     background-color: #ddd; /* Placeholder background */
     flex-shrink: 0; /* Prevent shrinking */
     display: block; /* Default display */
+    display: none; /* Default display */
 }
 
 .main-nav {
