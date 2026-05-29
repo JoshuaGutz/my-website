@@ -1,40 +1,95 @@
 /*
 */
 // Variables to manage the state
-let pokemonSet = new Set();  // To track the listed Pokémon
+let pokemonSet = new Set();  // To track the listed Pokemon
 let resultsCount = 0;
-let fileContent = '';        // Variable to store the content of PCGmons.txt
+let pokemonList = [];
+let pokemonByName = new Map();
 
-const fileInput = document.getElementById('file-input');
 const searchButton = document.getElementById('search-btn');
 const clearButton = document.getElementById('clear-btn');
+const pokemonDataUrl = new URL('PCGmons-NEW [2025-05-28].txt', window.location.href);
 
-// Disable the search button by default
+// Disable the search button until the bundled data is loaded.
 searchButton.disabled = true;
 
-// Enable search button when a file is selected
-fileInput.addEventListener('change', function () {
-    if (fileInput.files.length > 0) {
-        searchButton.disabled = false;
-        loadFile(fileInput.files[0]);
-    } else {
-        searchButton.disabled = true;
-    }
-});
+loadPokemonData();
 
-// Function to load file content
-function loadFile(file) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-        fileContent = event.target.result;
-        console.log('File loaded successfully'); // Log file loaded message
-        alert('File loaded successfully!');
+// Function to load bundled PCGmons data
+async function loadPokemonData() {
+    try {
+        const response = await fetch(pokemonDataUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const fileContent = await response.text();
+        pokemonList = parsePokemonFile(fileContent);
+        pokemonByName = buildPokemonIndex(pokemonList);
+
+        if (pokemonList.length === 0) {
+            throw new Error('No valid Pokemon rows were parsed.');
+        }
+
+        searchButton.disabled = false;
+        console.log(`Loaded ${pokemonList.length} Pokemon rows.`);
+    } catch (error) {
+        searchButton.disabled = true;
+        console.error('Unable to load bundled PCGmons data', error);
+        alert('Unable to load PCGmons-NEW data automatically. Please make sure the page is being served from the hosted site and the text file is available.');
+    }
+}
+
+// Function to parse PCGmons-NEW rows into Pokemon objects
+function parsePokemonFile(fileContent) {
+    return fileContent
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map(parsePokemonRow)
+        .filter(Boolean);
+}
+
+function parsePokemonRow(rawLine) {
+    const rowPattern = /^(?:Pokemon|Pok\u00e9mon):\s*(.*?)\s*-\s*Tier:\s*(.*?)\s*-\s*Type:\s*(.*?)\s*-\s*Gen:\s*(\d+)\s*-\s*Weight:\s*([\d.]+)\s*kg\s*-\s*Base:\s*(\d+)\s*-\s*Speed:\s*(\d+)\s*-\s*HP:\s*(\d+)\s*-\s*Attack:\s*(\d+)\s*-\s*Defense:\s*(\d+)\s*-\s*Sp\.\s*Atk:\s*(\d+)\s*-\s*Sp\.\s*Def:\s*(\d+)\s*-\s*Type effectiveness:\s*(.*)$/i;
+    const match = rawLine.match(rowPattern);
+
+    if (!match) {
+        console.warn('Skipping invalid Pokemon row:', rawLine);
+        return null;
+    }
+
+    return {
+        rawLine,
+        name: match[1].trim(),
+        tier: match[2].trim(),
+        types: match[3].split('/').map((type) => type.trim().toLowerCase()).filter(Boolean),
+        generation: Number(match[4]),
+        weightKg: Number(match[5]),
+        base: Number(match[6]),
+        speed: Number(match[7]),
+        hp: Number(match[8]),
+        attack: Number(match[9]),
+        defense: Number(match[10]),
+        specialAttack: Number(match[11]),
+        specialDefense: Number(match[12]),
+        typeEffectiveness: match[13].split('|').map((entry) => entry.trim()).filter(Boolean)
     };
-    reader.onerror = function (event) {
-        console.error('Error reading file', event);
-        alert('Error reading file, please try again!');
-    };
-    reader.readAsText(file); // Read the file as text
+}
+
+function buildPokemonIndex(pokemonRows) {
+    const index = new Map();
+    pokemonRows.forEach((pokemon) => {
+        const key = normalizePokemonName(pokemon.name);
+        if (!index.has(key)) {
+            index.set(key, pokemon);
+        }
+    });
+    return index;
+}
+
+function normalizePokemonName(pokemonName) {
+    return pokemonName.trim().replace(/\s+/g, ' ').toLowerCase();
 }
 
 // Add event listener for the Enter key
@@ -56,7 +111,7 @@ document.getElementById('search-btn').addEventListener('click', function () {
     }
 });
 
-// Function to clear the list of Pokémon
+// Function to clear the list of Pokemon
 clearButton.addEventListener('click', function () {
     pokemonSet.clear();
     document.getElementById("pokemon-name").value = "";
@@ -72,47 +127,45 @@ function handleSearch(pokemonName) {
     const pokemonData = searchPokemonInFile(pokemonName);
 
     if (pokemonData) {
-        // Pokémon found in the file
-        addResultToList(pokemonData, pokemonName, false);
+        // Pokemon found in the file
+        addResultToList(pokemonData.rawLine, pokemonData.name, false, pokemonData.types);
     } else {
-        // Pokémon not found, prompt for input
+        // Pokemon not found, prompt for input
         addResultToList('!pokemon ' + pokemonName, pokemonName, true);
     }
 }
 
-// Function to search the loaded PCGmons.txt content
+// Function to search the loaded PCGmons data
 function searchPokemonInFile(pokemonName) {
-    if (!fileContent) {
-        console.error('No file content loaded');
-        alert('No file content loaded. Please load a PCGmons.txt file.');
+    if (pokemonByName.size === 0) {
+        console.error('No Pokemon data loaded');
+        alert('PCGmons data is still loading or failed to load. Please refresh the page and try again.');
         return null;
     }
 
-    const regex = new RegExp(`Pokemon: ${pokemonName} - Tier:.*`, 'i');
-    const match = fileContent.match(regex);
-    return match ? match[0] : null;
+    return pokemonByName.get(normalizePokemonName(pokemonName)) || null;
 }
 
 // Function to add a result to the list
-function addResultToList(result, pokemonName, notFound = false) {
+function addResultToList(result, pokemonName, notFound = false, types = []) {
     const resultsList = document.getElementById('results-list');
+    const pokemonKey = normalizePokemonName(pokemonName);
 
-    // Check if the Pokémon is already listed
-    if (pokemonSet.has(pokemonName)) {
-        flashExistingPokemon(pokemonName);
+    // Check if the Pokemon is already listed
+    if (pokemonSet.has(pokemonKey)) {
+        flashExistingPokemon(pokemonKey);
         return;
     }
 
     const listItem = document.createElement('li');
-    const types = extractTypes(result);
 
     listItem.classList.add("results-list-item"); // Add the class here
 
     listItem.innerHTML = `<pre>${result}</pre>`;
-    listItem.setAttribute('data-pokemon-name', pokemonName);  // Add an attribute to identify the Pokémon
+    listItem.setAttribute('data-pokemon-name', pokemonKey);  // Add an attribute to identify the Pokemon
     applyTypeBackground(listItem, types);
 
-    // Only show the copy button and input field for Pokémon that are not found
+    // Only show the copy button and input field for Pokemon that are not found
     if (notFound) {
         const copyButton = document.createElement('button');
         copyButton.textContent = 'Copy !pokemon ' + pokemonName;
@@ -132,32 +185,23 @@ function addResultToList(result, pokemonName, notFound = false) {
 
     resultsList.appendChild(listItem);
     
-    // Add the Pokémon name to the set and increment count
-    pokemonSet.add(pokemonName);
+    // Add the Pokemon name to the set and increment count
+    pokemonSet.add(pokemonKey);
     resultsCount++;
 }
 
-// Function to flash an existing Pokémon if already listed
-function flashExistingPokemon(pokemonName) {
+// Function to flash an existing Pokemon if already listed
+function flashExistingPokemon(pokemonKey) {
     const resultsListItems = document.querySelectorAll('[data-pokemon-name]');
     resultsListItems.forEach((item) => {
-        if (item.getAttribute('data-pokemon-name') === pokemonName) {
+        if (item.getAttribute('data-pokemon-name') === pokemonKey) {
             item.classList.add('flash');
             setTimeout(() => item.classList.remove('flash'), 1000);
         }
     });
 }
 
-// Function to extract the types from the result string
-function extractTypes(result) {
-    const typesMatch = result.match(/Type: (\w+)(?:\/(\w+))?/);
-    if (typesMatch) {
-        return typesMatch.slice(1).filter(Boolean);  // Return array of types
-    }
-    return [];
-}
-
-// Function to apply background based on Pokémon types
+// Function to apply background based on Pokemon types
 function applyTypeBackground(element, types) {
     const typeColors = {
         fire: 'red',
@@ -214,7 +258,7 @@ function adjustTextColor(element) {
     }
 }
 
-// Function to show a data entry input after copying a not-found Pokémon
+// Function to show a data entry input after copying a not-found Pokemon
 function showDataEntryInput(pokemonName) {
     const dataEntry = document.getElementById('data-entry');
     dataEntry.style.display = 'block';
@@ -224,20 +268,19 @@ function showDataEntryInput(pokemonName) {
         if (inputData) {
             // Parse and store the data, then hide the input and copy button
             parsePokemonData(inputData);
-            document.querySelector(`[data-pokemon-name="${pokemonName}"]`).innerHTML = `<pre>${inputData}</pre>`;
+            document.querySelector(`[data-pokemon-name="${normalizePokemonName(pokemonName)}"]`).innerHTML = `<pre>${inputData}</pre>`;
             dataEntry.style.display = 'none';
         }
     });
 }
 
-// Function to parse manually entered Pokémon data
+// Function to parse manually entered Pokemon data
 function parsePokemonData(data) {
     // Process the data (e.g., validate and store in a format if needed)
-    console.log('Parsed Pokémon Data: ', data);
+    console.log('Parsed Pokemon Data: ', data);
 }
 
 // Function to focus on a text box
 function focusTextBox(textBoxID) {
     document.getElementById(textBoxID).focus();
 }
-
