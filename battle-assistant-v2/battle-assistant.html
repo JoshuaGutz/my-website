@@ -7,18 +7,19 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="modal.css">
 </head>
-<!-- 
--->
 <body>
     <p id="page_name" style="font-size: 12px;"></p>
-    <div onclick="focusTextBox('pokemon-name')">
+    <div id="search-panel" onclick="focusTextBox('pokemon-name')">
     <h1>Battle Assistant</h1>
     <button id="return-btn">Return to Main</button>
     <button id="openExtensionBtn">Open PCG Extension</button>
     <br>
 
     <!-- Search form -->
-    <input type="text" id="pokemon-name" placeholder="Enter Pokémon name" />
+    <div id="pokemon-search-wrap">
+        <input type="text" id="pokemon-name" placeholder="Enter Pokemon name" autocomplete="off" />
+        <ul id="pokemon-suggestions" class="pokemon-suggestions" hidden></ul>
+    </div>
     <button id="search-btn" disabled>Search</button>
     <button id="clear-btn">Clear List</button>
     </div>
@@ -26,9 +27,9 @@
     <!-- Result list -->
     <ul id="results-list"></ul>
 
-    <!-- Hidden text input for entering data manually if Pokémon is not found -->
+    <!-- Hidden text input for entering data manually if Pokemon is not found -->
     <div id="data-entry" style="display:none;">
-        <input type="text" id="result-data" placeholder="Enter Pokémon data" />
+        <input type="text" id="result-data" placeholder="Enter Pokemon data" />
     </div>
 
     <script src="allpages.js"></script>

@@ -159,9 +159,143 @@ input[type="text"] {
     border-radius: 3px;
 }
 
+#pokemon-search-wrap {
+    position: relative;
+    display: inline-block;
+    min-width: 320px;
+    max-width: 100%;
+}
+
+#pokemon-name {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.pokemon-suggestions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 20;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid #555;
+    background: #111;
+    border-radius: 6px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.pokemon-suggestion {
+    width: 100%;
+    display: block;
+    text-align: left;
+    margin: 0;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.pokemon-suggestion:hover,
+.pokemon-suggestion.is-active {
+    background: #2d2d2d;
+}
 
 .results-list-item {
-    border: 3px solid black;
+    border: none;
+    padding: 0;
+    margin: 10px 0;
+    list-style: none;
+}
+
+.pokemon-card {
+    position: relative;
+    padding: 12px 14px 14px;
+    border-radius: 6px;
+    border: 2px solid rgba(0, 0, 0, 0.8);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+    display: grid;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.pokemon-card__toprow {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+}
+
+.pokemon-card__remove {
+    width: 30px;
+    height: 30px;
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.2);
+    color: inherit;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.pokemon-card__content {
+    display: grid;
+    gap: 8px;
+}
+
+.pokemon-card__line,
+.pokemon-card__effectiveness-line,
+.pokemon-card__label,
+.pokemon-card__raw {
+    margin: 0;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.pokemon-card__line--primary {
+    font-size: 1.02rem;
+    font-weight: 700;
+}
+
+.pokemon-card__label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.pokemon-card__effectiveness {
+    display: grid;
+    gap: 4px;
+}
+
+.pokemon-card__effectiveness-line {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.pokemon-card__raw {
+    white-space: pre-wrap;
+    word-break: break-word;
+    font: inherit;
+}
+
+.pokemon-card--missing {
+    background: #2b2b2b;
+    color: white;
+}
+
+.pokemon-card__copy {
+    justify-self: start;
+    margin: 0;
 }
 
 #countdown {
