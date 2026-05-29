@@ -1,0 +1,19 @@
+
+SPA--Single Page App
+
+
+
+
+/
+├── index.html            ← the only page the browser loads
+├── pages/
+│   ├── battle.html       ← page fragment
+│   ├── spawns.html
+├── css/
+│   ├── main.css          ← shared styles
+│   ├── battle.css        ← page-specific styles (optional)
+├── js/
+│   ├── router.js         ← handles navigation
+│   ├── init.js           ← sets up event listeners, etc.
+
+

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mobile First SPA</title>
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <!-- Top bar visible on all pages -->
+  <div id="top-bar">
+    <div id="countdown">mm:ss</div>
+    <img id="sprite-image" src="" alt="Sprite" />
+  </div>
+
+  <!-- Main container for content -->
+  <main id="content">
+    <!-- Content will be dynamically injected here -->
+  </main>
+
+  <!-- Bottom nav bar -->
+  <nav class="bottom-nav">
+    <button onclick="navigate('home')">Home</button>
+    <button onclick="navigate('page1')">Page 1</button>
+    <button onclick="navigate('page2')">Page 2</button>
+    <button onclick="toggleTopBar()">Toggle Bar</button>
+  </nav>
+
+  <script src="/js/router.js"></script>
+  <script src="/js/toggleTopBar.js"></script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PCG Panel Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .sidebar {
+      width: 300px;
+      background: #f0f0f0;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .main {
+      flex: 1;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #0052a3;
+    }
+
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      background: #e8f5e9;
+      border-left: 4px solid #4caf50;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.error {
+      background: #ffebee;
+      border-left-color: #f44336;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: #ddd;
+      border-radius: 2px;
+      margin: 10px 0;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-bar.active {
+      display: block;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #0066cc;
+      width: 0%;
+      animation: loading 6.5s ease-in-out forwards;
+    }
+
+    @keyframes loading {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .info-box {
+      background: white;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR WITH YOUR CUSTOM UI -->
+  <div class="sidebar">
+    <h2>PCG Manager</h2>
+
+    <div class="info-box">
+      <strong>Channel:</strong> deemonrider
+    </div>
+
+    <div class="info-box">
+      <strong>Account:</strong> your_account
+    </div>
+
+    <!-- REGISTER BUTTONS -->
+    <button id="registerPokedex" disabled>
+      Register Pokédex
+    </button>
+    <div class="progress-bar" id="pokedexProgress">
+      <div class="progress-fill"></div>
+    </div>
+
+    <button id="registerInventory" disabled>
+      Register Inventory
+    </button>
+    <div class="progress-bar" id="inventoryProgress">
+      <div class="progress-fill"></div>
+    </div>
+
+    <!-- REFRESH BUTTON -->
+    <button id="refreshPcg">
+      Refresh PCG
+    </button>
+
+    <!-- STATUS MESSAGES -->
+    <div id="status" class="status"></div>
+  </div>
+
+  <!-- MAIN CONTENT WITH IFRAME -->
+  <div class="main">
+    <h2>PCG Extension Panel</h2>
+    <iframe
+      id="pcgFrame"
+      src="https://www.twitch.tv/deemonrider/extensions/pm0qkv9g4h87t5y6lg329oam8j7ze9/panel"
+      title="Pokédex Check Gauge Extension"
+      sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+      allow="geolocation; microphone; camera; payment"
+    ></iframe>
+  </div>
+
+  <script>
+    class PCGUI {
+      constructor() {
+        this.registerPokedexBtn = document.getElementById('registerPokedex');
+        this.registerInventoryBtn = document.getElementById('registerInventory');
+        this.refreshPcgBtn = document.getElementById('refreshPcg');
+        this.statusDiv = document.getElementById('status');
+        this.pokedexProgress = document.getElementById('pokedexProgress');
+        this.inventoryProgress = document.getElementById('inventoryProgress');
+
+        // Enable buttons after a short delay (mimic startup cooldown)
+        this.enableButtonsAfterDelay();
+
+        // Set up event listeners
+        this.registerPokedexBtn.addEventListener('click', () => this.onRegisterPokedex());
+        this.registerInventoryBtn.addEventListener('click', () => this.onRegisterInventory());
+        this.refreshPcgBtn.addEventListener('click', () => this.onRefreshPcg());
+      }
+
+      enableButtonsAfterDelay() {
+        // Mimic the startup cooldown from the Android app
+        setTimeout(() => {
+          this.registerInventoryBtn.disabled = false;
+        }, 5000);
+
+        // Pokédex can be enabled immediately
+        this.registerPokedexBtn.disabled = false;
+      }
+
+      showStatus(message, isError = false) {
+        this.statusDiv.textContent = message;
+        this.statusDiv.classList.add('show');
+        if (isError) {
+          this.statusDiv.classList.add('error');
+        } else {
+          this.statusDiv.classList.remove('error');
+        }
+      }
+
+      async onRegisterPokedex() {
+        this.registerPokedexBtn.disabled = true;
+        this.pokedexProgress.classList.add('active');
+
+        // Simulate the checking animation (6.5 seconds like the Android app)
+        setTimeout(() => {
+          this.pokedexProgress.classList.remove('active');
+          this.registerPokedexBtn.disabled = false;
+          this.showStatus('Pokédex synced!');
+        }, 6500);
+      }
+
+      async onRegisterInventory() {
+        this.registerInventoryBtn.disabled = true;
+        this.inventoryProgress.classList.add('active');
+
+        // Simulate the checking animation (6.5 seconds like the Android app)
+        setTimeout(() => {
+          this.inventoryProgress.classList.remove('active');
+          this.registerInventoryBtn.disabled = false;
+          this.showStatus('Inventory synced!');
+        }, 6500);
+      }
+
+      async onRefreshPcg() {
+        this.showStatus('Refreshing PCG extension...');
+        this.refreshPcgBtn.disabled = true;
+
+        setTimeout(() => {
+          this.refreshPcgBtn.disabled = false;
+          this.showStatus('PCG refreshed!');
+        }, 2000);
+      }
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      new PCGUI();
+    });
+  </script>
+</body>
+</html>
