@@ -441,20 +441,19 @@ function addMissingPokemonResult(pokemonName) {
     const card = document.createElement('article');
     card.className = 'pokemon-card pokemon-card--missing';
     card.dataset.pokemonName = pokemonKey;
-
-    const topRow = document.createElement('div');
-    topRow.className = 'pokemon-card__toprow';
-
-    const removeButton = createRemoveButton(pokemonKey);
-    topRow.appendChild(removeButton);
+    card.appendChild(createRemoveButton(pokemonKey));
 
     const content = document.createElement('div');
     content.className = 'pokemon-card__content';
 
+    const lineOne = document.createElement('div');
+    lineOne.className = 'pokemon-card__line pokemon-card__line--primary';
     const raw = document.createElement('pre');
     raw.className = 'pokemon-card__raw';
     raw.textContent = `!pokemon ${pokemonName}`;
-    content.appendChild(raw);
+    lineOne.appendChild(raw);
+
+    content.appendChild(lineOne);
 
     const copyButton = document.createElement('button');
     copyButton.type = 'button';
@@ -467,7 +466,6 @@ function addMissingPokemonResult(pokemonName) {
         });
     });
 
-    card.appendChild(topRow);
     card.appendChild(content);
     card.appendChild(copyButton);
     listItem.appendChild(card);
@@ -486,19 +484,17 @@ function createPokemonCard(pokemon, pokemonKey) {
     card.dataset.pokemonName = pokemonKey;
 
     applyTypeBackground(card, pokemon.types);
-
-    const topRow = document.createElement('div');
-    topRow.className = 'pokemon-card__toprow';
-
-    const removeButton = createRemoveButton(pokemonKey);
-    topRow.appendChild(removeButton);
+    card.appendChild(createRemoveButton(pokemonKey));
 
     const content = document.createElement('div');
     content.className = 'pokemon-card__content';
 
     const lineOne = document.createElement('div');
     lineOne.className = 'pokemon-card__line pokemon-card__line--primary';
-    lineOne.textContent = `${pokemon.name} | ${formatTypeList(pokemon.displayTypes)} | Tier ${pokemon.tier} | Gen ${pokemon.generation}`;
+    const lineOneText = document.createElement('span');
+    lineOneText.className = 'pokemon-card__line-text';
+    lineOneText.textContent = `${pokemon.name} | ${formatTypeList(pokemon.displayTypes)} | Tier ${pokemon.tier} | Gen ${pokemon.generation}`;
+    lineOne.appendChild(lineOneText);
 
     const lineTwo = document.createElement('div');
     lineTwo.className = 'pokemon-card__line';
@@ -514,18 +510,12 @@ function createPokemonCard(pokemon, pokemonKey) {
     lineThree.textContent = [
         formatStatLine('Attack', pokemon.attack),
         formatStatLine('Defense', pokemon.defense),
-        formatStatLine('Sp. Atk', pokemon.specialAttack),
-        formatStatLine('Sp. Def', pokemon.specialDefense)
+        formatStatLine('Special Attack', pokemon.specialAttack),
+        formatStatLine('Special Defense', pokemon.specialDefense)
     ].join(' | ');
 
     const effectivenessBlock = document.createElement('div');
     effectivenessBlock.className = 'pokemon-card__effectiveness';
-
-    const effectivenessTitle = document.createElement('div');
-    effectivenessTitle.className = 'pokemon-card__label';
-    effectivenessTitle.textContent = 'Type effectiveness';
-
-    effectivenessBlock.appendChild(effectivenessTitle);
 
     const effectivenessLines = getPokemonDisplayEffectiveness(pokemon);
     effectivenessLines.forEach((line) => {
@@ -540,7 +530,6 @@ function createPokemonCard(pokemon, pokemonKey) {
     content.appendChild(lineThree);
     content.appendChild(effectivenessBlock);
 
-    card.appendChild(topRow);
     card.appendChild(content);
     return card;
 }
@@ -550,7 +539,7 @@ function createRemoveButton(pokemonKey) {
     removeButton.type = 'button';
     removeButton.className = 'pokemon-card__remove';
     removeButton.setAttribute('aria-label', 'Remove Pokemon');
-    removeButton.textContent = '×';
+    removeButton.textContent = 'X';
     removeButton.addEventListener('click', function (event) {
         event.stopPropagation();
         removePokemonResult(pokemonKey);
@@ -582,8 +571,13 @@ function flashExistingPokemon(pokemonKey) {
         return;
     }
 
-    item.classList.add('flash');
-    setTimeout(() => item.classList.remove('flash'), 1000);
+    const card = item.querySelector('.pokemon-card');
+    if (!card) {
+        return;
+    }
+
+    card.classList.add('flash');
+    setTimeout(() => card.classList.remove('flash'), 1000);
 }
 
 function applyTypeBackground(element, types) {

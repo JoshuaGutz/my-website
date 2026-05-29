@@ -27,25 +27,17 @@ h1 {
 /* List for displaying Pokémon information */
 #results-list {
     padding: 0;
-    margin-top: 20px;
+    margin: 6px 0 0;
 }
 
 /* List items with Pokémon details */
 #results-list li {
-    margin: 10px 0;
-    padding: 10px;
+    margin: 0;
+    padding: 0;
     list-style-type: none;
-    border-radius: 5px;
-    color: white;  /* Ensure default text is visible */
-    font-weight: bold;
 }
 
 /* Flash effect when Pokémon is already listed */
-.flash {
-    background-color: yellow !important;
-    transition: background-color 0.5s ease;
-}
-
 /* Text inside list items (preformatted) */
 #results-list li pre {
     white-space: pre-wrap; /* Wrap long lines of text */
@@ -78,11 +70,6 @@ button:hover {
 }
 
 /* Background color for list items based on Pokémon types */
-.flash {
-    background-color: yellow !important;
-    transition: background-color 0.5s ease;
-}
-
 /* Type-based backgrounds */
 #results-list li.pre {
     white-space: pre-wrap;
@@ -212,80 +199,99 @@ input[type="text"] {
 .results-list-item {
     border: none;
     padding: 0;
-    margin: 10px 0;
+    margin: 1px 0;
     list-style: none;
+}
+
+.pokemon-card.flash {
+    animation: cardPulse 0.55s ease-in-out 1;
+}
+
+@keyframes cardPulse {
+    0% {
+        box-shadow: inset 0 0 0 0 rgba(255, 255, 0, 0);
+        filter: brightness(1);
+    }
+    45% {
+        box-shadow: inset 0 0 0 9999px rgba(255, 255, 0, 0.16);
+        filter: brightness(1.12);
+    }
+    100% {
+        box-shadow: inset 0 0 0 0 rgba(255, 255, 0, 0);
+        filter: brightness(1);
+    }
 }
 
 .pokemon-card {
     position: relative;
-    padding: 12px 14px 14px;
+    padding: 8px 10px 9px;
     border-radius: 6px;
     border: 2px solid rgba(0, 0, 0, 0.8);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
     display: grid;
-    gap: 10px;
+    gap: 6px;
     overflow: hidden;
-}
-
-.pokemon-card__toprow {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
+    font-size: 0.95rem;
+    line-height: 1.15;
 }
 
 .pokemon-card__remove {
-    width: 30px;
-    height: 30px;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
     line-height: 1;
     padding: 0;
     margin: 0;
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.2);
     color: inherit;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 700;
+    flex: 0 0 auto;
 }
 
 .pokemon-card__content {
     display: grid;
-    gap: 8px;
+    gap: 2px;
+    padding-right: 28px;
 }
 
 .pokemon-card__line,
 .pokemon-card__effectiveness-line,
-.pokemon-card__label,
 .pokemon-card__raw {
     margin: 0;
-    line-height: 1.35;
+    line-height: 1.12;
     word-break: break-word;
 }
 
 .pokemon-card__line--primary {
-    font-size: 1.02rem;
+    display: flex;
+    align-items: center;
+    min-width: 0;
     font-weight: 700;
 }
 
-.pokemon-card__label {
-    font-size: 0.9rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0;
+.pokemon-card__line-text {
+    min-width: 0;
+}
+
+.pokemon-card__effectiveness-line {
+    font-size: inherit;
+    font-weight: inherit;
 }
 
 .pokemon-card__effectiveness {
     display: grid;
-    gap: 4px;
-}
-
-.pokemon-card__effectiveness-line {
-    font-size: 0.95rem;
-    font-weight: 600;
+    gap: 1px;
 }
 
 .pokemon-card__raw {
     white-space: pre-wrap;
     word-break: break-word;
     font: inherit;
+    flex: 1 1 auto;
 }
 
 .pokemon-card--missing {
@@ -296,6 +302,8 @@ input[type="text"] {
 .pokemon-card__copy {
     justify-self: start;
     margin: 0;
+    padding: 4px 8px;
+    font-size: inherit;
 }
 
 #countdown {
