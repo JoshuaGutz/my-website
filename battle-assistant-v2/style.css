@@ -285,27 +285,39 @@ input[type="text"] {
     line-height: 1.15;
 }
 
-.pokemon-card__remove {
+.pokemon-card__controls {
     position: absolute;
     top: 6px;
     right: 6px;
-    width: 24px;
-    height: 24px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+}
+
+.pokemon-card__control,
+.pokemon-card__remove {
+    width: 20px;
+    height: 20px;
     line-height: 1;
     padding: 0;
     margin: 0;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.22);
     color: inherit;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     flex: 0 0 auto;
+}
+
+.pokemon-card__remove {
+    border-radius: 50%;
 }
 
 .pokemon-card__content {
     display: grid;
     gap: 2px;
-    padding-right: 28px;
+    padding-right: 72px;
 }
 
 .pokemon-card__line,
@@ -347,6 +359,19 @@ input[type="text"] {
 .pokemon-card--missing {
     background: #2b2b2b;
     color: white;
+}
+
+.pokemon-card.is-collapsed {
+    gap: 0;
+}
+
+.pokemon-card.is-collapsed .pokemon-card__content {
+    gap: 0;
+}
+
+.pokemon-card.is-collapsed .pokemon-card__content > :not(.pokemon-card__line--primary),
+.pokemon-card.is-collapsed .pokemon-card__copy {
+    display: none;
 }
 
 .pokemon-card__copy {

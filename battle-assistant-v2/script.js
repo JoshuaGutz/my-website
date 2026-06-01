@@ -477,7 +477,7 @@ function addMissingPokemonResult(pokemonName, team) {
     card.className = 'pokemon-card pokemon-card--missing';
     card.dataset.pokemonName = pokemonKey;
     card.dataset.team = team;
-    card.appendChild(createRemoveButton(pokemonKey, team));
+    card.appendChild(createCardControls(pokemonKey, team));
 
     const content = document.createElement('div');
     content.className = 'pokemon-card__content';
@@ -504,6 +504,7 @@ function addMissingPokemonResult(pokemonName, team) {
 
     card.appendChild(content);
     card.appendChild(copyButton);
+    updatePokemonCardControls(card, false);
     listItem.appendChild(card);
     teamResultsLists[team].appendChild(listItem);
 
@@ -522,7 +523,7 @@ function createPokemonCard(pokemon, pokemonKey, team) {
     card.dataset.team = team;
 
     applyTypeBackground(card, pokemon.types);
-    card.appendChild(createRemoveButton(pokemonKey, team));
+    card.appendChild(createCardControls(pokemonKey, team));
 
     const content = document.createElement('div');
     content.className = 'pokemon-card__content';
@@ -569,6 +570,7 @@ function createPokemonCard(pokemon, pokemonKey, team) {
     content.appendChild(effectivenessBlock);
 
     card.appendChild(content);
+    updatePokemonCardControls(card, false);
     return card;
 }
 
@@ -585,6 +587,41 @@ function createRemoveButton(pokemonKey, team) {
     return removeButton;
 }
 
+function createMinimizeButton(pokemonKey, team) {
+    const minimizeButton = document.createElement('button');
+    minimizeButton.type = 'button';
+    minimizeButton.className = 'pokemon-card__control pokemon-card__control--minimize';
+    minimizeButton.setAttribute('aria-label', 'Minimize Pokemon card');
+    minimizeButton.textContent = '-';
+    minimizeButton.addEventListener('click', function (event) {
+        event.stopPropagation();
+        setPokemonCardCollapsed(pokemonKey, team, true);
+    });
+    return minimizeButton;
+}
+
+function createMaximizeButton(pokemonKey, team) {
+    const maximizeButton = document.createElement('button');
+    maximizeButton.type = 'button';
+    maximizeButton.className = 'pokemon-card__control pokemon-card__control--maximize';
+    maximizeButton.setAttribute('aria-label', 'Maximize Pokemon card');
+    maximizeButton.textContent = '+';
+    maximizeButton.addEventListener('click', function (event) {
+        event.stopPropagation();
+        setPokemonCardCollapsed(pokemonKey, team, false);
+    });
+    return maximizeButton;
+}
+
+function createCardControls(pokemonKey, team) {
+    const controls = document.createElement('div');
+    controls.className = 'pokemon-card__controls';
+    controls.appendChild(createMinimizeButton(pokemonKey, team));
+    controls.appendChild(createMaximizeButton(pokemonKey, team));
+    controls.appendChild(createRemoveButton(pokemonKey, team));
+    return controls;
+}
+
 function removePokemonResult(pokemonKey, team) {
     const item = findResultItemByKey(pokemonKey, team);
     if (!item) {
@@ -595,6 +632,35 @@ function removePokemonResult(pokemonKey, team) {
     teamPokemonSets[team].delete(pokemonKey);
     resultsCount = Math.max(0, resultsCount - 1);
     syncManualEntryVisibility();
+}
+
+function setPokemonCardCollapsed(pokemonKey, team, collapsed) {
+    const item = findResultItemByKey(pokemonKey, team);
+    if (!item) {
+        return;
+    }
+
+    const card = item.querySelector('.pokemon-card');
+    if (!card) {
+        return;
+    }
+
+    card.classList.toggle('is-collapsed', collapsed);
+    card.dataset.collapsed = String(collapsed);
+    updatePokemonCardControls(card, collapsed);
+}
+
+function updatePokemonCardControls(card, collapsed) {
+    const minimizeButton = card.querySelector('.pokemon-card__control--minimize');
+    const maximizeButton = card.querySelector('.pokemon-card__control--maximize');
+
+    if (minimizeButton) {
+        minimizeButton.hidden = Boolean(collapsed);
+    }
+
+    if (maximizeButton) {
+        maximizeButton.hidden = !collapsed;
+    }
 }
 
 function findResultItemByKey(pokemonKey, team) {
