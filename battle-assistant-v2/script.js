@@ -1,7 +1,11 @@
 /*
 */
 // State
-let pokemonSet = new Set();
+let selectedTeam = 'my';
+const teamPokemonSets = {
+    my: new Set(),
+    opponent: new Set()
+};
 let resultsCount = 0;
 let pokemonList = [];
 let pokemonByName = new Map();
@@ -17,6 +21,11 @@ const dataEntry = document.getElementById('data-entry');
 const resultDataInput = document.getElementById('result-data');
 const suggestionsList = document.getElementById('pokemon-suggestions');
 const searchWrap = document.getElementById('pokemon-search-wrap');
+const teamSelectorButtons = Array.from(document.querySelectorAll('[data-team-choice]'));
+const teamResultsLists = {
+    my: document.getElementById('my-team-results'),
+    opponent: document.getElementById('opponent-team-results')
+};
 const pokemonDataUrl = new URL('PCGmons-NEW [2025-05-28].txt', window.location.href);
 
 const typeColors = {
@@ -43,6 +52,7 @@ const typeColors = {
 searchButton.disabled = true;
 loadPokemonData();
 bindEvents();
+setSelectedTeam(selectedTeam);
 
 async function loadPokemonData() {
     try {
@@ -73,6 +83,13 @@ function bindEvents() {
     searchInput.addEventListener('input', handleSearchInput);
     searchInput.addEventListener('keydown', handleSearchKeydown);
 
+    teamSelectorButtons.forEach((button) => {
+        button.addEventListener('click', function (event) {
+            event.stopPropagation();
+            setSelectedTeam(button.dataset.teamChoice);
+        });
+    });
+
     searchButton.addEventListener('click', function () {
         submitSearchFromInput();
     });
@@ -88,6 +105,20 @@ function bindEvents() {
     });
 
     resultDataInput.addEventListener('change', handleManualDataEntry);
+}
+
+function setSelectedTeam(team) {
+    if (!teamPokemonSets[team]) {
+        return;
+    }
+
+    selectedTeam = team;
+
+    teamSelectorButtons.forEach((button) => {
+        const isActive = button.dataset.teamChoice === team;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
+    });
 }
 
 function parsePokemonFile(fileContent) {
@@ -388,9 +419,9 @@ function handleSearch(pokemonName) {
     const pokemonData = searchPokemonInFile(pokemonName);
 
     if (pokemonData) {
-        addPokemonResult(pokemonData);
+        addPokemonResult(pokemonData, selectedTeam);
     } else {
-        addMissingPokemonResult(pokemonName);
+        addMissingPokemonResult(pokemonName, selectedTeam);
     }
 }
 
@@ -404,44 +435,49 @@ function searchPokemonInFile(pokemonName) {
     return pokemonByName.get(normalizePokemonName(pokemonName)) || null;
 }
 
-function addPokemonResult(pokemon) {
+function addPokemonResult(pokemon, team) {
     const pokemonKey = normalizePokemonName(pokemon.name);
+    const pokemonSet = teamPokemonSets[team];
 
     if (pokemonSet.has(pokemonKey)) {
-        flashExistingPokemon(pokemonKey);
+        flashExistingPokemon(pokemonKey, team);
         return;
     }
 
     const listItem = document.createElement('li');
     listItem.classList.add('results-list-item');
     listItem.dataset.pokemonName = pokemonKey;
+    listItem.dataset.team = team;
     listItem.dataset.resultKind = 'pokemon';
 
-    const card = createPokemonCard(pokemon, pokemonKey);
+    const card = createPokemonCard(pokemon, pokemonKey, team);
     listItem.appendChild(card);
-    resultsList.appendChild(listItem);
+    teamResultsLists[team].appendChild(listItem);
 
     pokemonSet.add(pokemonKey);
     resultsCount++;
 }
 
-function addMissingPokemonResult(pokemonName) {
+function addMissingPokemonResult(pokemonName, team) {
     const pokemonKey = normalizePokemonName(pokemonName);
+    const pokemonSet = teamPokemonSets[team];
 
     if (pokemonSet.has(pokemonKey)) {
-        flashExistingPokemon(pokemonKey);
+        flashExistingPokemon(pokemonKey, team);
         return;
     }
 
     const listItem = document.createElement('li');
     listItem.classList.add('results-list-item');
     listItem.dataset.pokemonName = pokemonKey;
+    listItem.dataset.team = team;
     listItem.dataset.resultKind = 'missing';
 
     const card = document.createElement('article');
     card.className = 'pokemon-card pokemon-card--missing';
     card.dataset.pokemonName = pokemonKey;
-    card.appendChild(createRemoveButton(pokemonKey));
+    card.dataset.team = team;
+    card.appendChild(createRemoveButton(pokemonKey, team));
 
     const content = document.createElement('div');
     content.className = 'pokemon-card__content';
@@ -462,29 +498,31 @@ function addMissingPokemonResult(pokemonName) {
     copyButton.addEventListener('click', function () {
         navigator.clipboard.writeText(`!pokemon ${pokemonName}`).then(() => {
             alert('Copied to clipboard!');
-            showDataEntryInput(pokemonName);
+            showDataEntryInput(pokemonName, team);
         });
     });
 
     card.appendChild(content);
     card.appendChild(copyButton);
     listItem.appendChild(card);
-    resultsList.appendChild(listItem);
+    teamResultsLists[team].appendChild(listItem);
 
     pokemonSet.add(pokemonKey);
     resultsCount++;
     dataEntry.style.display = 'block';
     dataEntry.dataset.targetPokemonName = pokemonKey;
+    dataEntry.dataset.targetTeam = team;
     resultDataInput.value = '';
 }
 
-function createPokemonCard(pokemon, pokemonKey) {
+function createPokemonCard(pokemon, pokemonKey, team) {
     const card = document.createElement('article');
     card.className = 'pokemon-card';
     card.dataset.pokemonName = pokemonKey;
+    card.dataset.team = team;
 
     applyTypeBackground(card, pokemon.types);
-    card.appendChild(createRemoveButton(pokemonKey));
+    card.appendChild(createRemoveButton(pokemonKey, team));
 
     const content = document.createElement('div');
     content.className = 'pokemon-card__content';
@@ -534,7 +572,7 @@ function createPokemonCard(pokemon, pokemonKey) {
     return card;
 }
 
-function createRemoveButton(pokemonKey) {
+function createRemoveButton(pokemonKey, team) {
     const removeButton = document.createElement('button');
     removeButton.type = 'button';
     removeButton.className = 'pokemon-card__remove';
@@ -542,31 +580,32 @@ function createRemoveButton(pokemonKey) {
     removeButton.textContent = 'X';
     removeButton.addEventListener('click', function (event) {
         event.stopPropagation();
-        removePokemonResult(pokemonKey);
+        removePokemonResult(pokemonKey, team);
     });
     return removeButton;
 }
 
-function removePokemonResult(pokemonKey) {
-    const item = findResultItemByKey(pokemonKey);
+function removePokemonResult(pokemonKey, team) {
+    const item = findResultItemByKey(pokemonKey, team);
     if (!item) {
         return;
     }
 
     item.remove();
-    pokemonSet.delete(pokemonKey);
+    teamPokemonSets[team].delete(pokemonKey);
     resultsCount = Math.max(0, resultsCount - 1);
     syncManualEntryVisibility();
 }
 
-function findResultItemByKey(pokemonKey) {
-    return Array.from(resultsList.querySelectorAll('[data-pokemon-name]')).find(
-        (item) => item.dataset.pokemonName === pokemonKey
+function findResultItemByKey(pokemonKey, team) {
+    const teamList = team ? teamResultsLists[team] : resultsList;
+    return Array.from(teamList.querySelectorAll('[data-pokemon-name]')).find(
+        (item) => item.dataset.pokemonName === pokemonKey && (!team || item.dataset.team === team)
     ) || null;
 }
 
-function flashExistingPokemon(pokemonKey) {
-    const item = findResultItemByKey(pokemonKey);
+function flashExistingPokemon(pokemonKey, team) {
+    const item = findResultItemByKey(pokemonKey, team);
     if (!item) {
         return;
     }
@@ -609,9 +648,10 @@ function getReadableTextColor(types) {
     return types.some((type) => darkTypes.has(type)) ? '#ffffff' : '#111111';
 }
 
-function showDataEntryInput(pokemonName) {
+function showDataEntryInput(pokemonName, team = selectedTeam) {
     dataEntry.style.display = 'block';
     dataEntry.dataset.targetPokemonName = normalizePokemonName(pokemonName);
+    dataEntry.dataset.targetTeam = team;
 }
 
 function handleManualDataEntry() {
@@ -623,7 +663,8 @@ function handleManualDataEntry() {
     parsePokemonData(inputData);
 
     const targetKey = dataEntry.dataset.targetPokemonName;
-    const item = targetKey ? findResultItemByKey(targetKey) : null;
+    const targetTeam = dataEntry.dataset.targetTeam || selectedTeam;
+    const item = targetKey ? findResultItemByKey(targetKey, targetTeam) : null;
     if (item) {
         const raw = item.querySelector('.pokemon-card__raw');
         if (raw) {
@@ -648,11 +689,14 @@ function syncManualEntryVisibility() {
 }
 
 function clearAllResults() {
-    pokemonSet.clear();
+    teamPokemonSets.my.clear();
+    teamPokemonSets.opponent.clear();
     searchInput.value = '';
-    resultsList.innerHTML = '';
+    teamResultsLists.my.innerHTML = '';
+    teamResultsLists.opponent.innerHTML = '';
     dataEntry.style.display = 'none';
     dataEntry.dataset.targetPokemonName = '';
+    dataEntry.dataset.targetTeam = '';
     resultDataInput.value = '';
     resultsCount = 0;
     hideSuggestions();

@@ -28,6 +28,8 @@ h1 {
 #results-list {
     padding: 0;
     margin: 6px 0 0;
+    display: grid;
+    gap: 4px;
 }
 
 /* List items with Pokémon details */
@@ -35,6 +37,54 @@ h1 {
     margin: 0;
     padding: 0;
     list-style-type: none;
+}
+
+#team-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0 0;
+}
+
+#team-selector .team-selector__button {
+    margin: 0;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    line-height: 1;
+    border-radius: 999px;
+}
+
+#team-selector .team-selector__button.is-active {
+    background: linear-gradient(90deg, #7dd3fc, #22c55e);
+    color: #111;
+}
+
+.team-results-group {
+    display: grid;
+    gap: 4px;
+}
+
+.team-results-group__header {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+    padding-left: 2px;
+}
+
+.team-results-group__list {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+}
+
+.team-divider {
+    height: 2px;
+    margin: 2px 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    border-radius: 999px;
 }
 
 /* Flash effect when Pokémon is already listed */

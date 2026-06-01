@@ -20,12 +20,26 @@
         <input type="text" id="pokemon-name" placeholder="Enter Pokemon name" autocomplete="off" />
         <ul id="pokemon-suggestions" class="pokemon-suggestions" hidden></ul>
     </div>
+    <div id="team-selector" aria-label="Team selector">
+        <button type="button" class="team-selector__button is-active" data-team-choice="my">My Team</button>
+        <button type="button" class="team-selector__button" data-team-choice="opponent">Opponents Team</button>
+    </div>
     <button id="search-btn" disabled>Search</button>
     <button id="clear-btn">Clear List</button>
     </div>
 
     <!-- Result list -->
-    <ul id="results-list"></ul>
+    <div id="results-list" aria-live="polite">
+        <section class="team-results-group" data-team="my">
+            <div class="team-results-group__header">My Team</div>
+            <ul id="my-team-results" class="team-results-group__list"></ul>
+        </section>
+        <div class="team-divider" aria-hidden="true"></div>
+        <section class="team-results-group" data-team="opponent">
+            <div class="team-results-group__header">Opponents Team</div>
+            <ul id="opponent-team-results" class="team-results-group__list"></ul>
+        </section>
+    </div>
 
     <!-- Hidden text input for entering data manually if Pokemon is not found -->
     <div id="data-entry" style="display:none;">
