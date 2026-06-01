@@ -456,6 +456,7 @@ function addPokemonResult(pokemon, team) {
 
     pokemonSet.add(pokemonKey);
     resultsCount++;
+    syncTeamCardControlStates(team);
 }
 
 function addMissingPokemonResult(pokemonName, team) {
@@ -504,12 +505,12 @@ function addMissingPokemonResult(pokemonName, team) {
 
     card.appendChild(content);
     card.appendChild(copyButton);
-    updatePokemonCardControls(card, false);
     listItem.appendChild(card);
     teamResultsLists[team].appendChild(listItem);
 
     pokemonSet.add(pokemonKey);
     resultsCount++;
+    syncTeamCardControlStates(team);
     dataEntry.style.display = 'block';
     dataEntry.dataset.targetPokemonName = pokemonKey;
     dataEntry.dataset.targetTeam = team;
@@ -570,8 +571,33 @@ function createPokemonCard(pokemon, pokemonKey, team) {
     content.appendChild(effectivenessBlock);
 
     card.appendChild(content);
-    updatePokemonCardControls(card, false);
     return card;
+}
+
+function createMoveUpButton(pokemonKey, team) {
+    const moveUpButton = document.createElement('button');
+    moveUpButton.type = 'button';
+    moveUpButton.className = 'pokemon-card__control pokemon-card__control--move-up';
+    moveUpButton.setAttribute('aria-label', 'Move Pokemon up');
+    moveUpButton.textContent = '↑';
+    moveUpButton.addEventListener('click', function (event) {
+        event.stopPropagation();
+        movePokemonResult(pokemonKey, team, -1);
+    });
+    return moveUpButton;
+}
+
+function createMoveDownButton(pokemonKey, team) {
+    const moveDownButton = document.createElement('button');
+    moveDownButton.type = 'button';
+    moveDownButton.className = 'pokemon-card__control pokemon-card__control--move-down';
+    moveDownButton.setAttribute('aria-label', 'Move Pokemon down');
+    moveDownButton.textContent = '↓';
+    moveDownButton.addEventListener('click', function (event) {
+        event.stopPropagation();
+        movePokemonResult(pokemonKey, team, 1);
+    });
+    return moveDownButton;
 }
 
 function createRemoveButton(pokemonKey, team) {
@@ -616,6 +642,8 @@ function createMaximizeButton(pokemonKey, team) {
 function createCardControls(pokemonKey, team) {
     const controls = document.createElement('div');
     controls.className = 'pokemon-card__controls';
+    controls.appendChild(createMoveUpButton(pokemonKey, team));
+    controls.appendChild(createMoveDownButton(pokemonKey, team));
     controls.appendChild(createMinimizeButton(pokemonKey, team));
     controls.appendChild(createMaximizeButton(pokemonKey, team));
     controls.appendChild(createRemoveButton(pokemonKey, team));
@@ -631,7 +659,28 @@ function removePokemonResult(pokemonKey, team) {
     item.remove();
     teamPokemonSets[team].delete(pokemonKey);
     resultsCount = Math.max(0, resultsCount - 1);
+    syncTeamCardControlStates(team);
     syncManualEntryVisibility();
+}
+
+function movePokemonResult(pokemonKey, team, direction) {
+    const item = findResultItemByKey(pokemonKey, team);
+    if (!item || !item.parentElement) {
+        return;
+    }
+
+    const sibling = direction < 0 ? item.previousElementSibling : item.nextElementSibling;
+    if (!sibling) {
+        return;
+    }
+
+    if (direction < 0) {
+        item.parentElement.insertBefore(item, sibling);
+    } else {
+        item.parentElement.insertBefore(sibling, item);
+    }
+
+    syncTeamCardControlStates(team);
 }
 
 function setPokemonCardCollapsed(pokemonKey, team, collapsed) {
@@ -647,20 +696,44 @@ function setPokemonCardCollapsed(pokemonKey, team, collapsed) {
 
     card.classList.toggle('is-collapsed', collapsed);
     card.dataset.collapsed = String(collapsed);
-    updatePokemonCardControls(card, collapsed);
+    syncTeamCardControlStates(team);
 }
 
-function updatePokemonCardControls(card, collapsed) {
-    const minimizeButton = card.querySelector('.pokemon-card__control--minimize');
-    const maximizeButton = card.querySelector('.pokemon-card__control--maximize');
-
-    if (minimizeButton) {
-        minimizeButton.hidden = Boolean(collapsed);
+function syncTeamCardControlStates(team) {
+    const teamList = teamResultsLists[team];
+    if (!teamList) {
+        return;
     }
 
-    if (maximizeButton) {
-        maximizeButton.hidden = !collapsed;
-    }
+    const items = Array.from(teamList.querySelectorAll('.results-list-item'));
+    items.forEach((item, index) => {
+        const card = item.querySelector('.pokemon-card');
+        if (!card) {
+            return;
+        }
+
+        const isCollapsed = card.classList.contains('is-collapsed');
+        const moveUpButton = card.querySelector('.pokemon-card__control--move-up');
+        const moveDownButton = card.querySelector('.pokemon-card__control--move-down');
+        const minimizeButton = card.querySelector('.pokemon-card__control--minimize');
+        const maximizeButton = card.querySelector('.pokemon-card__control--maximize');
+
+        if (moveUpButton) {
+            moveUpButton.disabled = index === 0;
+        }
+
+        if (moveDownButton) {
+            moveDownButton.disabled = index === items.length - 1;
+        }
+
+        if (minimizeButton) {
+            minimizeButton.hidden = isCollapsed;
+        }
+
+        if (maximizeButton) {
+            maximizeButton.hidden = !isCollapsed;
+        }
+    });
 }
 
 function findResultItemByKey(pokemonKey, team) {

@@ -310,6 +310,11 @@ input[type="text"] {
     flex: 0 0 auto;
 }
 
+.pokemon-card__control:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
 .pokemon-card__remove {
     border-radius: 50%;
 }
@@ -317,7 +322,7 @@ input[type="text"] {
 .pokemon-card__content {
     display: grid;
     gap: 2px;
-    padding-right: 72px;
+    padding-right: 112px;
 }
 
 .pokemon-card__line,
