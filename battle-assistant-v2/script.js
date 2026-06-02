@@ -27,6 +27,7 @@ const teamDialogNicknameInput = document.getElementById('team-save-nickname');
 const teamDialogPreview = document.getElementById('team-save-preview');
 const teamDialogLoadList = document.getElementById('team-load-list');
 const teamDialogPrimaryButton = document.getElementById('team-dialog-primary');
+const teamDialogRemoveButton = document.getElementById('team-dialog-remove');
 const teamDialogCancelButton = document.getElementById('team-dialog-cancel');
 const searchInput = document.getElementById('pokemon-name');
 const resultsList = document.getElementById('results-list');
@@ -77,6 +78,7 @@ if (loadTeamButton) {
 loadPokemonData();
 bindEvents();
 setSelectedTeam(selectedTeam);
+updateSaveTeamButtonState();
 
 async function loadPokemonData() {
     try {
@@ -101,6 +103,7 @@ async function loadPokemonData() {
         if (loadTeamButton) {
             loadTeamButton.disabled = false;
         }
+        updateSaveTeamButtonState();
         console.log(`Loaded ${pokemonList.length} Pokemon rows.`);
     } catch (error) {
         searchButton.disabled = true;
@@ -159,6 +162,10 @@ function bindEvents() {
         }
     });
 
+    teamDialogRemoveButton.addEventListener('click', function () {
+        void confirmRemoveSavedTeam();
+    });
+
     teamDialogNicknameInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' && teamDialogMode === 'save') {
             event.preventDefault();
@@ -194,6 +201,21 @@ function setSelectedTeam(team) {
         button.classList.toggle('is-active', isActive);
         button.setAttribute('aria-pressed', String(isActive));
     });
+
+    updateSaveTeamButtonState();
+}
+
+function updateSaveTeamButtonState() {
+    if (!saveTeamButton) {
+        return;
+    }
+
+    saveTeamButton.disabled = !hasAnyPokemonInTeam(selectedTeam);
+}
+
+function hasAnyPokemonInTeam(team) {
+    const teamSet = teamPokemonSets[team];
+    return Boolean(teamSet && teamSet.size > 0);
 }
 
 async function getTeamStorageDb() {
@@ -294,6 +316,10 @@ async function saveTeamRecord(record) {
 }
 
 async function saveCurrentTeam() {
+    if (!hasAnyPokemonInTeam(selectedTeam)) {
+        return;
+    }
+
     openTeamDialog('save');
 }
 
@@ -343,6 +369,8 @@ async function openTeamDialog(mode) {
         teamDialogLoadSection.hidden = true;
         teamSavedList.parentElement.hidden = false;
         teamDialogPrimaryButton.textContent = 'Save';
+        teamDialogRemoveButton.hidden = true;
+        teamDialogRemoveButton.disabled = true;
         teamDialogPrimaryButton.disabled = false;
         teamDialogNicknameInput.value = '';
         teamDialogPreview.textContent = getTeamRosterPreviewText(selectedTeam);
@@ -360,6 +388,7 @@ async function openTeamDialog(mode) {
         teamDialogLoadSection.hidden = false;
         teamSavedList.parentElement.hidden = true;
         teamDialogPrimaryButton.textContent = 'Load';
+        teamDialogRemoveButton.hidden = false;
         await populateSavedTeamList();
         teamDialogLoadList.focus();
         return;
@@ -395,10 +424,12 @@ async function populateSavedTeamList() {
         option.selected = true;
         teamDialogLoadList.appendChild(option);
         teamDialogPrimaryButton.disabled = true;
+        teamDialogRemoveButton.disabled = true;
         return;
     }
 
     teamDialogPrimaryButton.disabled = false;
+    teamDialogRemoveButton.disabled = false;
 
     teamRecords.forEach((record, index) => {
         const option = document.createElement('option');
@@ -508,6 +539,47 @@ async function confirmLoadTeam() {
     } catch (error) {
         console.error('Unable to load team', error);
         alert('Unable to load the team in this browser.');
+    }
+}
+
+async function confirmRemoveSavedTeam() {
+    try {
+        const selectedNickname = teamDialogLoadList.value;
+        const record = teamDialogRecords.find((item) => item.nickname === selectedNickname);
+        if (!record) {
+            alert('Please select a saved team from the list.');
+            return;
+        }
+
+        const confirmed = window.confirm(`Remove saved team "${record.nickname}"?`);
+        if (!confirmed) {
+            return;
+        }
+
+        const db = await getTeamStorageDb();
+        await new Promise((resolve, reject) => {
+            const tx = db.transaction(teamStorageStoreName, 'readwrite');
+            const store = tx.objectStore(teamStorageStoreName);
+            const request = store.delete(record.nickname);
+
+            request.onsuccess = function () {
+                resolve();
+            };
+
+            request.onerror = function () {
+                reject(request.error);
+            };
+        });
+
+        if (teamDialogMode === 'load') {
+            await populateSavedTeamList();
+            teamDialogLoadList.focus();
+        } else if (teamDialogMode === 'save') {
+            await renderSavedTeamsForSaveMode();
+        }
+    } catch (error) {
+        console.error('Unable to remove saved team', error);
+        alert('Unable to remove the saved team in this browser.');
     }
 }
 
@@ -863,6 +935,9 @@ function addPokemonResult(pokemon, team) {
     pokemonSet.add(pokemonKey);
     resultsCount++;
     syncTeamCardControlStates(team);
+    if (team === selectedTeam) {
+        updateSaveTeamButtonState();
+    }
 }
 
 function addMissingPokemonResult(pokemonName, team) {
@@ -917,6 +992,9 @@ function addMissingPokemonResult(pokemonName, team) {
     pokemonSet.add(pokemonKey);
     resultsCount++;
     syncTeamCardControlStates(team);
+    if (team === selectedTeam) {
+        updateSaveTeamButtonState();
+    }
     dataEntry.style.display = 'block';
     dataEntry.dataset.targetPokemonName = pokemonKey;
     dataEntry.dataset.targetTeam = team;
@@ -1066,6 +1144,9 @@ function removePokemonResult(pokemonKey, team) {
     teamPokemonSets[team].delete(pokemonKey);
     resultsCount = Math.max(0, resultsCount - 1);
     syncTeamCardControlStates(team);
+    if (team === selectedTeam) {
+        updateSaveTeamButtonState();
+    }
     syncManualEntryVisibility();
 }
 
@@ -1245,6 +1326,7 @@ function clearAllResults() {
     resultDataInput.value = '';
     resultsCount = 0;
     hideSuggestions();
+    updateSaveTeamButtonState();
 }
 
 function clearTeamResults(team) {
@@ -1257,6 +1339,9 @@ function clearTeamResults(team) {
     resultsCount = Math.max(0, resultsCount - teamItems.length);
     teamList.innerHTML = '';
     teamPokemonSets[team].clear();
+    if (team === selectedTeam) {
+        updateSaveTeamButtonState();
+    }
 }
 
 function focusTextBox(textBoxID) {

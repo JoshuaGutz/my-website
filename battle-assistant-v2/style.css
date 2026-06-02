@@ -225,6 +225,10 @@ h1 {
     line-height: 1;
 }
 
+#team-dialog-remove[hidden] {
+    display: none;
+}
+
 .team-results-group {
     display: grid;
     gap: 4px;
