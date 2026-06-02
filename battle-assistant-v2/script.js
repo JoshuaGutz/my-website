@@ -15,8 +15,6 @@ let activeSuggestionIndex = -1;
 
 const searchButton = document.getElementById('search-btn');
 const clearButton = document.getElementById('clear-btn');
-const saveTeamButton = document.getElementById('save-team-btn');
-const loadTeamButton = document.getElementById('load-team-btn');
 const teamDialog = document.getElementById('team-dialog');
 const teamDialogTitle = document.getElementById('team-dialog-title');
 const teamDialogSubtitle = document.getElementById('team-dialog-subtitle');
@@ -36,6 +34,7 @@ const resultDataInput = document.getElementById('result-data');
 const suggestionsList = document.getElementById('pokemon-suggestions');
 const searchWrap = document.getElementById('pokemon-search-wrap');
 const teamSelectorButtons = Array.from(document.querySelectorAll('[data-team-choice]'));
+const teamActionButtons = Array.from(document.querySelectorAll('[data-team-action]'));
 const teamResultsLists = {
     my: document.getElementById('my-team-results'),
     opponent: document.getElementById('opponent-team-results')
@@ -46,6 +45,7 @@ const teamStorageStoreName = 'teams';
 let teamStorageDbPromise = null;
 let teamDialogMode = null;
 let teamDialogRecords = [];
+let teamDialogTeam = null;
 
 const typeColors = {
     fire: '#f97316',
@@ -69,16 +69,10 @@ const typeColors = {
 };
 
 searchButton.disabled = true;
-if (saveTeamButton) {
-    saveTeamButton.disabled = true;
-}
-if (loadTeamButton) {
-    loadTeamButton.disabled = true;
-}
 loadPokemonData();
 bindEvents();
 setSelectedTeam(selectedTeam);
-updateSaveTeamButtonState();
+updateTeamActionButtonStates();
 
 async function loadPokemonData() {
     try {
@@ -97,22 +91,10 @@ async function loadPokemonData() {
         }
 
         searchButton.disabled = false;
-        if (saveTeamButton) {
-            saveTeamButton.disabled = false;
-        }
-        if (loadTeamButton) {
-            loadTeamButton.disabled = false;
-        }
-        updateSaveTeamButtonState();
+        updateTeamActionButtonStates();
         console.log(`Loaded ${pokemonList.length} Pokemon rows.`);
     } catch (error) {
         searchButton.disabled = true;
-        if (saveTeamButton) {
-            saveTeamButton.disabled = true;
-        }
-        if (loadTeamButton) {
-            loadTeamButton.disabled = true;
-        }
         console.error('Unable to load bundled PCGmons data', error);
         alert('Unable to load PCGmons-NEW data automatically. Please make sure the page is being served from the hosted site and the text file is available.');
     }
@@ -137,12 +119,20 @@ function bindEvents() {
         clearAllResults();
     });
 
-    saveTeamButton.addEventListener('click', function () {
-        void saveCurrentTeam();
-    });
+    teamActionButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+            const team = button.dataset.teamTarget;
+            const action = button.dataset.teamAction;
 
-    loadTeamButton.addEventListener('click', function () {
-        void loadSavedTeam();
+            if (action === 'save') {
+                void saveCurrentTeam(team);
+                return;
+            }
+
+            if (action === 'load') {
+                void loadSavedTeam(team);
+            }
+        });
     });
 
     if (teamDialog) {
@@ -202,15 +192,20 @@ function setSelectedTeam(team) {
         button.setAttribute('aria-pressed', String(isActive));
     });
 
-    updateSaveTeamButtonState();
+    updateTeamActionButtonStates();
 }
 
-function updateSaveTeamButtonState() {
-    if (!saveTeamButton) {
-        return;
-    }
+function updateTeamActionButtonStates() {
+    teamActionButtons.forEach((button) => {
+        const team = button.dataset.teamTarget;
+        const action = button.dataset.teamAction;
 
-    saveTeamButton.disabled = !hasAnyPokemonInTeam(selectedTeam);
+        if (action === 'save') {
+            button.disabled = !hasAnyPokemonInTeam(team);
+        } else if (action === 'load') {
+            button.disabled = false;
+        }
+    });
 }
 
 function hasAnyPokemonInTeam(team) {
@@ -315,17 +310,17 @@ async function saveTeamRecord(record) {
     });
 }
 
-async function saveCurrentTeam() {
-    if (!hasAnyPokemonInTeam(selectedTeam)) {
+async function saveCurrentTeam(team) {
+    if (!hasAnyPokemonInTeam(team)) {
         return;
     }
 
-    openTeamDialog('save');
+    openTeamDialog('save', team);
 }
 
-async function loadSavedTeam() {
+async function loadSavedTeam(team) {
     try {
-        await openTeamDialog('load');
+        await openTeamDialog('load', team);
     } catch (error) {
         console.error('Unable to open team loader', error);
         closeTeamDialog();
@@ -356,13 +351,14 @@ function getTeamPokemonNames(team) {
         });
 }
 
-async function openTeamDialog(mode) {
+async function openTeamDialog(mode, team) {
     teamDialogMode = mode;
+    teamDialogTeam = team;
     teamDialogRecords = [];
     teamDialog.hidden = false;
 
     if (mode === 'save') {
-        teamDialogTitle.textContent = `Save ${getTeamLabelForSide(selectedTeam)}`;
+        teamDialogTitle.textContent = `Save ${getTeamLabelForSide(teamDialogTeam)}`;
         teamDialogSubtitle.textContent = '';
         teamDialogSubtitle.hidden = true;
         teamDialogSaveSection.hidden = false;
@@ -373,7 +369,7 @@ async function openTeamDialog(mode) {
         teamDialogRemoveButton.disabled = true;
         teamDialogPrimaryButton.disabled = false;
         teamDialogNicknameInput.value = '';
-        teamDialogPreview.textContent = getTeamRosterPreviewText(selectedTeam);
+        teamDialogPreview.textContent = getTeamRosterPreviewText(teamDialogTeam);
         await renderSavedTeamsForSaveMode();
         teamDialogNicknameInput.focus();
         teamDialogNicknameInput.select();
@@ -381,7 +377,7 @@ async function openTeamDialog(mode) {
     }
 
     if (mode === 'load') {
-        teamDialogTitle.textContent = `Load ${getTeamLabelForSide(selectedTeam)}`;
+        teamDialogTitle.textContent = `Load ${getTeamLabelForSide(teamDialogTeam)}`;
         teamDialogSubtitle.textContent = '';
         teamDialogSubtitle.hidden = true;
         teamDialogSaveSection.hidden = true;
@@ -400,6 +396,7 @@ async function openTeamDialog(mode) {
 function closeTeamDialog() {
     teamDialog.hidden = true;
     teamDialogMode = null;
+    teamDialogTeam = null;
     teamDialogRecords = [];
     teamDialogLoadList.innerHTML = '';
     teamSavedList.innerHTML = '';
@@ -419,7 +416,7 @@ async function populateSavedTeamList() {
 
     if (teamRecords.length === 0) {
         const option = document.createElement('option');
-        option.textContent = `No saved teams for ${getTeamLabelForSide(selectedTeam)}`;
+        option.textContent = `No saved teams for ${getTeamLabelForSide(teamDialogTeam)}`;
         option.disabled = true;
         option.selected = true;
         teamDialogLoadList.appendChild(option);
@@ -453,7 +450,7 @@ async function renderSavedTeamsForSaveMode() {
     if (teamRecords.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'team-dialog__saved-empty';
-        empty.textContent = `No saved teams for ${getTeamLabelForSide(selectedTeam)}`;
+        empty.textContent = `No saved teams for ${getTeamLabelForSide(teamDialogTeam)}`;
         teamSavedList.appendChild(empty);
         return;
     }
@@ -482,7 +479,7 @@ async function getSavedTeamRecordsForSelectedTeam() {
             team: record.team || 'my',
             roster: String(record.roster || '').trim()
         }))
-        .filter((record) => record.nickname && record.team === selectedTeam)
+        .filter((record) => record.nickname && record.team === teamDialogTeam)
         .sort((left, right) => compareStrings(left.nickname, right.nickname));
 }
 
@@ -503,10 +500,10 @@ async function confirmSaveTeam() {
             return;
         }
 
-        const roster = getTeamPokemonNames(selectedTeam);
+        const roster = getTeamPokemonNames(teamDialogTeam);
         await saveTeamRecord({
             nickname,
-            team: selectedTeam,
+            team: teamDialogTeam,
             roster: roster.join(',')
         });
 
@@ -531,9 +528,9 @@ async function confirmLoadTeam() {
             .map((name) => name.trim())
             .filter(Boolean);
 
-        const skipped = loadTeamRoster(names, selectedTeam);
+        const skipped = loadTeamRoster(names, teamDialogTeam);
         if (skipped.length > 0) {
-            alert(`Loaded ${getTeamLabelForSide(selectedTeam)} from "${record.nickname}", but skipped: ${skipped.join(', ')}.`);
+            alert(`Loaded ${getTeamLabelForSide(teamDialogTeam)} from "${record.nickname}", but skipped: ${skipped.join(', ')}.`);
         }
         closeTeamDialog();
     } catch (error) {
@@ -935,9 +932,7 @@ function addPokemonResult(pokemon, team) {
     pokemonSet.add(pokemonKey);
     resultsCount++;
     syncTeamCardControlStates(team);
-    if (team === selectedTeam) {
-        updateSaveTeamButtonState();
-    }
+    updateTeamActionButtonStates();
 }
 
 function addMissingPokemonResult(pokemonName, team) {
@@ -992,9 +987,7 @@ function addMissingPokemonResult(pokemonName, team) {
     pokemonSet.add(pokemonKey);
     resultsCount++;
     syncTeamCardControlStates(team);
-    if (team === selectedTeam) {
-        updateSaveTeamButtonState();
-    }
+    updateTeamActionButtonStates();
     dataEntry.style.display = 'block';
     dataEntry.dataset.targetPokemonName = pokemonKey;
     dataEntry.dataset.targetTeam = team;
@@ -1144,9 +1137,7 @@ function removePokemonResult(pokemonKey, team) {
     teamPokemonSets[team].delete(pokemonKey);
     resultsCount = Math.max(0, resultsCount - 1);
     syncTeamCardControlStates(team);
-    if (team === selectedTeam) {
-        updateSaveTeamButtonState();
-    }
+    updateTeamActionButtonStates();
     syncManualEntryVisibility();
 }
 
@@ -1326,7 +1317,7 @@ function clearAllResults() {
     resultDataInput.value = '';
     resultsCount = 0;
     hideSuggestions();
-    updateSaveTeamButtonState();
+    updateTeamActionButtonStates();
 }
 
 function clearTeamResults(team) {
@@ -1339,9 +1330,7 @@ function clearTeamResults(team) {
     resultsCount = Math.max(0, resultsCount - teamItems.length);
     teamList.innerHTML = '';
     teamPokemonSets[team].clear();
-    if (team === selectedTeam) {
-        updateSaveTeamButtonState();
-    }
+    updateTeamActionButtonStates();
 }
 
 function focusTextBox(textBoxID) {

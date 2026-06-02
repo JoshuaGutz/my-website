@@ -24,10 +24,6 @@
         <button type="button" class="team-selector__button is-active" data-team-choice="my">My Team</button>
         <button type="button" class="team-selector__button" data-team-choice="opponent">Opponents Team</button>
     </div>
-    <div id="team-actions">
-        <button type="button" id="save-team-btn">Save Team</button>
-        <button type="button" id="load-team-btn">Load Team</button>
-    </div>
     <button id="search-btn" disabled>Search</button>
     <button id="clear-btn">Clear List</button>
     </div>
@@ -64,12 +60,24 @@
     <!-- Result list -->
     <div id="results-list" aria-live="polite">
         <section class="team-results-group" data-team="my">
-            <div class="team-results-group__header">My Team</div>
+            <div class="team-results-group__header">
+                <span>My Team</span>
+                <div class="team-results-group__actions">
+                    <button type="button" class="team-results-group__action" data-team-action="save" data-team-target="my">Save</button>
+                    <button type="button" class="team-results-group__action" data-team-action="load" data-team-target="my">Load</button>
+                </div>
+            </div>
             <ul id="my-team-results" class="team-results-group__list"></ul>
         </section>
         <div class="team-divider" aria-hidden="true"></div>
         <section class="team-results-group" data-team="opponent">
-            <div class="team-results-group__header">Opponents Team</div>
+            <div class="team-results-group__header">
+                <span>Opponents Team</span>
+                <div class="team-results-group__actions">
+                    <button type="button" class="team-results-group__action" data-team-action="save" data-team-target="opponent">Save</button>
+                    <button type="button" class="team-results-group__action" data-team-action="load" data-team-target="opponent">Load</button>
+                </div>
+            </div>
             <ul id="opponent-team-results" class="team-results-group__list"></ul>
         </section>
     </div>

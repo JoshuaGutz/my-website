@@ -59,20 +59,6 @@ h1 {
     color: #111;
 }
 
-#team-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin: 6px 0 0;
-}
-
-#team-actions button {
-    margin: 0;
-    padding: 6px 10px;
-    font-size: 0.85rem;
-    line-height: 1;
-}
-
 .team-dialog[hidden] {
     display: none;
 }
@@ -235,12 +221,36 @@ h1 {
 }
 
 .team-results-group__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.72);
     padding-left: 2px;
+}
+
+.team-results-group__actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+}
+
+.team-results-group__action {
+    margin: 0;
+    padding: 3px 6px;
+    font-size: 0.68rem;
+    line-height: 1;
+    border-radius: 4px;
+}
+
+.team-results-group__action:disabled {
+    opacity: 0.35;
+    cursor: default;
 }
 
 .team-results-group__list {
