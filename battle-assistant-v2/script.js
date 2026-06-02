@@ -15,6 +15,19 @@ let activeSuggestionIndex = -1;
 
 const searchButton = document.getElementById('search-btn');
 const clearButton = document.getElementById('clear-btn');
+const saveTeamButton = document.getElementById('save-team-btn');
+const loadTeamButton = document.getElementById('load-team-btn');
+const teamDialog = document.getElementById('team-dialog');
+const teamDialogTitle = document.getElementById('team-dialog-title');
+const teamDialogSubtitle = document.getElementById('team-dialog-subtitle');
+const teamDialogSaveSection = document.getElementById('team-dialog-save');
+const teamDialogLoadSection = document.getElementById('team-dialog-load');
+const teamSavedList = document.getElementById('team-saved-list');
+const teamDialogNicknameInput = document.getElementById('team-save-nickname');
+const teamDialogPreview = document.getElementById('team-save-preview');
+const teamDialogLoadList = document.getElementById('team-load-list');
+const teamDialogPrimaryButton = document.getElementById('team-dialog-primary');
+const teamDialogCancelButton = document.getElementById('team-dialog-cancel');
 const searchInput = document.getElementById('pokemon-name');
 const resultsList = document.getElementById('results-list');
 const dataEntry = document.getElementById('data-entry');
@@ -27,6 +40,11 @@ const teamResultsLists = {
     opponent: document.getElementById('opponent-team-results')
 };
 const pokemonDataUrl = new URL('PCGmons-NEW [2025-05-28].txt', window.location.href);
+const teamStorageDbName = 'battle-assistant-team-storage';
+const teamStorageStoreName = 'teams';
+let teamStorageDbPromise = null;
+let teamDialogMode = null;
+let teamDialogRecords = [];
 
 const typeColors = {
     fire: '#f97316',
@@ -50,6 +68,12 @@ const typeColors = {
 };
 
 searchButton.disabled = true;
+if (saveTeamButton) {
+    saveTeamButton.disabled = true;
+}
+if (loadTeamButton) {
+    loadTeamButton.disabled = true;
+}
 loadPokemonData();
 bindEvents();
 setSelectedTeam(selectedTeam);
@@ -71,9 +95,21 @@ async function loadPokemonData() {
         }
 
         searchButton.disabled = false;
+        if (saveTeamButton) {
+            saveTeamButton.disabled = false;
+        }
+        if (loadTeamButton) {
+            loadTeamButton.disabled = false;
+        }
         console.log(`Loaded ${pokemonList.length} Pokemon rows.`);
     } catch (error) {
         searchButton.disabled = true;
+        if (saveTeamButton) {
+            saveTeamButton.disabled = true;
+        }
+        if (loadTeamButton) {
+            loadTeamButton.disabled = true;
+        }
         console.error('Unable to load bundled PCGmons data', error);
         alert('Unable to load PCGmons-NEW data automatically. Please make sure the page is being served from the hosted site and the text file is available.');
     }
@@ -98,6 +134,45 @@ function bindEvents() {
         clearAllResults();
     });
 
+    saveTeamButton.addEventListener('click', function () {
+        void saveCurrentTeam();
+    });
+
+    loadTeamButton.addEventListener('click', function () {
+        void loadSavedTeam();
+    });
+
+    if (teamDialog) {
+        teamDialog.addEventListener('click', function (event) {
+            if (event.target && event.target.dataset && event.target.dataset.dialogClose === 'true') {
+                closeTeamDialog();
+            }
+        });
+    }
+
+    teamDialogCancelButton.addEventListener('click', closeTeamDialog);
+    teamDialogPrimaryButton.addEventListener('click', function () {
+        if (teamDialogMode === 'save') {
+            void confirmSaveTeam();
+        } else if (teamDialogMode === 'load') {
+            void confirmLoadTeam();
+        }
+    });
+
+    teamDialogNicknameInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && teamDialogMode === 'save') {
+            event.preventDefault();
+            void confirmSaveTeam();
+        }
+    });
+
+    teamDialogLoadList.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && teamDialogMode === 'load') {
+            event.preventDefault();
+            void confirmLoadTeam();
+        }
+    });
+
     document.addEventListener('click', function (event) {
         if (!searchWrap.contains(event.target)) {
             hideSuggestions();
@@ -119,6 +194,337 @@ function setSelectedTeam(team) {
         button.classList.toggle('is-active', isActive);
         button.setAttribute('aria-pressed', String(isActive));
     });
+}
+
+async function getTeamStorageDb() {
+    if (!teamStorageDbPromise) {
+        teamStorageDbPromise = new Promise((resolve, reject) => {
+            const request = indexedDB.open(teamStorageDbName, 1);
+
+            request.onupgradeneeded = function (event) {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(teamStorageStoreName)) {
+                    db.createObjectStore(teamStorageStoreName, { keyPath: 'nickname' });
+                }
+            };
+
+            request.onsuccess = function () {
+                resolve(request.result);
+            };
+
+            request.onerror = function () {
+                reject(request.error);
+            };
+        });
+    }
+
+    return teamStorageDbPromise;
+}
+
+async function getSavedTeamRecord(nickname) {
+    const db = await getTeamStorageDb();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(teamStorageStoreName, 'readonly');
+        const store = tx.objectStore(teamStorageStoreName);
+        const request = store.get(nickname);
+
+        request.onsuccess = function () {
+            resolve(request.result || null);
+        };
+
+        request.onerror = function () {
+            reject(request.error);
+        };
+    });
+}
+
+async function getAllSavedTeamRecords() {
+    const db = await getTeamStorageDb();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(teamStorageStoreName, 'readonly');
+        const store = tx.objectStore(teamStorageStoreName);
+
+        if (typeof store.getAll !== 'function') {
+            const records = [];
+            const cursorRequest = store.openCursor();
+
+            cursorRequest.onsuccess = function () {
+                const cursor = cursorRequest.result;
+                if (!cursor) {
+                    resolve(records);
+                    return;
+                }
+
+                records.push(cursor.value);
+                cursor.continue();
+            };
+
+            cursorRequest.onerror = function () {
+                reject(cursorRequest.error);
+            };
+            return;
+        }
+
+        const request = store.getAll();
+        request.onsuccess = function () {
+            resolve(request.result || []);
+        };
+
+        request.onerror = function () {
+            reject(request.error);
+        };
+    });
+}
+
+async function saveTeamRecord(record) {
+    const db = await getTeamStorageDb();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(teamStorageStoreName, 'readwrite');
+        const store = tx.objectStore(teamStorageStoreName);
+        const request = store.add(record);
+
+        request.onsuccess = function () {
+            resolve();
+        };
+
+        request.onerror = function () {
+            reject(request.error);
+        };
+    });
+}
+
+async function saveCurrentTeam() {
+    openTeamDialog('save');
+}
+
+async function loadSavedTeam() {
+    try {
+        await openTeamDialog('load');
+    } catch (error) {
+        console.error('Unable to open team loader', error);
+        closeTeamDialog();
+        alert('Unable to load saved teams in this browser.');
+    }
+}
+
+function getTeamLabel(team) {
+    return team === 'opponent' ? 'Opponents Team' : 'My Team';
+}
+
+function getTeamLabelForSide(team) {
+    return team === 'opponent' ? 'Opponents Team' : 'My Team';
+}
+
+function getTeamPokemonNames(team) {
+    const teamList = teamResultsLists[team];
+    if (!teamList) {
+        return [];
+    }
+
+    return Array.from(teamList.querySelectorAll('.results-list-item[data-result-kind="pokemon"]'))
+        .map((item) => item.dataset.pokemonName)
+        .filter(Boolean)
+        .map((name) => {
+            const pokemon = pokemonByName.get(name);
+            return pokemon ? pokemon.name : name;
+        });
+}
+
+async function openTeamDialog(mode) {
+    teamDialogMode = mode;
+    teamDialogRecords = [];
+    teamDialog.hidden = false;
+
+    if (mode === 'save') {
+        teamDialogTitle.textContent = `Save ${getTeamLabelForSide(selectedTeam)}`;
+        teamDialogSubtitle.textContent = '';
+        teamDialogSubtitle.hidden = true;
+        teamDialogSaveSection.hidden = false;
+        teamDialogLoadSection.hidden = true;
+        teamSavedList.parentElement.hidden = false;
+        teamDialogPrimaryButton.textContent = 'Save';
+        teamDialogPrimaryButton.disabled = false;
+        teamDialogNicknameInput.value = '';
+        teamDialogPreview.textContent = getTeamRosterPreviewText(selectedTeam);
+        await renderSavedTeamsForSaveMode();
+        teamDialogNicknameInput.focus();
+        teamDialogNicknameInput.select();
+        return;
+    }
+
+    if (mode === 'load') {
+        teamDialogTitle.textContent = `Load ${getTeamLabelForSide(selectedTeam)}`;
+        teamDialogSubtitle.textContent = '';
+        teamDialogSubtitle.hidden = true;
+        teamDialogSaveSection.hidden = true;
+        teamDialogLoadSection.hidden = false;
+        teamSavedList.parentElement.hidden = true;
+        teamDialogPrimaryButton.textContent = 'Load';
+        await populateSavedTeamList();
+        teamDialogLoadList.focus();
+        return;
+    }
+
+    closeTeamDialog();
+}
+
+function closeTeamDialog() {
+    teamDialog.hidden = true;
+    teamDialogMode = null;
+    teamDialogRecords = [];
+    teamDialogLoadList.innerHTML = '';
+    teamSavedList.innerHTML = '';
+    teamDialogSubtitle.hidden = false;
+}
+
+function getTeamRosterPreviewText(team) {
+    const roster = getTeamPokemonNames(team);
+    return roster.join(', ');
+}
+
+async function populateSavedTeamList() {
+    const teamRecords = await getSavedTeamRecordsForSelectedTeam();
+
+    teamDialogRecords = teamRecords;
+    teamDialogLoadList.innerHTML = '';
+
+    if (teamRecords.length === 0) {
+        const option = document.createElement('option');
+        option.textContent = `No saved teams for ${getTeamLabelForSide(selectedTeam)}`;
+        option.disabled = true;
+        option.selected = true;
+        teamDialogLoadList.appendChild(option);
+        teamDialogPrimaryButton.disabled = true;
+        return;
+    }
+
+    teamDialogPrimaryButton.disabled = false;
+
+    teamRecords.forEach((record, index) => {
+        const option = document.createElement('option');
+        option.value = record.nickname;
+        option.textContent = `${record.nickname} - ${formatStoredRosterForDisplay(record.roster)}`;
+        if (index === 0) {
+            option.selected = true;
+        }
+        teamDialogLoadList.appendChild(option);
+    });
+}
+
+async function renderSavedTeamsForSaveMode() {
+    const teamRecords = await getSavedTeamRecordsForSelectedTeam();
+    if (!teamSavedList) {
+        return;
+    }
+
+    teamSavedList.innerHTML = '';
+
+    if (teamRecords.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'team-dialog__saved-empty';
+        empty.textContent = `No saved teams for ${getTeamLabelForSide(selectedTeam)}`;
+        teamSavedList.appendChild(empty);
+        return;
+    }
+
+    teamRecords.forEach((record) => {
+        const row = document.createElement('div');
+        row.className = 'team-dialog__saved-row team-dialog__saved-row--static';
+        row.textContent = `${record.nickname} - ${formatStoredRosterForDisplay(record.roster)}`;
+        teamSavedList.appendChild(row);
+    });
+}
+
+function formatStoredRosterForDisplay(rosterText) {
+    return String(rosterText || '')
+        .split(',')
+        .map((name) => name.trim())
+        .filter(Boolean)
+        .join(', ');
+}
+
+async function getSavedTeamRecordsForSelectedTeam() {
+    const records = await getAllSavedTeamRecords();
+    return records
+        .map((record) => ({
+            nickname: String(record.nickname || '').trim(),
+            team: record.team || 'my',
+            roster: String(record.roster || '').trim()
+        }))
+        .filter((record) => record.nickname && record.team === selectedTeam)
+        .sort((left, right) => compareStrings(left.nickname, right.nickname));
+}
+
+async function confirmSaveTeam() {
+    try {
+        const nickname = teamDialogNicknameInput.value.trim();
+        if (!nickname) {
+            alert('Please enter a team nickname.');
+            teamDialogNicknameInput.focus();
+            return;
+        }
+
+        const existing = await getSavedTeamRecord(nickname);
+        if (existing) {
+            alert(`A saved team named "${nickname}" already exists. Please choose a unique nickname.`);
+            teamDialogNicknameInput.focus();
+            teamDialogNicknameInput.select();
+            return;
+        }
+
+        const roster = getTeamPokemonNames(selectedTeam);
+        await saveTeamRecord({
+            nickname,
+            team: selectedTeam,
+            roster: roster.join(',')
+        });
+
+        closeTeamDialog();
+    } catch (error) {
+        console.error('Unable to save team', error);
+        alert('Unable to save the team in this browser.');
+    }
+}
+
+async function confirmLoadTeam() {
+    try {
+        const selectedNickname = teamDialogLoadList.value;
+        const record = teamDialogRecords.find((item) => item.nickname === selectedNickname);
+        if (!record) {
+            alert('Please select a saved team from the list.');
+            return;
+        }
+
+        const names = String(record.roster || '')
+            .split(',')
+            .map((name) => name.trim())
+            .filter(Boolean);
+
+        const skipped = loadTeamRoster(names, selectedTeam);
+        if (skipped.length > 0) {
+            alert(`Loaded ${getTeamLabelForSide(selectedTeam)} from "${record.nickname}", but skipped: ${skipped.join(', ')}.`);
+        }
+        closeTeamDialog();
+    } catch (error) {
+        console.error('Unable to load team', error);
+        alert('Unable to load the team in this browser.');
+    }
+}
+
+function loadTeamRoster(names, team) {
+    clearTeamResults(team);
+    const skipped = [];
+
+    names.forEach((name) => {
+        const pokemonData = searchPokemonInFile(name);
+        if (pokemonData) {
+            addPokemonResult(pokemonData, team);
+        } else {
+            skipped.push(name);
+        }
+    });
+
+    return skipped;
 }
 
 function parsePokemonFile(fileContent) {
@@ -831,8 +1237,8 @@ function clearAllResults() {
     teamPokemonSets.my.clear();
     teamPokemonSets.opponent.clear();
     searchInput.value = '';
-    teamResultsLists.my.innerHTML = '';
-    teamResultsLists.opponent.innerHTML = '';
+    clearTeamResults('my');
+    clearTeamResults('opponent');
     dataEntry.style.display = 'none';
     dataEntry.dataset.targetPokemonName = '';
     dataEntry.dataset.targetTeam = '';
@@ -841,6 +1247,20 @@ function clearAllResults() {
     hideSuggestions();
 }
 
+function clearTeamResults(team) {
+    const teamList = teamResultsLists[team];
+    if (!teamList) {
+        return;
+    }
+
+    const teamItems = Array.from(teamList.querySelectorAll('.results-list-item'));
+    resultsCount = Math.max(0, resultsCount - teamItems.length);
+    teamList.innerHTML = '';
+    teamPokemonSets[team].clear();
+}
+
 function focusTextBox(textBoxID) {
     document.getElementById(textBoxID).focus();
 }
+
+

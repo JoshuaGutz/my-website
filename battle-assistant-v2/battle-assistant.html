@@ -24,8 +24,40 @@
         <button type="button" class="team-selector__button is-active" data-team-choice="my">My Team</button>
         <button type="button" class="team-selector__button" data-team-choice="opponent">Opponents Team</button>
     </div>
+    <div id="team-actions">
+        <button type="button" id="save-team-btn">Save Team</button>
+        <button type="button" id="load-team-btn">Load Team</button>
+    </div>
     <button id="search-btn" disabled>Search</button>
     <button id="clear-btn">Clear List</button>
+    </div>
+
+    <div id="team-dialog" class="team-dialog" hidden>
+        <div class="team-dialog__backdrop" data-dialog-close="true"></div>
+        <div class="team-dialog__panel" role="dialog" aria-modal="true" aria-labelledby="team-dialog-title">
+            <div class="team-dialog__header">
+                <h2 id="team-dialog-title" class="team-dialog__title"></h2>
+                <div id="team-dialog-subtitle" class="team-dialog__subtitle"></div>
+            </div>
+
+            <div id="team-dialog-save" class="team-dialog__section" hidden>
+                <input type="text" id="team-save-nickname" autocomplete="off" placeholder="Nickname" />
+                <div id="team-save-preview" class="team-dialog__preview" aria-label="Mon list"></div>
+                <div class="team-dialog__saved-panel">
+                    <div class="team-dialog__label">Already saved teams</div>
+                    <div id="team-saved-list" class="team-dialog__list team-dialog__list--static" aria-label="Already saved teams"></div>
+                </div>
+            </div>
+
+            <div id="team-dialog-load" class="team-dialog__section" hidden>
+                <select id="team-load-list" class="team-dialog__list" size="8"></select>
+            </div>
+
+            <div class="team-dialog__footer">
+                <button type="button" id="team-dialog-primary"></button>
+                <button type="button" id="team-dialog-cancel">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <!-- Result list -->

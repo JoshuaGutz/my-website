@@ -59,6 +59,172 @@ h1 {
     color: #111;
 }
 
+#team-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0 0;
+}
+
+#team-actions button {
+    margin: 0;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.team-dialog[hidden] {
+    display: none;
+}
+
+.team-dialog [hidden] {
+    display: none !important;
+}
+
+.team-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.team-dialog__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.62);
+}
+
+.team-dialog__panel {
+    position: relative;
+    z-index: 1;
+    width: min(620px, 100%);
+    max-height: min(88vh, 760px);
+    overflow: auto;
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: #111;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+
+.team-dialog__header {
+    display: grid;
+    gap: 4px;
+}
+
+.team-dialog__title {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.1;
+}
+
+.team-dialog__subtitle {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.8rem;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.team-dialog__section {
+    display: grid;
+    gap: 6px;
+}
+
+.team-dialog__saved-panel {
+    display: grid;
+    gap: 4px;
+}
+
+.team-dialog__saved-list {
+    display: grid;
+    gap: 1px;
+    max-height: 96px;
+    overflow: auto;
+    padding: 4px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background: #1b1b1b;
+    scrollbar-gutter: stable;
+}
+
+.team-dialog__saved-empty {
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 0.76rem;
+    line-height: 1.1;
+}
+
+.team-dialog__saved-row {
+    padding: 3px 5px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 0.76rem;
+    line-height: 1.1;
+    color: rgba(255, 255, 255, 0.76);
+    word-break: break-word;
+}
+
+.team-dialog__saved-row--static {
+    user-select: none;
+    pointer-events: none;
+}
+
+.team-dialog__label,
+.team-dialog__hint {
+    font-size: 0.8rem;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.team-dialog__preview,
+.team-dialog__list,
+.team-dialog__section input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.team-dialog__preview {
+    background: #1b1b1b;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 8px;
+    font: inherit;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.team-dialog__list {
+    background: #1b1b1b;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.team-dialog__list option {
+    white-space: normal;
+}
+
+.team-dialog__footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.team-dialog__footer button {
+    margin: 0;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
 .team-results-group {
     display: grid;
     gap: 4px;
