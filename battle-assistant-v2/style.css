@@ -40,22 +40,22 @@ h1 {
 }
 
 #team-selector {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin: 6px 0 0;
-}
-
-#team-selector .team-selector__button {
+    display: inline-flex;
+    align-items: center;
     margin: 0;
-    padding: 6px 10px;
-    font-size: 0.85rem;
-    line-height: 1;
-    border-radius: 999px;
+    flex: 0 0 auto;
 }
 
-#team-selector .team-selector__button.is-active {
-    background: linear-gradient(90deg, #7dd3fc, #22c55e);
+#team-choice {
+    margin: 0;
+    padding: 8px 10px;
+    min-height: 34px;
+    font-size: 0.82rem;
+    line-height: 1;
+    border-radius: 6px;
+    width: auto;
+    max-width: 100%;
+    background: #fff;
     color: #111;
 }
 
@@ -409,6 +409,10 @@ input[type="text"] {
     padding: 8px 12px;
     line-height: 1;
     flex: 0 0 auto;
+}
+
+#clear-btn {
+    min-width: 78px;
 }
 
 .pokemon-suggestions {

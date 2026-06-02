@@ -15,6 +15,7 @@ let activeSuggestionIndex = -1;
 
 const searchButton = document.getElementById('search-btn');
 const clearButton = document.getElementById('clear-btn');
+const teamChoiceSelect = document.getElementById('team-choice');
 const teamDialog = document.getElementById('team-dialog');
 const teamDialogTitle = document.getElementById('team-dialog-title');
 const teamDialogSubtitle = document.getElementById('team-dialog-subtitle');
@@ -33,7 +34,6 @@ const dataEntry = document.getElementById('data-entry');
 const resultDataInput = document.getElementById('result-data');
 const suggestionsList = document.getElementById('pokemon-suggestions');
 const searchWrap = document.getElementById('pokemon-search-wrap');
-const teamSelectorButtons = Array.from(document.querySelectorAll('[data-team-choice]'));
 const teamActionButtons = Array.from(document.querySelectorAll('[data-team-action]'));
 const teamResultsLists = {
     my: document.getElementById('my-team-results'),
@@ -73,6 +73,7 @@ loadPokemonData();
 bindEvents();
 setSelectedTeam(selectedTeam);
 updateTeamActionButtonStates();
+focusSearchInput();
 
 async function loadPokemonData() {
     try {
@@ -103,12 +104,10 @@ async function loadPokemonData() {
 function bindEvents() {
     searchInput.addEventListener('input', handleSearchInput);
     searchInput.addEventListener('keydown', handleSearchKeydown);
+    document.addEventListener('keydown', handleGlobalKeydown);
 
-    teamSelectorButtons.forEach((button) => {
-        button.addEventListener('click', function (event) {
-            event.stopPropagation();
-            setSelectedTeam(button.dataset.teamChoice);
-        });
+    teamChoiceSelect.addEventListener('change', function () {
+        setSelectedTeam(teamChoiceSelect.value);
     });
 
     searchButton.addEventListener('click', function () {
@@ -185,12 +184,9 @@ function setSelectedTeam(team) {
     }
 
     selectedTeam = team;
-
-    teamSelectorButtons.forEach((button) => {
-        const isActive = button.dataset.teamChoice === team;
-        button.classList.toggle('is-active', isActive);
-        button.setAttribute('aria-pressed', String(isActive));
-    });
+    if (teamChoiceSelect && teamChoiceSelect.value !== team) {
+        teamChoiceSelect.value = team;
+    }
 
     updateTeamActionButtonStates();
 }
@@ -784,6 +780,28 @@ function handleSearchKeydown(event) {
     }
 }
 
+function handleGlobalKeydown(event) {
+    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) {
+        return;
+    }
+
+    if (event.key !== '/' && event.code !== 'Slash') {
+        return;
+    }
+
+    const target = event.target;
+    if (target === searchInput) {
+        return;
+    }
+
+    if (isEditableElement(target)) {
+        return;
+    }
+
+    event.preventDefault();
+    focusSearchInput();
+}
+
 function submitSearchFromInput() {
     const query = searchInput.value.trim();
     if (!query) {
@@ -1335,6 +1353,25 @@ function clearTeamResults(team) {
 
 function focusTextBox(textBoxID) {
     document.getElementById(textBoxID).focus();
+}
+
+function focusSearchInput() {
+    if (searchInput) {
+        searchInput.focus();
+    }
+}
+
+function isEditableElement(element) {
+    if (!element || element === document.body) {
+        return false;
+    }
+
+    if (element.isContentEditable) {
+        return true;
+    }
+
+    const tagName = element.tagName ? element.tagName.toLowerCase() : '';
+    return tagName === 'input' || tagName === 'textarea' || tagName === 'select';
 }
 
 

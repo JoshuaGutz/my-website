@@ -26,12 +26,14 @@
                 <input type="text" id="pokemon-name" placeholder="Enter Pokemon name" autocomplete="off" />
                 <ul id="pokemon-suggestions" class="pokemon-suggestions" hidden></ul>
             </div>
+            <label id="team-selector" aria-label="Team selector">
+                <select id="team-choice">
+                    <option value="my" selected>My Team</option>
+                    <option value="opponent">Opponents Team</option>
+                </select>
+            </label>
             <button id="search-btn" disabled>Search</button>
-            <button id="clear-btn">Restart</button>
-        </div>
-        <div id="team-selector" aria-label="Team selector">
-            <button type="button" class="team-selector__button is-active" data-team-choice="my">My Team</button>
-            <button type="button" class="team-selector__button" data-team-choice="opponent">Opponents Team</button>
+            <button id="clear-btn">Reset</button>
         </div>
     </div>
     </div>
