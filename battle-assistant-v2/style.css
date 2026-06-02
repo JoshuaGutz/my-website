@@ -378,14 +378,37 @@ input[type="text"] {
 
 #pokemon-search-wrap {
     position: relative;
-    display: inline-block;
-    min-width: 320px;
+    flex: 1 1 240px;
+    min-width: 240px;
     max-width: 100%;
 }
 
 #pokemon-name {
     width: 100%;
     box-sizing: border-box;
+}
+
+#search-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+}
+
+.search-controls__row {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+}
+
+#search-btn,
+#clear-btn {
+    margin: 0;
+    padding: 8px 12px;
+    line-height: 1;
+    flex: 0 0 auto;
 }
 
 .pokemon-suggestions {

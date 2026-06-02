@@ -16,16 +16,20 @@
     <!-- <br> -->
 
     <!-- Search form -->
-    <div id="pokemon-search-wrap">
-        <input type="text" id="pokemon-name" placeholder="Enter Pokemon name" autocomplete="off" />
-        <ul id="pokemon-suggestions" class="pokemon-suggestions" hidden></ul>
+    <div id="search-controls">
+        <div class="search-controls__row">
+            <div id="pokemon-search-wrap">
+                <input type="text" id="pokemon-name" placeholder="Enter Pokemon name" autocomplete="off" />
+                <ul id="pokemon-suggestions" class="pokemon-suggestions" hidden></ul>
+            </div>
+            <button id="search-btn" disabled>Search</button>
+            <button id="clear-btn">Restart</button>
+        </div>
+        <div id="team-selector" aria-label="Team selector">
+            <button type="button" class="team-selector__button is-active" data-team-choice="my">My Team</button>
+            <button type="button" class="team-selector__button" data-team-choice="opponent">Opponents Team</button>
+        </div>
     </div>
-    <div id="team-selector" aria-label="Team selector">
-        <button type="button" class="team-selector__button is-active" data-team-choice="my">My Team</button>
-        <button type="button" class="team-selector__button" data-team-choice="opponent">Opponents Team</button>
-    </div>
-    <button id="search-btn" disabled>Search</button>
-    <button id="clear-btn">Clear List</button>
     </div>
 
     <div id="team-dialog" class="team-dialog" hidden>
