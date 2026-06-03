@@ -36,7 +36,22 @@
             <button id="search-btn" disabled>Search</button>
             <button id="clear-btn">Reset</button>
         </div>
-    </div>
+        <div id="layout-controls" class="layout-controls" aria-label="Layout preferences">
+            <label class="layout-controls__field">
+                <span>Layout</span>
+                <select id="layout-mode">
+                    <option value="stacked" selected>Top/Bottom</option>
+                    <option value="split">Left/Right</option>
+                </select>
+            </label>
+            <label class="layout-controls__field">
+                <span>First team</span>
+                <select id="layout-order">
+                    <option value="my" selected>My Team first</option>
+                    <option value="opponent">Opponents Team first</option>
+                </select>
+            </label>
+        </div>
     </div>
 
     <div id="team-dialog" class="team-dialog" hidden>

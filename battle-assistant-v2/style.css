@@ -30,6 +30,7 @@ h1 {
     margin: 6px 0 0;
     display: grid;
     gap: 4px;
+    grid-auto-flow: row;
 }
 
 /* List items with Pokémon details */
@@ -51,6 +52,39 @@ h1 {
     padding: 8px 10px;
     min-height: 34px;
     font-size: 0.82rem;
+    line-height: 1;
+    border-radius: 6px;
+    width: auto;
+    max-width: 100%;
+    background: #fff;
+    color: #111;
+}
+
+.layout-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.layout-controls__field {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.74);
+}
+
+.layout-controls__field span {
+    white-space: nowrap;
+}
+
+.layout-controls__field select {
+    margin: 0;
+    padding: 6px 8px;
+    min-height: 32px;
+    font-size: 0.78rem;
     line-height: 1;
     border-radius: 6px;
     width: auto;
@@ -310,6 +344,20 @@ button:hover {
 #results-list {
     /* max-height: 500px; */
     overflow-y: auto;
+}
+
+#results-list[data-layout-mode="split"] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+}
+
+#results-list[data-layout-mode="split"] .team-divider {
+    display: none;
+}
+
+#results-list[data-layout-mode="split"] .team-results-group {
+    min-width: 0;
 }
 
 /* General page styling (index, battle assistant) */

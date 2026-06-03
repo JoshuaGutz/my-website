@@ -2,6 +2,8 @@
 */
 // State
 let selectedTeam = 'my';
+let layoutMode = 'stacked';
+let layoutFirstTeam = 'my';
 const teamPokemonSets = {
     my: new Set(),
     opponent: new Set()
@@ -16,6 +18,8 @@ let activeSuggestionIndex = -1;
 const searchButton = document.getElementById('search-btn');
 const clearButton = document.getElementById('clear-btn');
 const teamChoiceSelect = document.getElementById('team-choice');
+const layoutModeSelect = document.getElementById('layout-mode');
+const layoutOrderSelect = document.getElementById('layout-order');
 const teamDialog = document.getElementById('team-dialog');
 const teamDialogTitle = document.getElementById('team-dialog-title');
 const teamDialogSubtitle = document.getElementById('team-dialog-subtitle');
@@ -35,6 +39,11 @@ const resultDataInput = document.getElementById('result-data');
 const suggestionsList = document.getElementById('pokemon-suggestions');
 const searchWrap = document.getElementById('pokemon-search-wrap');
 const teamActionButtons = Array.from(document.querySelectorAll('[data-team-action]'));
+const teamResultsSections = {
+    my: document.querySelector('.team-results-group[data-team="my"]'),
+    opponent: document.querySelector('.team-results-group[data-team="opponent"]')
+};
+const teamDivider = document.querySelector('.team-divider');
 const teamResultsLists = {
     my: document.getElementById('my-team-results'),
     opponent: document.getElementById('opponent-team-results')
@@ -42,6 +51,7 @@ const teamResultsLists = {
 const pokemonDataUrl = new URL('PCGmons-NEW [2026-05-28].txt', window.location.href);
 const teamStorageDbName = 'battle-assistant-team-storage';
 const teamStorageStoreName = 'teams';
+const layoutPreferencesStorageKey = 'battle-assistant-layout-preferences';
 let teamStorageDbPromise = null;
 let teamDialogMode = null;
 let teamDialogRecords = [];
@@ -70,9 +80,11 @@ const typeColors = {
 
 searchButton.disabled = true;
 loadPokemonData();
+loadLayoutPreferences();
 bindEvents();
 setSelectedTeam(selectedTeam);
 updateTeamActionButtonStates();
+applyLayoutPreferences();
 focusSearchInput();
 
 async function loadPokemonData() {
@@ -109,6 +121,22 @@ function bindEvents() {
     teamChoiceSelect.addEventListener('change', function () {
         setSelectedTeam(teamChoiceSelect.value);
     });
+
+    if (layoutModeSelect) {
+        layoutModeSelect.addEventListener('change', function () {
+            layoutMode = layoutModeSelect.value === 'split' ? 'split' : 'stacked';
+            persistLayoutPreferences();
+            applyLayoutPreferences();
+        });
+    }
+
+    if (layoutOrderSelect) {
+        layoutOrderSelect.addEventListener('change', function () {
+            layoutFirstTeam = layoutOrderSelect.value === 'opponent' ? 'opponent' : 'my';
+            persistLayoutPreferences();
+            applyLayoutPreferences();
+        });
+    }
 
     searchButton.addEventListener('click', function () {
         submitSearchFromInput();
@@ -189,6 +217,83 @@ function setSelectedTeam(team) {
     }
 
     updateTeamActionButtonStates();
+}
+
+function loadLayoutPreferences() {
+    try {
+        const raw = localStorage.getItem(layoutPreferencesStorageKey);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && (parsed.layoutMode === 'stacked' || parsed.layoutMode === 'split')) {
+                layoutMode = parsed.layoutMode;
+            }
+            if (parsed && (parsed.layoutFirstTeam === 'my' || parsed.layoutFirstTeam === 'opponent')) {
+                layoutFirstTeam = parsed.layoutFirstTeam;
+            }
+        }
+    } catch (error) {
+        console.warn('Unable to load layout preferences', error);
+    }
+
+    if (layoutModeSelect) {
+        layoutModeSelect.value = layoutMode;
+    }
+    if (layoutOrderSelect) {
+        layoutOrderSelect.value = layoutFirstTeam;
+    }
+}
+
+function persistLayoutPreferences() {
+    try {
+        localStorage.setItem(
+            layoutPreferencesStorageKey,
+            JSON.stringify({
+                layoutMode,
+                layoutFirstTeam
+            })
+        );
+    } catch (error) {
+        console.warn('Unable to save layout preferences', error);
+    }
+}
+
+function applyLayoutPreferences() {
+    if (!resultsList) {
+        return;
+    }
+
+    if (layoutModeSelect && layoutModeSelect.value !== layoutMode) {
+        layoutModeSelect.value = layoutMode;
+    }
+    if (layoutOrderSelect && layoutOrderSelect.value !== layoutFirstTeam) {
+        layoutOrderSelect.value = layoutFirstTeam;
+    }
+
+    const isSplit = layoutMode === 'split';
+    const firstTeam = layoutFirstTeam;
+    const secondTeam = firstTeam === 'my' ? 'opponent' : 'my';
+
+    resultsList.dataset.layoutMode = layoutMode;
+    resultsList.dataset.layoutFirstTeam = layoutFirstTeam;
+
+    if (teamResultsSections.my) {
+        teamResultsSections.my.style.order = String(firstTeam === 'my' ? 0 : isSplit ? 1 : 2);
+    }
+    if (teamResultsSections.opponent) {
+        teamResultsSections.opponent.style.order = String(firstTeam === 'opponent' ? 0 : isSplit ? 1 : 2);
+    }
+    if (teamDivider) {
+        teamDivider.hidden = isSplit;
+        teamDivider.style.order = '1';
+    }
+    if (!isSplit) {
+        if (teamResultsSections[firstTeam]) {
+            teamResultsSections[firstTeam].style.order = '0';
+        }
+        if (teamResultsSections[secondTeam]) {
+            teamResultsSections[secondTeam].style.order = '2';
+        }
+    }
 }
 
 function updateTeamActionButtonStates() {
@@ -1373,5 +1478,3 @@ function isEditableElement(element) {
     const tagName = element.tagName ? element.tagName.toLowerCase() : '';
     return tagName === 'input' || tagName === 'textarea' || tagName === 'select';
 }
-
-
