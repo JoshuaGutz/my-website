@@ -39,7 +39,7 @@ const teamResultsLists = {
     my: document.getElementById('my-team-results'),
     opponent: document.getElementById('opponent-team-results')
 };
-const pokemonDataUrl = new URL('PCGmons-NEW [2025-05-28].txt', window.location.href);
+const pokemonDataUrl = new URL('PCGmons-NEW [2026-05-28].txt', window.location.href);
 const teamStorageDbName = 'battle-assistant-team-storage';
 const teamStorageStoreName = 'teams';
 let teamStorageDbPromise = null;
