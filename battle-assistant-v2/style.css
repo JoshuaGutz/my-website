@@ -577,7 +577,7 @@ input[type="text"] {
 .pokemon-card__content {
     display: grid;
     gap: 2px;
-    padding-right: 112px;
+    padding-right: 0; /* Change from 112px to 0 */
 }
 
 .pokemon-card__line,
