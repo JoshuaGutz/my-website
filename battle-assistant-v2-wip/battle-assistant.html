@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Assistant</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/battle-assistant-v2/favicon_io--crossed-swords/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/battle-assistant-v2/favicon_io--crossed-swords/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/battle-assistant-v2/favicon_io--crossed-swords/favicon-16x16.png">
+    <link rel="manifest" href="/battle-assistant-v2/favicon_io--crossed-swords/site.webmanifest">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="modal.css">
+</head>
+<body>
+    <!-- <p id="page_name" style="font-size: 12px;"></p> -->
+    <!-- <div id="search-panel" onclick="focusTextBox('pokemon-name')"> -->
+    <div id="search-panel">
+    <!-- <h1>Battle Assistant</h1> -->
+    <!-- <button id="return-btn">Return to Main</button> -->
+    <!-- <button id="openExtensionBtn">Open PCG Extension</button> -->
+    <!-- <br> -->
+
+    <!-- Search form -->
+    <div id="search-controls">
+        <div class="search-controls__row">
+            <div id="pokemon-search-wrap">
+                <input type="text" id="pokemon-name" placeholder="Enter Pokemon name (Press / to jump to the search box)" autocomplete="off" />
+                <ul id="pokemon-suggestions" class="pokemon-suggestions" hidden></ul>
+            </div>
+            <label id="team-selector" aria-label="Team selector">
+                <select id="team-choice">
+                    <option value="my" selected>My Team</option>
+                    <option value="opponent">Opponents Team</option>
+                </select>
+            </label>
+            <button id="search-btn" disabled>Search</button>
+            <button id="clear-btn">Reset</button>
+        </div>
+        <div id="layout-controls" class="layout-controls" aria-label="Layout preferences">
+            <label class="layout-controls__field">
+                <span>Layout</span>
+                <select id="layout-mode">
+                    <option value="stacked" selected>Top/Bottom</option>
+                    <option value="split">Left/Right</option>
+                </select>
+            </label>
+            <label class="layout-controls__field">
+                <span>First team</span>
+                <select id="layout-order">
+                    <option value="my" selected>My Team first</option>
+                    <option value="opponent">Opponents Team first</option>
+                </select>
+            </label>
+        </div>
+    </div>
+
+    <div id="team-dialog" class="team-dialog" hidden>
+        <div class="team-dialog__backdrop" data-dialog-close="true"></div>
+        <div class="team-dialog__panel" role="dialog" aria-modal="true" aria-labelledby="team-dialog-title">
+            <div class="team-dialog__header">
+                <h2 id="team-dialog-title" class="team-dialog__title"></h2>
+                <div id="team-dialog-subtitle" class="team-dialog__subtitle"></div>
+            </div>
+
+            <div id="team-dialog-manager" class="team-dialog__section" hidden>
+                <div class="team-dialog__section-group">
+                    <div class="team-dialog__label">Current team</div>
+                    <div id="team-save-preview" class="team-dialog__preview" aria-label="Current team roster"></div>
+                </div>
+                <div class="team-dialog__section-group">
+                    <div class="team-dialog__label">Save current team</div>
+                    <input type="text" id="team-save-nickname" autocomplete="off" placeholder="Nickname" />
+                    <div class="team-dialog__hint">Choose a nickname, then save or merge the roster.</div>
+                </div>
+                <div id="team-dialog-conflict" class="team-dialog__section team-dialog__conflict" hidden>
+                    <div class="team-dialog__label">That nickname already exists</div>
+                    <div id="team-dialog-conflict-summary" class="team-dialog__hint"></div>
+                    <div class="team-dialog__conflict-actions">
+                        <button type="button" id="team-dialog-conflict-merge">Merge</button>
+                        <button type="button" id="team-dialog-conflict-overwrite">Overwrite</button>
+                        <button type="button" id="team-dialog-conflict-save-as">Save As</button>
+                        <button type="button" id="team-dialog-conflict-cancel">Cancel</button>
+                    </div>
+                </div>
+                <div id="team-dialog-action" class="team-dialog__section team-dialog__conflict" hidden>
+                    <div id="team-dialog-action-title" class="team-dialog__label"></div>
+                    <div id="team-dialog-action-summary" class="team-dialog__hint"></div>
+                    <div class="team-dialog__conflict-actions">
+                        <button type="button" id="team-dialog-action-confirm"></button>
+                        <button type="button" id="team-dialog-action-cancel">Cancel</button>
+                    </div>
+                </div>
+                <div class="team-dialog__section-group">
+                    <div class="team-dialog__label">Saved teams</div>
+                    <select id="team-load-list" class="team-dialog__list" size="8" aria-label="Saved teams"></select>
+                </div>
+            </div>
+
+            <div class="team-dialog__footer">
+                <button type="button" id="team-dialog-save">Save</button>
+                <button type="button" id="team-dialog-load">Load</button>
+                <button type="button" id="team-dialog-remove">Remove</button>
+                <button type="button" id="team-dialog-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result list -->
+    <div id="results-list" aria-live="polite">
+        <section class="team-results-group" data-team="my">
+            <div class="team-results-group__header">
+                <span>My Team</span>
+                <div class="team-results-group__actions">
+                    <button type="button" class="team-results-group__action" data-team-action="manage" data-team-target="my">Manage Teams</button>
+                </div>
+            </div>
+            <ul id="my-team-results" class="team-results-group__list"></ul>
+        </section>
+        <div class="team-divider" aria-hidden="true"></div>
+        <section class="team-results-group" data-team="opponent">
+            <div class="team-results-group__header">
+                <span>Opponents Team</span>
+                <div class="team-results-group__actions">
+                    <button type="button" class="team-results-group__action" data-team-action="manage" data-team-target="opponent">Manage Teams</button>
+                </div>
+            </div>
+            <ul id="opponent-team-results" class="team-results-group__list"></ul>
+        </section>
+    </div>
+
+    <!-- Hidden text input for entering data manually if Pokemon is not found -->
+    <div id="data-entry" style="display:none;">
+        <input type="text" id="result-data" placeholder="Enter Pokemon data" />
+    </div>
+
+    <script src="allpages.js"></script>
+    <script src="script.js"></script>
+    <script src="modals.js"></script>
+</body>
+</html>
